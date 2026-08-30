@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TFT Comp Analyzer</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="fetch-error-banner" class="banner banner-error" hidden></div>
+<div id="selftest-banner" class="banner banner-error" hidden></div>
+
+<header class="site-header">
+  <h1>TFT Comp Analyzer</h1>
+</header>
+
+<main class="columns">
+
+  <section id="palette-column" class="column" aria-labelledby="palette-heading">
+    <h2 id="palette-heading">Unit Paleti</h2>
+    <div class="palette-controls">
+      <input type="search" id="palette-search" placeholder="Unit ara...">
+      <select id="palette-cost-filter">
+        <option value="">Tüm maliyetler</option>
+        <option value="1">1 maliyet</option>
+        <option value="2">2 maliyet</option>
+        <option value="3">3 maliyet</option>
+        <option value="4">4 maliyet</option>
+        <option value="5">5 maliyet</option>
+      </select>
+      <!-- Seçenekler traits.json'dan JS ile dolduruluyor (app.js:
+           populateTraitFilterOptions) — set değişince kod değişmeden çalışsın
+           diye burada hiçbir trait adı/ID'si hardcode edilmiyor. -->
+      <select id="palette-trait-filter">
+        <option value="">Tüm trait'ler</option>
+      </select>
+    </div>
+    <div id="palette-grid" class="palette-grid"></div>
+  </section>
+
+  <section id="board-column" class="column" aria-labelledby="board-heading">
+    <h2 id="board-heading">Board</h2>
+    <div id="board-toast-container"></div>
+    <div id="board-slots" class="board-slots"></div>
+    <div id="active-traits" class="active-traits-panel"></div>
+  </section>
+
+  <section id="result-column" class="column" aria-labelledby="result-heading">
+    <h2 id="result-heading">Sonuç</h2>
+    <div id="result-content">
+      <p class="empty-state">Board'a en az 4 unit ekleyince eşleşen comp burada görünecek.</p>
+    </div>
+  </section>
+
+</main>
+
+<details id="constraints-box" class="constraints-box" open>
+  <summary>Kısıtlar</summary>
+  <ul id="constraints-list"></ul>
+</details>
+
+<footer class="site-footer">
+  <p>Bu proje Riot Games ile ilişkili değildir ve Riot tarafından onaylanmamıştır.</p>
+</footer>
+
+<script src="app.js" defer></script>
+</body>
+</html>

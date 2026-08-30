@@ -1,0 +1,389 @@
+:root {
+  --border: #d5d5d5;
+  --bg: #ffffff;
+  --bg-muted: #f6f6f6;
+  --text: #1c1c1c;
+  --text-muted: #6b6b6b;
+  --error-bg: #fdecea;
+  --error-border: #d93025;
+  --error-text: #8a1c14;
+
+  /* Cost colors (SPEC-WEB.md section 4) — fixed across sets, not set data. */
+  --cost-1: #9a9a9a;
+  --cost-2: #3aa65b;
+  --cost-3: #3a7bd5;
+  --cost-4: #9b3adf;
+  --cost-5: #d5a83a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--text);
+  background: var(--bg-muted);
+}
+
+.banner {
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+}
+
+.banner-error {
+  background: var(--error-bg);
+  color: var(--error-text);
+  border-bottom: 2px solid var(--error-border);
+}
+
+.banner-error ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.site-header {
+  padding: 1rem 1.5rem 0.5rem;
+}
+
+.site-header h1 {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: 260px minmax(420px, 1fr) 320px;
+  gap: 1rem;
+  padding: 0 1rem 1rem;
+  align-items: start;
+}
+
+.column {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.75rem;
+  min-height: 60vh;
+}
+
+.column h2 {
+  font-size: 1rem;
+  margin: 0 0 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.palette-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.palette-controls input,
+.palette-controls select {
+  padding: 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 0.5rem;
+}
+
+.board-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.board-slot {
+  width: 72px;
+  height: 72px;
+  border: 2px dashed var(--border);
+  border-radius: 6px;
+  background: var(--bg-muted);
+}
+
+.active-traits-panel {
+  min-height: 3rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+}
+
+.empty-state {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.site-footer {
+  padding: 1rem 1.5rem 2rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+/* --- Unit kartı (palet + board slot içinde ortak) — SPEC-WEB section 4/5.2 --- */
+
+.unit-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  width: 100%;
+  padding: 0.3rem;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  cursor: pointer;
+  font-size: 0.7rem;
+  text-align: center;
+  user-select: none;
+}
+
+.unit-card.cost-1 { border-color: var(--cost-1); }
+.unit-card.cost-2 { border-color: var(--cost-2); }
+.unit-card.cost-3 { border-color: var(--cost-3); }
+.unit-card.cost-4 { border-color: var(--cost-4); }
+.unit-card.cost-5 { border-color: var(--cost-5); }
+
+.unit-card.dimmed {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.unit-card .unit-icon,
+.unit-card .unit-fallback {
+  width: 44px;
+  height: 44px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: var(--bg-muted);
+}
+
+.unit-card .unit-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.unit-card .unit-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.unit-card .remove-btn {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  line-height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  font-size: 0.7rem;
+  padding: 0;
+  cursor: pointer;
+}
+
+.star-selector {
+  display: flex;
+  gap: 0.15rem;
+}
+
+.star-selector button {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  font-size: 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-muted);
+  cursor: pointer;
+}
+
+.star-selector button.active {
+  background: var(--cost-5);
+  color: #fff;
+  border-color: var(--cost-5);
+}
+
+/* --- Board slot --- */
+
+.board-slot {
+  width: 88px;
+  height: 96px;
+  padding: 0.25rem;
+}
+
+.board-slot.occupied {
+  border-style: solid;
+  background: var(--bg);
+}
+
+.board-slot.drag-over {
+  border-color: var(--cost-3);
+  background: #eaf1fc;
+}
+
+.toast {
+  margin: 0 0 0.5rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.8rem;
+  background: #fff4e5;
+  border: 1px solid #e0a83a;
+  border-radius: 4px;
+  color: #7a4a00;
+}
+
+/* --- Aktif trait paneli (section 7.1) --- */
+
+.active-traits-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-content: flex-start;
+}
+
+.trait-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: var(--bg);
+}
+
+.trait-badge img,
+.trait-badge .trait-fallback {
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+}
+
+.trait-badge.almost {
+  opacity: 0.45;
+}
+
+/* --- Sonuç paneli (section 8) --- */
+
+.comp-report h3 {
+  margin: 0 0 0.25rem;
+}
+
+.match-meta {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin: 0 0 0.75rem;
+}
+
+.badge-weak-match {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.7rem;
+  border-radius: 4px;
+  background: #fff4e5;
+  color: #7a4a00;
+  border: 1px solid #e0a83a;
+}
+
+.stat-row {
+  display: flex;
+  gap: 1.25rem;
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+}
+
+.result-content h4 {
+  margin: 1rem 0 0.4rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+}
+
+.h2h-row,
+.trait-row,
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--bg-muted);
+}
+
+.h2h-row .n-ci,
+.trait-row .n,
+.item-row .n {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.low-confidence {
+  opacity: 0.55;
+}
+
+.low-confidence .n-ci::after {
+  content: " · düşük güven";
+}
+
+.insufficient-note {
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.nearest-list li {
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.item-unit-group {
+  margin-bottom: 0.75rem;
+}
+
+.item-unit-group .unit-heading {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+/* --- Kısıtlar (section 8/9) --- */
+
+.constraints-box {
+  margin: 0 1rem 1rem;
+  padding: 0.6rem 1rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.constraints-box summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.constraints-box ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+}

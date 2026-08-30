@@ -342,11 +342,15 @@ Yukarıdan aşağıya sıra:
 
 > **Augment sekmesi v1'de yok.** İlk taslakta burada bir "Augment: silver / gold / prismatic" satırı vardı; kaldırıldı çünkü `augments.json` üretilmiyor (bölüm 3.6, SPEC.md bölüm 11 — Riot API'de `augments` alanı hiç yok). Veri bir gün gelirse bu sekme geri eklenir, şema referans olarak bölüm 3.6'da duruyor.
 
+> **"Yakın" eşiği — sayısal olarak tanımlandı (2026-08-30, uygulama sırasında bulundu).** Bu bölüm "mesafe eşiğe yakınsa" diyor ama bir sayı vermiyordu; uygulama bunu belirsiz bırakamadığı için bir sabit seçti: **mesafe, `match_threshold`'un %90'ından fazlaysa** "zayıf eşleşme" rozeti gösterilir (`app.js`'te `WEAK_MATCH_RATIO = 0.9`). Bu veriden türetilmiş bir değer değil, keyfi ama açık bir seçim — mesafe eşiğe yaklaştıkça, board gerçekte comp'un tipik örneklerinden gitgide uzaklaşan bir board olabilir, kullanıcı bunu bilsin diye. Değiştirmek istenirse tek satır (`app.js`'teki sabit).
+
 ### 8.1 Her yerde geçerli kurallar
 
 - Hiçbir oran n olmadan gösterilmeyecek.
 - Yetersiz veri olan hücre gizlenmeyecek, "yetersiz veri" yazılacak. Gizlemek, kullanıcıya var olmayan bir tamlık hissi verir.
 - Güven aralığı geniş olan sonuçları görsel olarak zayıflat (soluk renk veya "düşük güven" etiketi).
+
+> **"Geniş" eşiği — sayısal olarak tanımlandı (2026-08-30, uygulama sırasında bulundu).** Yukarıdaki kural da bir sayı vermiyordu. Uygulama seçimi: **güven aralığının üst-alt genişliği 0.15'i (15 yüzde puanı) aşarsa** "düşük güven" olarak zayıflatılır (`app.js`'te `WIDE_CI_WIDTH = 0.15`). Bu da veriden türetilmedi, keyfi bir sabit — Wilson aralığının genel olarak ne kadar geniş çıktığına dair bir dağılım analizi yapılmadı. Değiştirmek istenirse tek satır.
 
 ## 9. Dil — bu bölüm pazarlık konusu değil
 
