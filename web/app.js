@@ -3,9 +3,12 @@
 /**
  * TFT Comp Analyzer — web arayüzü (SPEC-WEB.md).
  *
- * Tek dosya (SPEC-WEB.md section 2 — bölünmüyor). Bu iterasyon: palet
- * (section 4/5), board etkileşimi (section 5/6), aktif trait paneli
- * (section 7.1), comp eşleştirme (section 7.3) ve sonuç paneli (section 8).
+ * Tek dosya (SPEC-WEB.md section 2 — bölünmüyor). Yerleşim section 5
+ * (2026-08-30'da yeniden yazıldı): header/logo, sol "önerilen comp'lar",
+ * orta board + aktif trait paneli, sağ sonuç paneli, altta yatay unit
+ * paleti. Etkileşim: section 5/6 (board + DnD + tıklama), section 7.1
+ * (aktif trait), section 7.3 (comp eşleştirme), section 8 (sonuç paneli,
+ * section 8.2'nin sadeleştirilmiş dili ile).
  */
 
 const DATA_FILES = {
@@ -23,15 +26,17 @@ const BOARD_SIZE = 10;
 const DEFAULT_STAR = 2; // SPEC-WEB.md section 5.2 — veride en sık görülen durum
 const TOP_K = 5; // src/cli.py ile aynı sabit
 const MIN_UNITS_FOR_MATCH = 4; // SPEC-WEB.md section 7.3 / src/cli.py MIN_UNITS
+const SUGGESTION_COUNT = 8; // section 5.3 — spec'in verdiği "5-10" aralığından seçilen sabit
 
 // Spec bu ikisi için sayısal bir sınır vermiyor (section 8, 8.1) — kendi
-// seçtiğimiz, açıkça yorumlanmış eşikler:
+// seçtiğimiz, açıkça yorumlanmış eşikler (bkz. SPEC-WEB.md section 8/8.1):
 const WEAK_MATCH_RATIO = 0.9; // mesafe eşiğin %90'ından fazlaysa "zayıf eşleşme"
 const WIDE_CI_WIDTH = 0.15; // CI genişliği (üst-alt) 15 puanı aşarsa "düşük güven"
 
 const state = {};
 let board = {}; // { unitId: { star: 1|2|3 } }
 let boardOrder = []; // slot sırasını korumak için unitId listesi, en fazla BOARD_SIZE
+let activeCostTab = "1"; // section 5.4 — varsayılan açık sekme: 1 maliyet
 
 // ---------------------------------------------------------------------------
 // Veri yükleme
@@ -76,7 +81,8 @@ function showSelfTestError(failures) {
 }
 
 // ---------------------------------------------------------------------------
-// İstemci tarafı hesaplamalar (SPEC-WEB.md section 7)
+// İstemci tarafı hesaplamalar (SPEC-WEB.md section 7) — SELF-TEST BUNLARA
+// BAĞLI, davranışlarını değiştirme.
 // ---------------------------------------------------------------------------
 
 /** Board'daki her unit'in trait'lerini benzersiz say (yıldız seviyesi
@@ -225,7 +231,7 @@ function runSelfTest() {
 }
 
 // ---------------------------------------------------------------------------
-// Ortak yardımcılar — görsel fallback (section 4)
+// Ortak yardımcılar — görsel fallback (section 4), küçük dekoratif ikonlar
 // ---------------------------------------------------------------------------
 
 function unitInitials(name) {
@@ -244,36 +250,75 @@ function makeFallbackBox(name, className) {
   return box;
 }
 
-function attachIcon(container, iconUrl, name, imgClass, fallbackClass) {
-  const img = document.createElement("img");
-  img.className = imgClass;
-  img.src = iconUrl;
-  img.loading = "lazy"; // section 4 — palette 60+ görsel var
-  img.alt = name;
-  img.onerror = () => {
-    // section 4 — kırık görsel ikonu gösterme, unit adının ilk harflerini göster
-    img.replaceWith(makeFallbackBox(name, fallbackClass));
-  };
-  container.appendChild(img);
+/** Küçük, set verisinden bağımsız bir "altın sikke" ikonu — section 5.2'nin
+ * "maliyet (altın bir ikon + sayı)" isteği için. Oyun/set içeriği değil,
+ * dekoratif bir arayüz öğesi olduğu için inline SVG (section 10'un "set
+ * verisini koda gömme" kuralı unit/trait/item/augment kimlikleri içindir). */
+function goldCoinSvg() {
+  return '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7" fill="#e0a83a" stroke="#8a5a10" stroke-width="1"/></svg>';
 }
 
 // ---------------------------------------------------------------------------
-// Unit kartı — palet ve board slot'unda ortak (section 4, 5.2, 6)
+// Unit kartı — TFT kart estetiği, palet ve board slot'unda ortak
+// (section 4, 5.2, 6)
 // ---------------------------------------------------------------------------
 
 function createUnitCard(unitId, mode) {
   const info = state.units[unitId];
   const card = document.createElement("div");
-  card.className = `unit-card cost-${info.cost}`;
+  card.className = `tft-card cost-${info.cost}`;
   card.draggable = true;
   card.dataset.unitId = unitId;
 
-  attachIcon(card, info.icon, info.name, "unit-icon", "unit-fallback");
+  // Portre arka plan olarak — GERÇEK bir <img> (section 5.2'nin uyarısı:
+  // CSS background-image ile onerror hiç tetiklenmez).
+  const img = document.createElement("img");
+  img.className = "tft-card-portrait";
+  img.src = info.icon;
+  img.loading = "lazy"; // section 4 — palette 60+ görsel var
+  img.alt = info.name;
+  img.onerror = () => {
+    img.replaceWith(makeFallbackBox(info.name, "tft-card-fallback"));
+  };
+  card.appendChild(img);
 
-  const nameEl = document.createElement("div");
-  nameEl.className = "unit-name";
+  // Sol altta, dikey sıralı trait ikonları + adları (section 5.2).
+  const traitsBox = document.createElement("div");
+  traitsBox.className = "tft-card-traits";
+  for (const traitId of info.traits) {
+    const traitInfo = state.traits[traitId];
+    if (!traitInfo) continue;
+    const chip = document.createElement("div");
+    chip.className = "trait-chip";
+    const traitImg = document.createElement("img");
+    traitImg.src = traitInfo.icon;
+    traitImg.loading = "lazy";
+    traitImg.alt = traitInfo.name;
+    traitImg.onerror = () => {
+      const fb = document.createElement("span");
+      fb.className = "trait-fallback";
+      fb.textContent = "•";
+      traitImg.replaceWith(fb);
+    };
+    chip.appendChild(traitImg);
+    const label = document.createElement("span");
+    label.textContent = traitInfo.name;
+    chip.appendChild(label);
+    traitsBox.appendChild(chip);
+  }
+  card.appendChild(traitsBox);
+
+  // Alt şerit: solda ad, sağda maliyet (altın ikon + sayı).
+  const footer = document.createElement("div");
+  footer.className = "tft-card-footer";
+  const nameEl = document.createElement("span");
+  nameEl.className = "tft-card-name";
   nameEl.textContent = info.name;
-  card.appendChild(nameEl);
+  const costEl = document.createElement("span");
+  costEl.className = "tft-card-cost";
+  costEl.innerHTML = `${goldCoinSvg()}${info.cost}`;
+  footer.append(nameEl, costEl);
+  card.appendChild(footer);
 
   // section 6.2: dragstart içinde dataTransfer.setData ile unit ID'sini taşı.
   card.addEventListener("dragstart", (e) => {
@@ -330,7 +375,7 @@ function createUnitCard(unitId, mode) {
 }
 
 // ---------------------------------------------------------------------------
-// Palet (section 4, 5)
+// Palet — yatay panel, maliyet sekmeleri (section 5.4)
 // ---------------------------------------------------------------------------
 
 /** Trait filtresi seçeneklerini traits.json'dan doldurur — section 10'un
@@ -352,15 +397,21 @@ function renderPalette() {
   grid.innerHTML = "";
 
   const search = document.getElementById("palette-search").value.trim().toLowerCase();
-  const costFilter = document.getElementById("palette-cost-filter").value;
   const traitFilter = document.getElementById("palette-trait-filter").value;
+  const searching = search.length > 0;
+
+  // section 5.4: arama aktifken maliyet sekmesi devre dışı — hiçbir sekme
+  // "seçili" görünmemeli, sonuçlar tüm maliyetlerden gelsin.
+  document.querySelectorAll(".cost-tab").forEach((btn) => {
+    btn.classList.toggle("active", !searching && btn.dataset.cost === activeCostTab);
+  });
 
   const unitIds = Object.keys(state.units).sort((a, b) => state.units[a].name.localeCompare(state.units[b].name));
 
   for (const unitId of unitIds) {
     const info = state.units[unitId];
+    if (!searching && String(info.cost) !== activeCostTab) continue;
     if (search && !info.name.toLowerCase().includes(search)) continue;
-    if (costFilter && String(info.cost) !== costFilter) continue;
     if (traitFilter && !info.traits.includes(traitFilter)) continue;
     grid.appendChild(createUnitCard(unitId, "palette"));
   }
@@ -368,12 +419,103 @@ function renderPalette() {
 
 function setupPaletteFilters() {
   document.getElementById("palette-search").addEventListener("input", renderPalette);
-  document.getElementById("palette-cost-filter").addEventListener("change", renderPalette);
   document.getElementById("palette-trait-filter").addEventListener("change", renderPalette);
 }
 
+function setupCostTabs() {
+  document.querySelectorAll(".cost-tab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      activeCostTab = btn.dataset.cost;
+      // Bir sekmeye tıklamak, sekmeyi aşan bir aramayı temizler — yoksa
+      // sekme "seçili" görünür ama arama onu görmezden gelmeye devam eder,
+      // kafa karıştırıcı olur.
+      document.getElementById("palette-search").value = "";
+      renderPalette();
+    });
+  });
+}
+
+function setupPaletteToggle() {
+  const toggle = document.getElementById("palette-toggle");
+  toggle.addEventListener("click", () => {
+    const grid = document.getElementById("palette-grid");
+    const expanded = grid.classList.toggle("expanded");
+    toggle.textContent = expanded ? "Daralt ▴" : "Genişlet ▾";
+  });
+}
+
+/** section 5.5: sonuç paneli artık sağdan kayan bir overlay. Buton her zaman
+ * tıklanabilir (board boş / comp eşleşmemiş olsa da) — panelin açık/kapalı
+ * durumu içeriğin güncelliğinden bağımsız, updateResult() board her
+ * değiştiğinde #result-content'i zaten dolduruyor, sekme sadece görünürlüğü
+ * değiştiriyor. */
+function setupResultPanelToggle() {
+  const panel = document.getElementById("result-panel");
+  const toggle = document.getElementById("result-toggle");
+  toggle.addEventListener("click", () => {
+    const open = panel.classList.toggle("open");
+    toggle.textContent = open ? "›" : "‹";
+    toggle.setAttribute("aria-expanded", String(open));
+  });
+}
+
 // ---------------------------------------------------------------------------
-// Board (section 5, 5.1 — hex ızgara YOK, düz 10 slot)
+// Önerilen comp'lar paneli (section 5.3)
+// ---------------------------------------------------------------------------
+
+function renderSuggestions() {
+  const list = document.getElementById("suggestions-list");
+  list.innerHTML = "";
+
+  const realComps = Object.entries(state.comps).filter(([compId]) => compId !== "off_meta");
+  // TFT'de düşük placement iyidir (section 10) — artan sırada = en iyiden başla.
+  realComps.sort((a, b) => a[1].avg_placement - b[1].avg_placement);
+  const top = realComps.slice(0, SUGGESTION_COUNT);
+
+  for (const [compId, comp] of top) {
+    const row = document.createElement("button");
+    row.type = "button";
+    row.className = "suggestion-row";
+    row.dataset.compId = compId;
+
+    const name = document.createElement("span");
+    name.className = "suggestion-name";
+    name.textContent = comp.name;
+
+    const stats = document.createElement("span");
+    stats.className = "suggestion-stats";
+    stats.textContent = `Ort. sıra ${comp.avg_placement.toFixed(2)} · İlk 4 %${(comp.top4_rate * 100).toFixed(1)} · n=${comp.n_total}`;
+
+    row.append(name, stats);
+    row.addEventListener("click", () => loadSuggestedComp(compId));
+    list.appendChild(row);
+  }
+}
+
+/** section 5.3: bir öneriye tıklanınca board'u o comp'un core_units'iyle
+ * doldur — board doluysa bile onay istemeden, doğrudan (2026-08-30: ilk
+ * taslaktaki confirm() kullanımda rahatsız edici bulundu, kaldırıldı). */
+function loadSuggestedComp(compId) {
+  const comp = state.comps[compId];
+  const coreUnits = comp.core_units.slice(0, BOARD_SIZE);
+  const omitted = comp.core_units.length - coreUnits.length;
+
+  board = {};
+  boardOrder = [];
+  for (const unitId of coreUnits) {
+    board[unitId] = { star: DEFAULT_STAR };
+    boardOrder.push(unitId);
+  }
+
+  if (omitted > 0) {
+    showToast(`${comp.name}: ${omitted} unit board'a sığmadı, en az sık görülenler bırakıldı.`);
+  }
+
+  onBoardChanged();
+}
+
+// ---------------------------------------------------------------------------
+// Board (section 5.1 — hex ızgara YOK, düz 10 slot)
 // ---------------------------------------------------------------------------
 
 function renderBoardSlots() {
@@ -515,7 +657,12 @@ function renderActiveTraits() {
   for (const row of rows) {
     const badge = document.createElement("div");
     badge.className = "trait-badge" + (row.almost ? " almost" : "");
-    attachIcon(badge, row.info.icon, row.info.name, "", "trait-fallback");
+    const img = document.createElement("img");
+    img.src = row.info.icon;
+    img.loading = "lazy";
+    img.alt = row.info.name;
+    img.onerror = () => img.replaceWith(makeFallbackBox(row.info.name, "trait-fallback"));
+    badge.appendChild(img);
     const label = document.createElement("span");
     label.textContent = `${row.info.name} ${row.label}`;
     badge.appendChild(label);
@@ -524,13 +671,21 @@ function renderActiveTraits() {
 }
 
 // ---------------------------------------------------------------------------
-// Sonuç paneli (section 8) — dil kuralı (section 9): "counter"/"win rate" yok,
-// "üstünlük" kullanılıyor. src/cli.py'nin format_head_to_head /
-// format_traits ile aynı mantık ve ifadeler.
+// Sonuç paneli (section 8, dil section 8.2) — dil kuralı (section 9):
+// "counter"/"win rate" yok, "üstünlük" kullanılıyor, ham sayı yerine cümle.
 // ---------------------------------------------------------------------------
 
 function compName(comps, compId) {
   return (comps[compId] && comps[compId].name) || compId;
+}
+
+/** Bir delta/lift değerini yöne çeviren cümle parçası — TFT'de düşük
+ * placement iyi olduğu için negatif değer her zaman "iyileştiriyor" demeli
+ * (section 10'un "düşük placement'ı kötü renklendirme" hatasına düşme). */
+function directionPhrase(value) {
+  return value < 0
+    ? `ortalama sıralamayı ${Math.abs(value).toFixed(2)} iyileştiriyor`
+    : `ortalama sıralamayı ${value.toFixed(2)} kötüleştiriyor`;
 }
 
 function updateResult() {
@@ -561,18 +716,20 @@ function updateResult() {
 function renderUnmatched(container, ranked, distance, threshold, comps) {
   // section 7.3 / src/cli.py: zorla bir comp'a eşleştirip rapor gösterme.
   const p1 = document.createElement("p");
-  p1.textContent = `Bu board bilinen bir comp'a uymuyor (en yakın mesafe ${distance.toFixed(3)}, eşik ${threshold.toFixed(3)}).`;
+  p1.textContent =
+    `Bu board şu anda bilinen hiçbir comp'a yeterince yakın değil ` +
+    `(en yakın mesafe ${distance.toFixed(2)}, eşik ${threshold.toFixed(2)}).`;
   container.appendChild(p1);
 
-  const h = document.createElement("h4");
-  h.textContent = "En yakın 3 comp";
-  container.appendChild(h);
+  const p2 = document.createElement("p");
+  p2.textContent = "En yakın 3 comp:";
+  container.appendChild(p2);
 
   const list = document.createElement("ul");
   list.className = "nearest-list";
   for (const { compId, distance: d } of ranked.slice(0, 3)) {
     const li = document.createElement("li");
-    li.textContent = `${compName(comps, compId)}: mesafe ${d.toFixed(3)}`;
+    li.textContent = `${compName(comps, compId)} — mesafe ${d.toFixed(2)}.`;
     list.appendChild(li);
   }
   container.appendChild(list);
@@ -595,19 +752,15 @@ function renderCompReport(container, compId, distance, meta, comps, matchups, co
 
   const metaP = document.createElement("p");
   metaP.className = "match-meta";
-  metaP.textContent = `mesafe ${distance.toFixed(3)} (eşik ${meta.match_threshold.toFixed(3)})`;
+  metaP.textContent = `Board'unuz bu comp'a mesafe ${distance.toFixed(2)} ile en yakın (eşik ${meta.match_threshold.toFixed(2)}).`;
   wrap.appendChild(metaP);
 
-  const stats = document.createElement("div");
-  stats.className = "stat-row";
-  const s1 = document.createElement("span");
-  s1.innerHTML = `Ortalama placement: <strong>${comp.avg_placement.toFixed(2)}</strong>`;
-  const s2 = document.createElement("span");
-  s2.innerHTML = `Top4 oranı: <strong>${(comp.top4_rate * 100).toFixed(1)}%</strong>`;
-  const s3 = document.createElement("span");
-  s3.textContent = `n=${comp.n_total}`;
-  stats.append(s1, s2, s3);
-  wrap.appendChild(stats);
+  // section 8.2: ham sayı yığını değil, cümle.
+  const statsP = document.createElement("p");
+  statsP.textContent =
+    `Bu comp ortalama ${comp.avg_placement.toFixed(2)} sırada bitiriyor, ` +
+    `oyunların %${(comp.top4_rate * 100).toFixed(0)}'sinde ilk 4'e giriyor (${comp.n_total} örnek).`;
+  wrap.appendChild(statsP);
 
   wrap.appendChild(renderHeadToHead(compId, matchups, comps));
   wrap.appendChild(renderTraitSection(compId, compTraits, traits));
@@ -621,8 +774,9 @@ function renderCompReport(container, compId, distance, meta, comps, matchups, co
  * üstündeyse en yüksek/en düşük üstünlük TOP_K'şar. Hiçbir eşleşme %50
  * sınırını geçmiyorsa/altına inmiyorsa bunu belirten not. Fark: burada ayrıca
  * (SPEC-WEB.md section 8.1 — "yetersiz veri... gizlenmeyecek") insufficient_data
- * olan eşleşmeler sıralamaya girmiyor ama ayrı bir satırda İSİMLEN belirtiliyor,
- * src/cli.py'de olduğu gibi sessizce atlanmıyor. */
+ * olan eşleşmeler sıralamaya girmiyor ama ayrı bir cümlede İSİMLEN belirtiliyor,
+ * src/cli.py'de olduğu gibi sessizce atlanmıyor. Dil section 8.2: cümle,
+ * satır değil. */
 function renderHeadToHead(compId, matchups, comps) {
   const section = document.createElement("div");
   const h = document.createElement("h4");
@@ -633,43 +787,46 @@ function renderHeadToHead(compId, matchups, comps) {
   const validEntries = Object.entries(entries).filter(([, cell]) => "rate" in cell);
   const insufficientEntries = Object.entries(entries).filter(([, cell]) => cell.insufficient_data === true);
 
-  function row(oppId, cell) {
-    const div = document.createElement("div");
+  function sentence(oppId, cell) {
+    const p = document.createElement("p");
+    p.className = "h2h-sentence";
     const ciWidth = cell.ci[1] - cell.ci[0];
-    div.className = "h2h-row" + (ciWidth > WIDE_CI_WIDTH ? " low-confidence" : "");
-    const left = document.createElement("span");
-    left.textContent = `${compName(comps, oppId)}: ${(cell.rate * 100).toFixed(1)}% üstünlük`;
-    const right = document.createElement("span");
-    right.className = "n-ci";
-    right.textContent = `n=${cell.n}, CI [${(cell.ci[0] * 100).toFixed(1)}%, ${(cell.ci[1] * 100).toFixed(1)}%]`;
-    div.append(left, right);
-    return div;
+    if (ciWidth > WIDE_CI_WIDTH) p.classList.add("low-confidence");
+    const rate = (cell.rate * 100).toFixed(0);
+    const lo = (cell.ci[0] * 100).toFixed(0);
+    const hi = (cell.ci[1] * 100).toFixed(0);
+    let text =
+      `${compName(comps, oppId)}'a karşı aynı lobide %${rate} oranında daha yüksek sırada bitiriyor ` +
+      `(${cell.n} maçta, güven aralığı %${lo}-%${hi}).`;
+    if (ciWidth > WIDE_CI_WIDTH) text += " Az veriyle hesaplandığı için bu aralık geniş, temkinli okuyun.";
+    p.textContent = text;
+    return p;
   }
 
   if (validEntries.length === 0) {
     const p = document.createElement("p");
     p.className = "empty-state";
-    p.textContent = "Yeterli veri yok.";
+    p.textContent = "Bu comp için yeterli head-to-head verisi yok.";
     section.appendChild(p);
   } else {
     const byRate = validEntries.slice().sort((a, b) => a[1].rate - b[1].rate);
 
     if (byRate.length < 2 * TOP_K) {
       const label = document.createElement("p");
-      label.textContent = "Bilinen head-to-head eşleşmeler (üstünlük oranına göre, yüksekten düşüğe):";
+      label.textContent = "Bilinen eşleşmeler, üstünlük oranına göre yüksekten düşüğe:";
       section.appendChild(label);
-      for (const [oppId, cell] of byRate.slice().reverse()) section.appendChild(row(oppId, cell));
+      for (const [oppId, cell] of byRate.slice().reverse()) section.appendChild(sentence(oppId, cell));
     } else {
       const best = byRate.slice(-TOP_K).reverse();
       const worst = byRate.slice(0, TOP_K);
       const bestLabel = document.createElement("p");
-      bestLabel.textContent = "En yüksek üstünlük:";
+      bestLabel.textContent = "En yüksek üstünlük sağladığı comp'lar:";
       section.appendChild(bestLabel);
-      for (const [oppId, cell] of best) section.appendChild(row(oppId, cell));
+      for (const [oppId, cell] of best) section.appendChild(sentence(oppId, cell));
       const worstLabel = document.createElement("p");
-      worstLabel.textContent = "En düşük üstünlük:";
+      worstLabel.textContent = "En düşük üstünlük sağladığı comp'lar:";
       section.appendChild(worstLabel);
-      for (const [oppId, cell] of worst) section.appendChild(row(oppId, cell));
+      for (const [oppId, cell] of worst) section.appendChild(sentence(oppId, cell));
     }
 
     const minRate = byRate[0][1].rate;
@@ -688,15 +845,15 @@ function renderHeadToHead(compId, matchups, comps) {
   if (insufficientEntries.length > 0) {
     const note = document.createElement("p");
     note.className = "insufficient-note";
-    const names = insufficientEntries.map(([oppId, cell]) => `${compName(comps, oppId)} (n=${cell.n})`);
-    note.textContent = `Yetersiz veri nedeniyle sıralamaya girmeyen eşleşmeler: ${names.join(", ")}.`;
+    const names = insufficientEntries.map(([oppId, cell]) => `${compName(comps, oppId)} (${cell.n} maç)`);
+    note.textContent = `Şu comp'larla yeterli veri olmadığı için karşılaştırma yapılamıyor: ${names.join(", ")}.`;
     section.appendChild(note);
   }
 
   return section;
 }
 
-/** src/cli.py's format_traits ile aynı ifadeler. */
+/** src/cli.py's format_traits ile aynı ayrım, cümle biçiminde (section 8.2). */
 function renderTraitSection(compId, compTraits, traits) {
   const section = document.createElement("div");
   const h = document.createElement("h4");
@@ -705,47 +862,51 @@ function renderTraitSection(compId, compTraits, traits) {
 
   const entry = compTraits[compId] || {};
 
-  function list(title, traitItems) {
+  function list(introText, emptyText, traitItems) {
     const p = document.createElement("p");
-    p.textContent = title;
+    p.textContent = introText;
     section.appendChild(p);
     if (!traitItems || traitItems.length === 0) {
       const empty = document.createElement("p");
       empty.className = "empty-state";
-      empty.textContent = "Yeterli veri yok.";
+      empty.textContent = emptyText;
       section.appendChild(empty);
       return;
     }
     for (const item of traitItems) {
       const name = (traits[item.trait] && traits[item.trait].name) || item.trait;
-      const div = document.createElement("div");
-      div.className = "trait-row";
-      const left = document.createElement("span");
-      left.textContent = name;
-      const right = document.createElement("span");
-      right.className = "n";
-      const sign = item.delta > 0 ? "+" : "";
-      right.textContent = `delta ${sign}${item.delta.toFixed(2)} (n=${item.n})`;
-      div.append(left, right);
-      section.appendChild(div);
+      const row = document.createElement("p");
+      row.className = "trait-sentence";
+      row.textContent = `Rakipte ${name} aktifken bu comp'un ${directionPhrase(item.delta)} (${item.n} maçta).`;
+      section.appendChild(row);
     }
   }
 
-  list("Zorlandığı trait'ler (rakipte aktifken placement kötüleşiyor):", entry.weak_against);
-  list("Rahat ettiği trait'ler (rakipte aktifken placement iyileşiyor):", entry.strong_against);
+  list(
+    "Bu comp'un rahat ettiği trait'ler — rakipte aktifken sıralaması iyileşiyor:",
+    "Bu comp için yeterli veri yok.",
+    entry.strong_against
+  );
+  list(
+    "Bu comp'un zorlandığı trait'ler — rakipte aktifken sıralaması kötüleşiyor:",
+    "Bu comp için yeterli veri yok.",
+    entry.weak_against
+  );
 
   return section;
 }
 
-/** section 3.8: item vektörün parçası değil, ayrı bir katman; known_limitation
- * kullanıcıya gösterilmeli (tooltip). */
+/** section 3.8/8.3: item vektörün parçası değil, ayrı bir katman;
+ * known_limitation kullanıcıya gösterilmeli. section 8.3: bu bölüm 8.2'nin
+ * "cümle" kuralına girmiyor — görsel gösterim (unit ikonu + item ikonları,
+ * tooltip'lerde ad/lift/n). */
 function renderItemSection(compId, comp, items, units) {
   const section = document.createElement("div");
   const h = document.createElement("h4");
   h.textContent = "Item önerileri";
   if (items._metadata && items._metadata.known_limitation) {
     const info = document.createElement("span");
-    info.textContent = " ⓘ"; // ⓘ
+    info.textContent = " ⓘ";
     info.title = items._metadata.known_limitation;
     info.style.cursor = "help";
     h.appendChild(info);
@@ -758,43 +919,70 @@ function renderItemSection(compId, comp, items, units) {
   if (coreUnits.length === 0) {
     const p = document.createElement("p");
     p.className = "empty-state";
-    p.textContent = "Veri yok.";
+    p.textContent = "Bu comp için item verisi yok.";
     section.appendChild(p);
     return section;
   }
 
+  const grid = document.createElement("div");
+  grid.className = "item-groups-grid";
+
   for (const unitId of coreUnits) {
+    const unitInfo = units[unitId];
+    const unitName = (unitInfo && unitInfo.name) || unitId;
+
     const group = document.createElement("div");
     group.className = "item-unit-group";
-    const heading = document.createElement("div");
-    heading.className = "unit-heading";
-    heading.textContent = (units[unitId] && units[unitId].name) || unitId;
-    group.appendChild(heading);
+
+    // Unit ikonu — üstüne gelince adı (native title, section 8.3).
+    const unitIconWrap = document.createElement("div");
+    unitIconWrap.className = "item-unit-icon-wrap";
+    if (unitInfo) {
+      const unitImg = document.createElement("img");
+      unitImg.className = "item-unit-icon";
+      unitImg.src = unitInfo.icon;
+      unitImg.loading = "lazy";
+      unitImg.alt = unitName;
+      unitImg.title = unitName;
+      unitImg.onerror = () => unitImg.replaceWith(makeFallbackBox(unitName, "item-unit-icon-fallback"));
+      unitIconWrap.appendChild(unitImg);
+    } else {
+      unitIconWrap.appendChild(makeFallbackBox(unitName, "item-unit-icon-fallback"));
+    }
+    group.appendChild(unitIconWrap);
+
+    const itemRow = document.createElement("div");
+    itemRow.className = "item-icons-row";
 
     const list = perUnit[unitId] || [];
     if (list.length === 0) {
       // section 3.8: boş liste "veri yok" demek, "kötü item" değil.
-      const p = document.createElement("p");
-      p.className = "empty-state";
-      p.textContent = "Veri yok.";
-      group.appendChild(p);
+      const p = document.createElement("span");
+      p.className = "empty-state item-no-data";
+      p.textContent = "Veri yok";
+      itemRow.appendChild(p);
     } else {
       for (const it of list) {
-        const row = document.createElement("div");
-        row.className = "item-row";
-        const left = document.createElement("span");
-        left.textContent = it.name;
-        const right = document.createElement("span");
-        right.className = "n";
-        const sign = it.lift > 0 ? "+" : "";
-        right.textContent = `lift ${sign}${it.lift.toFixed(2)} (n=${it.n})`;
-        row.append(left, right);
-        group.appendChild(row);
+        const itemImg = document.createElement("img");
+        itemImg.className = "item-icon";
+        itemImg.src = it.icon;
+        itemImg.loading = "lazy";
+        itemImg.alt = it.name;
+        // section 8.3: tooltip'te yön sözle anlatılır, çıplak "lift: -0.34" değil.
+        itemImg.title = `${it.name} — bu comp'ta ${directionPhrase(it.lift)} (${it.n} maçta)`;
+        itemImg.onerror = () => {
+          const fb = makeFallbackBox(it.name, "item-icon-fallback");
+          fb.title = itemImg.title;
+          itemImg.replaceWith(fb);
+        };
+        itemRow.appendChild(itemImg);
       }
     }
-    section.appendChild(group);
+    group.appendChild(itemRow);
+    grid.appendChild(group);
   }
 
+  section.appendChild(grid);
   return section;
 }
 
@@ -844,8 +1032,12 @@ async function init() {
 
   populateTraitFilterOptions();
   setupPaletteFilters();
+  setupCostTabs();
+  setupPaletteToggle();
+  setupResultPanelToggle();
   setupDragAndDrop();
   renderConstraints();
+  renderSuggestions();
   renderPalette();
   renderBoardSlots();
   renderActiveTraits();

@@ -12,48 +12,87 @@
 <div id="selftest-banner" class="banner banner-error" hidden></div>
 
 <header class="site-header">
-  <h1>TFT Comp Analyzer</h1>
+  <div class="logo">
+    <!-- Altın spatula ikonu — set verisi değil, sabit bir marka öğesi (bkz.
+         SPEC-WEB.md section 5.0), o yüzden inline SVG olarak koda gömülü. -->
+    <svg class="logo-icon" viewBox="0 0 48 48" aria-hidden="true">
+      <rect x="21" y="4" width="6" height="24" rx="2" fill="url(#handleGrad)" />
+      <path d="M24 26c-9 0-16 6-16 13 0 3 3 5 6 3.5 3-1.5 6-2.5 10-2.5s7 1 10 2.5c3 1.5 6-0.5 6-3.5 0-7-7-13-16-13z" fill="url(#paddleGrad)" />
+      <circle cx="17" cy="36" r="1.6" fill="#5b4315" opacity="0.5" />
+      <circle cx="24" cy="39" r="1.6" fill="#5b4315" opacity="0.5" />
+      <circle cx="31" cy="36" r="1.6" fill="#5b4315" opacity="0.5" />
+      <defs>
+        <linearGradient id="handleGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f0c975" />
+          <stop offset="1" stop-color="#b8873a" />
+        </linearGradient>
+        <linearGradient id="paddleGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f5d68f" />
+          <stop offset="1" stop-color="#c8952f" />
+        </linearGradient>
+      </defs>
+    </svg>
+    <h1>TFT Comp Analyzer</h1>
+  </div>
 </header>
 
-<main class="columns">
+<div class="layout-grid">
 
-  <section id="palette-column" class="column" aria-labelledby="palette-heading">
-    <h2 id="palette-heading">Unit Paleti</h2>
-    <div class="palette-controls">
-      <input type="search" id="palette-search" placeholder="Unit ara...">
-      <select id="palette-cost-filter">
-        <option value="">Tüm maliyetler</option>
-        <option value="1">1 maliyet</option>
-        <option value="2">2 maliyet</option>
-        <option value="3">3 maliyet</option>
-        <option value="4">4 maliyet</option>
-        <option value="5">5 maliyet</option>
-      </select>
-      <!-- Seçenekler traits.json'dan JS ile dolduruluyor (app.js:
-           populateTraitFilterOptions) — set değişince kod değişmeden çalışsın
-           diye burada hiçbir trait adı/ID'si hardcode edilmiyor. -->
-      <select id="palette-trait-filter">
-        <option value="">Tüm trait'ler</option>
-      </select>
-    </div>
-    <div id="palette-grid" class="palette-grid"></div>
-  </section>
+  <aside id="suggestions-column" class="side-column">
+    <details id="suggestions-panel" class="collapsible-panel" open>
+      <summary>Önerilen Comp'lar</summary>
+      <div id="suggestions-list" class="suggestions-list"></div>
+    </details>
+  </aside>
 
-  <section id="board-column" class="column" aria-labelledby="board-heading">
+  <section id="board-column" class="board-column" aria-labelledby="board-heading">
     <h2 id="board-heading">Board</h2>
     <div id="board-toast-container"></div>
     <div id="board-slots" class="board-slots"></div>
     <div id="active-traits" class="active-traits-panel"></div>
   </section>
 
-  <section id="result-column" class="column" aria-labelledby="result-heading">
+</div>
+
+<!-- section 5.5: sonuç paneli artık ızgaranın parçası değil, sağdan kayan
+     bir overlay. Sekme panelin İÇİNDE (ilk çocuk) — böylece translateX ile
+     panelle birlikte kayar, ayrı bir konum senkronizasyonu gerekmez. Scroll
+     eden içerik ayrı bir iç wrapper'da (.result-panel-scroll): dış konteyner
+     overflow:visible kalmalı, yoksa CSS'in "overflow-y ayarlanınca
+     overflow-x da auto olur" kuralı sekmeyi (left:-28px ile dışarı taşan)
+     kırpar. -->
+<aside id="result-panel" class="result-panel" aria-labelledby="result-heading">
+  <button type="button" id="result-toggle" class="result-toggle" aria-expanded="false" aria-controls="result-panel">‹</button>
+  <div class="result-panel-scroll">
     <h2 id="result-heading">Sonuç</h2>
     <div id="result-content">
       <p class="empty-state">Board'a en az 4 unit ekleyince eşleşen comp burada görünecek.</p>
     </div>
-  </section>
+  </div>
+</aside>
 
-</main>
+<div id="palette-panel" class="palette-panel">
+  <div class="palette-panel-header">
+    <span class="palette-panel-title">Unit Paleti</span>
+    <div class="palette-controls">
+      <input type="search" id="palette-search" placeholder="Unit ara... (tüm maliyetlerde arar)">
+      <select id="palette-trait-filter">
+        <option value="">Tüm trait'ler</option>
+      </select>
+    </div>
+    <button type="button" id="palette-toggle" class="palette-toggle">Genişlet ▾</button>
+  </div>
+  <div class="palette-body">
+    <div id="cost-tabs" class="cost-tabs">
+      <button type="button" class="cost-tab cost-1" data-cost="1">1</button>
+      <button type="button" class="cost-tab cost-2" data-cost="2">2</button>
+      <button type="button" class="cost-tab cost-3" data-cost="3">3</button>
+      <button type="button" class="cost-tab cost-4" data-cost="4">4</button>
+      <button type="button" class="cost-tab cost-5" data-cost="5">5</button>
+    </div>
+    <div id="palette-grid" class="palette-grid"></div>
+  </div>
+</div>
 
 <details id="constraints-box" class="constraints-box" open>
   <summary>Kısıtlar</summary>

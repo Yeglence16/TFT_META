@@ -206,7 +206,7 @@ Head-to-head sıralama oranları. Yetersiz örnekli hücreler pipeline tarafınd
     }
   },
   "c_07": {
-    "TFT18_Ahri": [{ "id": "TFT18_Item_JeweledGauntlet", "name": "Jeweled Gauntlet", "lift": -0.34, "n": 212 }],
+    "TFT18_Ahri": [{ "id": "TFT18_Item_JeweledGauntlet", "name": "Jeweled Gauntlet", "lift": -0.34, "n": 212, "icon": "https://raw.communitydragon.org/latest/game/assets/.../jeweledgauntlet.png" }],
     "...": []
   },
   "...": {}
@@ -214,6 +214,8 @@ Head-to-head sıralama oranları. Yetersiz örnekli hücreler pipeline tarafınd
 ```
 
 Item **vektörün bir parçası değil** — comp tanımı (bölüm 3.4'teki `centroid`) item'dan bağımsız, aynı comp'u oynayan iki oyuncu farklı item taşıyabilir. Bu dosya ayrı bir katman: her comp için, o comp'un en sık oynanan unit'lerinden (`comps.json`'daki `core_units`) her biri üzerinde en iyi 3 item, `lift` ve `n` ile. `lift` = augment'lerdeki gibi comp'un kendi ortalama placement'ına göre fark, shrinkage uygulanmış; negatif iyi. Sadece tamamlanmış item'lar var, component'ler yok. Bir unit için `n < 50` olan hiçbir hücre bu listeye girmez (tamamen dışlanır, boş liste `[]` görebilirsin — "veri yok" demektir, "kötü item" demek değil).
+
+> **`icon` alanı sonradan eklendi (2026-08-30, item önerileri görselleştirilirken bulundu).** Bu dosyanın kaynağı `items.py` (SPEC.md bölüm 15) hiç `icon` yazmıyordu — sadece `id`/`name`/`lift`/`n`. İkon URL'i asıl `data/static/items.json`'da duruyor (`static_data.py`'nin diğer her şeyle aynı `_icon_url()` türetmesiyle, bölüm 4), ama o dosya `web/data/`'ya hiç kopyalanmıyordu. `build_web_data.py`'nin `enrich_items_with_icons()`'ı artık her `items.json` girdisini `id` üzerinden `data/static/items.json`'a karşı eşleyip `icon` alanını ekliyor — arayüzün ayrı bir statik katalog dosyası çekmesine gerek kalmıyor, her öneri kendi ikonunu taşıyor. URL deseni canlı doğrulandı: 10 rastgele tamamlanmış item, 10/10 → 200.
 
 **`_metadata` — normal bir comp anahtarı değil.** Comp anahtarları her zaman `c_NN` biçiminde; `_metadata` bunun dışında, alt çizgiyle başlıyor ki karıştırılmasın. `known_limitation`: bu dosyadaki `lift`'in ciddi bir confounding taşıdığını açıklayan sabit bir metin — bir oyuncunun bir item'ı tamamlayabilmiş olması zaten iyi giden bir maçla ilişkili, yani ölçülen kısmen "item'ı toplayabilmiş olmak", item'ın kendi katkısı değil. **Arayüz bu metni kullanıcıya göstermeli** (ör. bir tooltip/uyarı ikonuyla) — `lift`'i temiz bir nedensellik gibi sunma. `coverage`: `n<50` eşiğinin kaç (comp, core_unit) çiftini tamamen boş bıraktığını, kaçını tam 3 item ile doldurduğunu gösterir — bir unit için boş `[]` dönmesi normal olabilir, `coverage` bunun ne kadar yaygın olduğunu açıklar.
 
@@ -237,25 +239,120 @@ CommunityDragon TFT dump'ında her unit ve trait için bir icon alanı var, içi
 
 ## 5. Ekran yapısı
 
-Tek sayfa, üç sütun. Masaüstü öncelikli — kullanıcılar bilgisayarda oynayacak.
+**Bu bölüm 2026-08-30'da baştan yazıldı — ilk sürümün üç eşit sütunlu yerleşimi terk edildi.** Eski tasarım (sol palet / orta board / sağ sonuç, üçü de aynı dikey şeritte) uygulandı ve çalışıyordu; terk edilme sebebi bir hata değil, TFT'nin kendi görsel diline daha yakın, oyunumsu bir tasarıma geçme kararı. Bu bölümün eski hali artık geçersiz.
+
+Masaüstü öncelikli kalıyor (bölüm 11: mobil optimizasyonu yok).
+
+### 5.0 Genel yerleşim
+
+**Bu bölüm 2026-08-30'da ikinci kez değişti — sağ sonuç sütunu ızgaradan çıkıp kayan bir panele dönüştü** (ayrıntı bölüm 5.5). Aşağıdaki diyagram güncel hali:
+
+```
++--------------------------------------------------------------------+
+| [altın spatula ikonu] TFT Comp Analyzer                            |  <- header
++----------------+---------------------------------------------------+
+|  ÖNERİLEN      |                                                    |
+|  COMP'LAR      |                    BOARD                           |
+|  (dar, dikey,  |                (geniş — artık tüm kalan genişlik)  |
+|  genişleti-    |                                                    |
+|  lebilir)      +----------------------------------------------------+
+|                |               Aktif trait paneli                   |
++----------------+----------------------------------------------------+
+|                      UNIT PALETİ (tam genişlik, yatay)               |
+| [1]                                                                  |
+| [2]   <- dikey maliyet sekmeleri         unit'ler yatay dizili       |
+| [3]                                                                  |
+| [4]                                                                  |
+| [5]                                                                  |
++------------------------------------------------------------------+
+
+Ekranın sağ kenarında her zaman dikey bir "‹" sekmesi durur. Tıklanınca
+SONUÇ paneli sağdan içeri kayar — board'un ÜSTÜNE biner (overlay),
+yerleşimi sıkıştırmaz:
+
++----------------+---------------------------------------+-----------+
+|  ÖNERİLEN      |                                     ░░│  SONUÇ    │
+|  COMP'LAR      |         BOARD (aynı yerde durur)   ░░│  (overlay,│
+|                |                                     ░░│  kendi    │
+|                +-------------------------------------░░│  içinde   │
+|                |        Aktif trait paneli           ░░│  kayar)   │
++----------------+---------------------------------------+-----------+
+```
+
+Dört bölge + bir overlay:
 
 | Bölge | İçerik |
 | --- | --- |
-| Sol — Unit paleti | Setteki tüm unit'ler kart halinde. Arama kutusu, cost filtresi, trait filtresi. |
-| Orta — Board | 10 slotluk takım alanı. Sürüklenen unit'ler buraya düşer. Altında aktif trait paneli. |
-| Sağ — Sonuç | Eşleşen comp ve tüm analiz çıktısı. Board boşken boş durum mesajı. |
+| Header | Altın renkli spatula ikonu + "TFT Comp Analyzer" başlığı, sağında sonuç panelini açan "‹"/"›" sekmesi. |
+| Sol sütun | Önerilen comp'lar paneli — bölüm 5.3. |
+| Orta (kalan tüm genişlik) | Board (bölüm 5.1) + altında aktif trait paneli (bölüm 7.1). Artık sağda sabit bir sütun olmadığı için tüm kalan genişliği kullanır. |
+| Sağ kenar (overlay, varsayılan kapalı) | Sonuç paneli — bölüm 5.5, içerik bölüm 8; dil kuralı bölüm 8.2. |
+| Alt (tam genişlik) | Unit paleti — dikey değil yatay bir panel. Bölüm 5.2/5.4. |
+
+> **Sabit viewport kuralı — sonuç panelinin overlay'e taşınmasıyla kısmen kendiliğinden çözüldü (2026-08-30, ikinci güncelleme).** İlk düzeltme (bölüm 5.6'daki karar geçmişine bak) üç sütunu ortak bir ızgarada tutup her birine `overflow-y:auto` vermişti. Sonuç paneli artık ızgaranın tamamen dışında, `position: fixed` bir overlay olduğu için onun içeriği normal sayfa akışına hiç girmiyor — eski sorun (sonuç uzayınca sayfa uzaması) o panel için yapısal olarak imkânsız hale geldi. Geriye kalan iki bölge (önerilen comp'lar, board) için kural aynen geçerli: `body` dikey flex ve `height: 100vh`, ızgara bu flex içinde esnek (`flex: 1 1 auto; min-height: 0`), her sütun kendi taşmasını kendi içinde kaydırıyor (`overflow-y: auto; min-height: 0`). Palet ve kısıtlar kutusu sabit boyutlu (`flex: 0 0 auto`); palet genişletildiğinde bile kendi üst sınırını aşmıyor. Çok kısa bir ekranda gerçekten sığmıyorsa `body` son çare olarak kendi kaymasına izin veriyor.
+
+**Tema:** Koyu arka plan, altın ve mor vurgu renkleri, TFT'nin oyun içi kart estetiğine yakın (gölgeli kartlar, belirgin çerçeveler). Kesin renk kodları CSS'te — spec sadece yönü belirtiyor, bir palet dayatmıyor.
 
 ### 5.1 Board — hex ızgara YAPMA
 
-TFT'nin gerçek altıgen dizilim ızgarasını kurma. Analiz pipeline'ı pozisyon verisi kullanmıyor — çünkü Riot API pozisyon vermiyor. Hex ızgara yaparsan kullanıcıya **dizilimin sonucu etkilediği izlenimini vermiş olursun**, ki etkilemiyor. Düz bir 10 slotluk sıra yeterli ve dürüst.
+Değişmedi. TFT'nin gerçek altıgen dizilim ızgarasını kurma. Analiz pipeline'ı pozisyon verisi kullanmıyor — çünkü Riot API pozisyon vermiyor. Hex ızgara yaparsan kullanıcıya **dizilimin sonucu etkilediği izlenimini vermiş olursun**, ki etkilemiyor. Düz bir 10 slotluk sıra yeterli ve dürüst.
 
-### 5.2 Unit kartı üzerindeki kontroller
+### 5.2 Unit kartı — tasarım ve kontroller
+
+**Tasarım (2026-08-30, yeni — referans: TFT'nin kendi kart stili).** Bu tasarım hem palette hem board'daki dolu slotlarda aynı temel karta uygulanır:
+
+- Unit portresi kartın **arka planı** — `units.json`'daki `icon` URL'i (bölüm 4).
+- Sol altta, dikey sıralı, küçük trait ikonları — her ikonun yanında trait adı. Palette'te unit'in kendi (statik) trait listesi gösterilir; board'a özgü aktif-tier hesabı burada değil, aktif trait panelinde (bölüm 7.1).
+- Alt şeritte solda unit adı, sağda maliyet (altın bir ikon + sayı).
+- Kartın çerçevesi maliyet rengiyle boyanır (bölüm 4'teki 5 renk: 1 gri, 2 yeşil, 3 mavi, 4 mor, 5 altın).
+
+> **Dikkat — `onerror` geri düşüşü CSS `background-image` ile çalışmaz.** Bölüm 4'ün zorunlu kıldığı kırık-görsel yedeği (`onerror` ile unit adının baş harflerini gösteren kutu) sadece bir `<img>` elementinin `error` olayıyla tetiklenir; CSS `background-image` için böyle bir olay yok. Portreyi arka plan gibi GÖSTERMEK için bile, altyapıda gerçek bir `<img>` (üstüne `object-fit: cover` ile tam kart boyutunda) kullan, salt CSS `background-image` değil — yoksa kırık görsel durumunda hiçbir şey tetiklenmez ve bölüm 4'ün kuralı sessizce delinmiş olur.
+
+**Kontroller (değişmedi):**
 
 - Yıldız seviyesi seçici (1 / 2 / 3). Varsayılan 2 — veride en sık görülen durum bu.
-- Kaldırma butonu (üst köşede x). Sürükleyip dışarı atma da çalışsın ama tek yol olmasın.
-- Aynı unit board'a iki kez eklenemez. Palette zaten eklenmiş unit'i soluklaştır.
+- Kaldırma butonu (üst köşede x). Sürükleyip dışarı atma da çalışsın ama tek yol olmasın (bölüm 6.1).
+- Aynı unit board'a iki kez eklenemez. Palette'te zaten eklenmiş unit'i soluklaştır.
+
+### 5.3 Önerilen comp'lar paneli (yeni)
+
+Sol sütun. `comps.json`'dan (`off_meta` hariç — centroid'i/core_units'i yok, önerilemez) **ortalama placement'a göre en iyi 8 comp**, düşükten yükseğe sıralı (TFT'de küçük placement iyidir — bölüm 10'un "düşük placement'ı kötü renklendirme" hatasına düşme). 8, spec'in verdiği "5-10" aralığından seçilmiş sabit bir sayı; değiştirmek istenirse tek satır.
+
+Her satırda: comp adı, ortalama placement, top4 oranı, `n` (`n_total`). Panelin kendisi genişletilebilir/daraltılabilir (`<details>` yeterli, JS gerekmez).
+
+**Bir satıra tıklanınca:**
+1. **Board doluysa bile doğrudan, onay istemeden yüklenir.** İlk taslak burada bir `confirm()` onayı öngörüyordu ("mevcut board silinecek, devam edilsin mi?"); kullanıma alınınca rahatsız edici bulundu ve kaldırıldı (2026-08-30) — comp'lar arası hızlı geçiş, sık sık "evet"e tıklamayı gerektirmeyecek şekilde akıcı olmalı. Board tamamen temizlenir, sonra o comp'un `core_units` listesindeki her unit yıldız 2 ile eklenir. `core_units` 10'dan uzunsa (bölüm 3.4: 5-12 arası olabilir), listenin **ilk 10'u** alınır — `clustering.py`'nin `select_core_units`'i bu listeyi zaten sıklığa göre sıralı üretiyor, yani ilk 10 o comp'un en karakteristik unit'leri olur. Kesilen unit varsa kullanıcıya kısaca söyle ("N unit sığmadı, en az sık görülenler bırakıldı" gibi).
+2. Bu, board'u tek tek `addUnitToBoard` ile doldurmaktan **farklı** bir yol — "board dolu" uyarısı (bölüm 6.2) burada devreye girmez, çünkü toplu bir değiştirme işlemi.
+3. Sonuç paneli normal akışla (bölüm 7.3) yeniden hesaplanır — comp'u zorla göstermek yerine `nearestComp` ne bulursa o gösterilir. Çoğu zaman aynı comp'a geri döner (`core_units` zaten o comp'un en sık board'larından türetildi) ama bu **garanti değil** (`core_units` bir frekans özeti, centroid'in kendisi değil) — arayüz bunu farklı bir comp ya da "uymuyor" olarak gösterirse bu bir hata değil, dürüst bir sonuçtur.
+
+### 5.4 Unit paleti — yatay panel (yeni)
+
+Artık dikey bir sütun değil, sayfanın altında tam genişlikte yatay bir panel. Kendisi genişletilebilir/daraltılabilir; genişletilince unit sırası birden fazla satıra sarar, daraltılmışken tek (yatay kaydırılabilir) satır yeterli.
+
+**Sol tarafta dikey maliyet sekmeleri: 1, 2, 3, 4, 5.** Her sekme kendi maliyet renginde (bölüm 4/5.2'deki 5 renk). Bir sekmeye tıklamak paleti **sadece o maliyetteki unit'lere** daraltır — birden fazla maliyet aynı anda seçilemez, sekmeler birbirini dışlar. **Varsayılan açık sekme: 1 maliyet.**
+
+> **Arama, maliyet sekmesini aşar (2026-08-30, kullanıcı kararı).** Önceki taslak sekme + arama + trait filtresini hep VE ile birleştiriyordu — bu bir kullanılabilirlik sorunu yaratır: "1 maliyet" sekmesi açıkken kullanıcı "Ahri" ararsa (4 maliyet) hiç sonuç çıkmaz, kullanıcı "Ahri" yokmuş sanabilir. Karar: **arama kutusunda metin varken maliyet sekmesi devre dışı kalır** — sonuçlar tüm maliyetlerden gelir. Arayüz bunu görsel olarak da yansıtmalı: arama sürerken sekme butonlarının hiçbiri "seçili" görünmemeli (aktif sekme vurgusu kalkar), arama temizlenince en son seçili sekmeye geri dönülür. **Trait filtresi bundan etkilenmiyor** — aramayla birlikte hâlâ VE mantığıyla çalışır (ör. arama="ah" + trait="Sorcerer" → tüm maliyetlerden, adında "ah" geçen VE Sorcerer trait'i olan unit'ler).
+
+### 5.5 Sonuç paneli — kayan panel (2026-08-30, sütundan overlay'e)
+
+Sonuç paneli artık üç-sütunlu ızgaranın bir parçası değil, `position: fixed` bir overlay:
+
+- **Sekme:** ekranın sağ kenarında her zaman görünen, dikey (dar, uzun) bir "‹" butonu — kapalıyken de görünür, board boş olsa veya hiçbir comp eşleşmese bile. Tıklanınca panel sağdan içeri kayar, buton "›" olur; tekrar tıklanınca panel kayarak kapanır, buton "‹"ya döner.
+- **Konum ve davranış:** panel `position: fixed; right: 0; height: 100vh`, kapalıyken `transform: translateX(100%)` ile ekranın dışında, açılınca `translateX(0)`'a geçiş animasyonuyla kayar. Board'un **üstüne biner** (yüksek `z-index`) — açılması board'un veya sol sütunun genişliğini değiştirmez, sıkıştırmaz.
+- **İçerik:** bölüm 8'in tarif ettiği sonuç paneli içeriğinin **aynısı** — comp adı + mesafe, bölüm 8.2'nin sade cümleleri, head-to-head, trait analizi, bölüm 8.3'ün ikon tabanlı item önerileri. Panel kendi içinde kayar — bölüm 5.0'ın sabit-viewport kuralına bu yüzden zaten uyuyor, ayrıca bir önlem gerekmiyor.
+- **Buton her zaman aktif, panel her zaman güncel.** Board boşken veya `nearestComp` hiçbir comp'a eşleştirmediğinde de sekme tıklanabilir kalır; panel açılınca bölüm 7.3'ün ilgili mesajını gösterir ("board'a en az 4 unit ekleyin" / "bilinen bir comp'a uymuyor" + en yakın 3 comp). Panelin açık/kapalı durumu ile içeriğin güncelliği birbirinden bağımsız — board her değiştiğinde içerik hesaplanır (panel görünür olsun olmasın), sekmeye tıklamak sadece görünürlüğü değiştirir.
+
+> **Uygulama tuzağı — `overflow-y` sekmeyi görünmez kılar (2026-08-30, bulundu ve düzeltildi).** İlk uygulama scroll'u doğrudan dış panele (`overflow-y: auto`) koymuştu; sekme (panelin sol kenarından `left:-28px` ile dışarı taşan bir çocuk element) tamamen kayboldu. Sebep CSS'in az bilinen bir kuralı: bir eksenin `overflow`'u `visible` dışında bir şeye ayarlanınca, öteki eksen `visible` olsa bile `auto`'ya döner — yani `overflow-y: auto` tek başına `overflow-x`'i de kırpar. Düzeltme: dış konteyner (`#result-panel`) `overflow: visible` (varsayılan) kalıyor, scroll'u ayrı bir iç wrapper (`.result-panel-scroll`, `height:100%; overflow-y:auto`) üstleniyor. Sekme dış konteynerin çocuğu olduğu için artık kırpılmıyor. Ekran görüntüsüyle doğrulanmadan (DOM'da elementin var olması yetmiyor, CSS'in onu gerçekten göstermesi gerekiyor) bu fark edilmezdi.
+
+### 5.6 Terk edilen tasarımlar — karar geçmişi
+
+Üç eşit sütunlu ilk yerleşim (palet/board/sonuç, hepsi dikey) bilinçli olarak terk edildi, bir hata düzeltmesi değildi — SPEC.md'nin "Ek: Karar geçmişi" bölümündeki mantıkla aynı gerekçeyle burada da not düşülüyor: gelecekte biri "neden palet artık yatay?" diye sorarsa cevap "TFT'nin görsel diline yaklaşmak", "eski tasarım bozuktu" değil.
+
+**Sonuç sütunu (üç-sütunlu ızgara içinde) — terk edildi, overlay'e taşındı (2026-08-30).** Ara aşamada sonuç paneli üçüncü bir ızgara sütunuydu, kendi `overflow-y:auto`'suyla (bölüm 5.0'ın "sabit viewport kuralı"nın ilk hali). Bu çalışıyordu ama kullanımda board'a ayrılan genişliği daralttığı ve palet dahil sayfanın geri kalanını sıkıştırdığı görüldü. Sağ kenarda kayan bir overlay'e taşınması hem bu sıkışmayı ortadan kaldırdı (board artık kalan tüm genişliği kullanıyor) hem de eski "sabit viewport" düzeltmesini o panel için gereksiz kıldı (overlay zaten sayfa akışının dışında).
 
 ## 6. Sürükle-bırak
+
+Bu bölüm sadece board'a unit yerleştirme/çıkarma etkileşimini kapsar (bölüm 5.1/5.2). Önerilen comp'lar panelinin "tıkla, board'u toplu doldur" davranışı (bölüm 5.3) ayrı bir mekanizma — sürükle-bırak değil, tek tıkla topluca doldurma; aşağıdaki kurallar ona uygulanmaz.
 
 Tarayıcının yerleşik HTML5 drag & drop API'si (`draggable`, `dragstart`, `drop`) bu iş için yeterli. Kütüphane ekleme.
 
@@ -338,6 +435,7 @@ Yukarıdan aşağıya sıra:
 | Temel istatistik | Ortalama placement ve top-4 oranı. n mutlaka görünsün. |
 | Head-to-head | En iyi 5 ve en kötü 5 eşleşme. Her satırda oran, n ve güven aralığı. |
 | Trait analizi | Zorlandığı 5 ve rahat ettiği 5 trait, delta ve n ile. |
+| Item önerileri | Her core unit için ikon + önerilen item ikonları. Görsel, cümle değil — bölüm 8.3. |
 | Kısıtlar | Sayfanın altında sabit duran, kapanabilir bir kutu. İçeriği bölüm 9'da. |
 
 > **Augment sekmesi v1'de yok.** İlk taslakta burada bir "Augment: silver / gold / prismatic" satırı vardı; kaldırıldı çünkü `augments.json` üretilmiyor (bölüm 3.6, SPEC.md bölüm 11 — Riot API'de `augments` alanı hiç yok). Veri bir gün gelirse bu sekme geri eklenir, şema referans olarak bölüm 3.6'da duruyor.
@@ -351,6 +449,28 @@ Yukarıdan aşağıya sıra:
 - Güven aralığı geniş olan sonuçları görsel olarak zayıflat (soluk renk veya "düşük güven" etiketi).
 
 > **"Geniş" eşiği — sayısal olarak tanımlandı (2026-08-30, uygulama sırasında bulundu).** Yukarıdaki kural da bir sayı vermiyordu. Uygulama seçimi: **güven aralığının üst-alt genişliği 0.15'i (15 yüzde puanı) aşarsa** "düşük güven" olarak zayıflatılır (`app.js`'te `WIDE_CI_WIDTH = 0.15`). Bu da veriden türetilmedi, keyfi bir sabit — Wilson aralığının genel olarak ne kadar geniş çıktığına dair bir dağılım analizi yapılmadı. Değiştirmek istenirse tek satır.
+
+### 8.2 Dil sadeleştirme (2026-08-30 — yerleşim değişikliğiyle birlikte eklendi)
+
+Sonuç panelinin **içeriği** (yukarıdaki tablo, hangi bölümler var) değişmedi — değişen **sunuluş biçimi.** Ham sayı yığını yerine cümle:
+
+- ~~"Ortalama placement: 4.18 · Top4 oranı: %57.3 · n=1245"~~
+- **"Bu comp ortalama 4.18. sırada bitiriyor, oyunların %57'sinde ilk 4'e giriyor (1245 örnek)."**
+
+Sayılar kaybolmuyor — bölüm 8.1'in "hiçbir oran n olmadan gösterilmeyecek" kuralı aynen geçerli, `n` cümlenin içine gömülü ama hâlâ orada. Aynı ilke head-to-head ve trait analizinde de geçerli: tablo satırı yerine cümle, ör. "X comp'una karşı aynı lobide %62 oranında daha yüksek sırada bitiriyor (843 maçta)." Veri yetersizse ("yeterli veri yok", bölüm 8.1) bunu da düz bir cümleyle söyle — boş alan veya sadece bir tire bırakma.
+
+**Bölüm 9'un dil kuralı hiç gevşemedi.** Cümleye çevirirken "üstünlük" dışında bir kelime (özellikle "kazanıyor", "yeniyor", "daha güçlü") sızmasın diye dikkat et — amaç jargonu azaltmak, veri iddiasını büyütmek değil.
+
+### 8.3 Item önerileri — görsel gösterim (2026-08-30, bölüm 8.2'nin istisnası)
+
+Item önerileri bölüm 8.2'nin "cümle, ham sayı değil" kuralına **girmiyor** — burada metin yerine görsel kullanılıyor, referans TFT'nin kendi item gösterimi (bölüm 5.2'nin unit kartı tasarımıyla aynı ruh):
+
+- Her core unit (`comps.json`'daki `core_units`) için: unit ikonu, altında/yanında o unit üzerinde önerilen item ikonları (küçük, en fazla 3 — `items.json`'ın kendi sınırı).
+- Unit ikonunun üstüne gelince (native `title` yeterli, özel bir tooltip kütüphanesi gerekmez) unit adı çıkar.
+- Bir item ikonunun üstüne gelince item adı + `lift` + `n` çıkar — `lift`'in yönü hâlâ doğru anlatılmalı (negatif iyi, bölüm 3.8), tooltip metninde bunu sözle belirt ("X sıralamayı Y kadar iyileştiriyor" gibi), çıplak `lift: -0.34` yazma.
+- Bir core unit için hiç item yoksa (`items.json`'da boş liste — bölüm 3.8: "veri yok" demek, "kötü item" demek değil) unit ikonu yine görünür, altında item ikonu yerine kısa bir "veri yok" notu olur.
+- Item ikonları `units.json`/`traits.json` ile aynı CommunityDragon stratejisiyle (bölüm 4: `onerror` yedek kutusu, `loading="lazy"`) — kaynak artık `items.json`'ın kendi `icon` alanı (bölüm 3.8'in güncellenmiş şeması), ayrı bir statik katalog çekmeye gerek yok.
+- `_metadata.known_limitation` uyarısı (bölüm 3.8) bu bölümde de gösterilmeye devam ediyor — bölüm başlığının yanında bir uyarı ikonu/tooltip yeterli, her item için tekrarlamaya gerek yok.
 
 ## 9. Dil — bu bölüm pazarlık konusu değil
 
@@ -405,5 +525,27 @@ Sayfanın altındaki kısıtlar kutusunda şunlar yazacak:
 - Kırık görsel durumunda yedek kutu görünüyor.
 
 ---
+
+*Uygulama sırası önerisi: veri yükleme ve şema doğrulama → palet → board ve DnD → trait hesabı → vektör ve eşleştirme → sonuç paneli → kısıtlar ve cilalama. Her adımı bitirmeden sonrakine geçme; özellikle vektör doğrulaması geçmeden sonuç paneline başlama.*
+
+## Ek: Web arayüzü karar geçmişi
+
+Bu bölüm, web arayüzü inşa edilirken alınan önemli kararları ve reddedilen/geri alınan yaklaşımları kaydeder — SPEC.md'nin kendi "Ek: Karar geçmişi" bölümüyle aynı gerekçeyle: gelecekte biri "bu neden böyle?" diye sorduğunda cevap burada dursun, aynı çıkmaza ikinci kez girilmesin. Ayrıntılı gerekçeler ilgili bölümlerde yazılı (aşağıda referans veriliyor); burası özet ve zaman çizelgesi.
+
+**Üç eşit sütun → TFT temalı yerleşim (bölüm 5, kabul edildi).** İlk uygulanan üç eşit dikey sütun (palet/board/sonuç) çalışıyordu — terk edilme sebebi bir hata değil, TFT'nin kendi görsel diline yaklaşma kararı: logo, koyu tema, altın/mor vurgular, kart-stili unit görünümü (portre arka plan + trait ikonları + maliyet şeridi), yatay palet + dikey maliyet sekmeleri, sol "önerilen comp'lar" paneli. Ayrıntı bölüm 5.0-5.4, 5.6.
+
+**Sonuç sütunu (ızgara içinde) → kayan overlay panel (bölüm 5.5, kabul edildi).** Ara aşamada sonuç paneli üçüncü bir ızgara sütunuydu; kendi `overflow-y:auto`'suyla sayfayı uzatmıyordu ama board'a ayrılan genişliği daraltıyor, kullanımda sıkışık hissettiriyordu. Sağ kenarda `position:fixed` bir overlay'e taşındı: board artık kalan tüm genişliği kullanıyor, panel board'un üstüne biniyor (yüksek `z-index`), açılıp kapanması layout'u hiç etkilemiyor. Sekme ("‹"/"›") her zaman görünür, board boş veya comp eşleşmemiş olsa bile.
+
+**Comp'a tıklayınca board'u dolduran onay penceresi — eklendi, sonra kaldırıldı (bölüm 5.3).** İlk taslak, board doluyken bir öneriye tıklanınca `confirm("Mevcut board silinecek, devam edilsin mi?")` gösteriyordu. Kullanıma alınınca rahatsız edici bulundu (comp'lar arası hızlı gezinmeyi her seferinde kesiyordu) ve kaldırıldı — artık board doluysa da doğrudan, onaysız yükleniyor.
+
+**`overflow-y` sekmeyi görünmez kılıyordu — bulundu ve düzeltildi (bölüm 5.5).** Kayan panelin scroll'unu doğrudan dış konteynere (`overflow-y:auto`) koymak, panelin sol kenarından dışarı taşan sekme butonunu tamamen kırptı — CSS'in "bir eksenin overflow'u `visible` dışında olunca öteki eksen de `auto` sayılır" kuralı yüzünden. DOM'da elemanın var olması yeterli değildi; jsdom'daki tüm testler geçmesine rağmen (jsdom gerçek CSS layout/clip hesaplamıyor) sorun sadece gerçek bir tarayıcıda ekran görüntüsü alınınca ortaya çıktı. Düzeltme: scroll'u ayrı bir iç `div`'e (`.result-panel-scroll`) taşımak, dış konteyneri `overflow: visible` (varsayılan) bırakmak.
+
+**Item önerileri: cümleden ikona (bölüm 8.3, kabul edildi — bölüm 8.2'nin tek istisnası).** İlk uygulama item önerilerini de diğer her şey gibi cümleye çevirmişti ("X üzerinde Y, ortalama sıralamayı Z iyileştiriyor"). Sonradan TFT'nin kendi item gösterimine yakın bir tasarıma geçildi: her core unit için ikon + altında item ikonları, ad/yön/n bilgisi native `title` tooltip'inde. Bunun için ayrı bir backend eksikliği ortaya çıktı: `items.json`'da hiç `icon` alanı yoktu, `data/static/items.json`'daki ikon URL'i hiç `web/data/`'ya kopyalanmıyordu — `build_web_data.py`'ye `enrich_items_with_icons()` eklenip bölüm 3.8'in şeması güncellendi. Desen canlı doğrulandı: 10 rastgele tamamlanmış item, 10/10 → 200.
+
+**Arama vs. maliyet sekmesi çakışması — arama kazanıyor (bölüm 5.4, kabul edildi).** Yatay palete geçince maliyet filtresi bir dropdown'dan sekmeye döndü; bu, arama ile sekmenin aynı anda aktifken çelişebileceği bir durum yarattı ("1 maliyet" sekmesi açıkken "Ahri" (4 maliyet) aranırsa hiç sonuç çıkmaz, kullanıcı "Ahri" yokmuş sanabilir). Karar: arama kutusunda metin varken maliyet sekmesi devre dışı kalır, sonuçlar tüm maliyetlerden gelir (hiçbir sekme "seçili" görünmez); trait filtresi bundan etkilenmez, aramayla VE mantığıyla birleşmeye devam eder.
+
+**Head-to-head'de yetersiz veri — gizlemek yerine isimlendirmek (bölüm 8, kabul edildi, CLI'den kasıtlı sapma).** `src/cli.py`'nin `format_head_to_head`'i `insufficient_data` eşleşmelerini sessizce atlar. Web arayüzü bölüm 8.1'in "yetersiz veri gizlenmeyecek" kuralını daha sıkı uyguluyor: bu eşleşmeler sıralamaya girmiyor ama ayrı bir cümlede karşı taraf isimleriyle birlikte açıkça belirtiliyor ("şu comp'larla yeterli veri olmadığı için karşılaştırma yapılamıyor: ...").
+
+**Diğer küçük kararlar (ayrıntı ilgili bölümlerde):** önerilen comp sayısı 8 (bölüm 5.3, "5-10" aralığından seçilmiş sabit), `core_units` 10'u aşarsa ilk 10'u alma (bölüm 5.3), arama kutusu ve trait filtresinin yeniden tasarımdan sonra da korunması (bölüm 5.4), unit portresi için CSS `background-image` değil gerçek `<img>` kullanılması (bölüm 5.2 — `onerror` yedek davranışı için zorunlu), "zayıf eşleşme" ve "düşük güven" eşiklerinin (%90, 15 puan) veriden değil uygulamadan seçilmiş sabitler olması (bölüm 8, 8.1).
 
 *Uygulama sırası önerisi: veri yükleme ve şema doğrulama → palet → board ve DnD → trait hesabı → vektör ve eşleştirme → sonuç paneli → kısıtlar ve cilalama. Her adımı bitirmeden sonrakine geçme; özellikle vektör doğrulaması geçmeden sonuç paneline başlama.*

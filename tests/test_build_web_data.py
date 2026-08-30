@@ -10,6 +10,7 @@ from src.build_web_data import (
     SchemaError,
     build_selftest_cases,
     derive_trait_tiers_from_units,
+    enrich_items_with_icons,
     nearest_comp,
     validate_comp_traits,
     validate_comps,
@@ -202,7 +203,7 @@ def test_validate_comp_traits_rejects_unknown_trait_id():
 def _valid_items():
     return {
         "_metadata": {"known_limitation": "confounded", "coverage": {}},
-        "c_00": {"u1": [{"id": "i1", "name": "Item", "lift": -0.3, "n": 60}]},
+        "c_00": {"u1": [{"id": "i1", "name": "Item", "lift": -0.3, "n": 60, "icon": "https://example.com/i1.png"}]},
     }
 
 
@@ -229,6 +230,36 @@ def test_validate_items_rejects_more_than_3_entries():
     data["c_00"]["u1"] = [{"id": f"i{i}", "name": "Item", "lift": -0.1, "n": 60} for i in range(4)]
     with pytest.raises(SchemaError):
         validate_items(data, known_comp_ids={"c_00"})
+
+
+def test_validate_items_rejects_missing_icon():
+    data = _valid_items()
+    del data["c_00"]["u1"][0]["icon"]
+    with pytest.raises(SchemaError):
+        validate_items(data, known_comp_ids={"c_00"})
+
+
+def test_enrich_items_with_icons_joins_by_id():
+    items = {
+        "_metadata": {"known_limitation": "x", "coverage": {}},
+        "c_00": {"u1": [{"id": "i1", "name": "Item", "lift": -0.3, "n": 60}]},
+    }
+    static_items = {"i1": {"name": "Item", "type": "completed", "icon": "https://example.com/i1.png"}}
+    enriched = enrich_items_with_icons(items, static_items)
+    assert enriched["c_00"]["u1"][0]["icon"] == "https://example.com/i1.png"
+    # orijinal alanlar korunuyor, girdi mutasyona uğramıyor
+    assert enriched["c_00"]["u1"][0]["lift"] == -0.3
+    assert "icon" not in items["c_00"]["u1"][0]
+    assert enriched["_metadata"] == items["_metadata"]
+
+
+def test_enrich_items_with_icons_raises_on_unknown_item_id():
+    items = {
+        "_metadata": {"known_limitation": "x", "coverage": {}},
+        "c_00": {"u1": [{"id": "i_ghost", "name": "Item", "lift": -0.3, "n": 60}]},
+    }
+    with pytest.raises(SchemaError):
+        enrich_items_with_icons(items, static_items={})
 
 
 # ---------------------------------------------------------------------------

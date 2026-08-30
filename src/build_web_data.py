@@ -28,10 +28,15 @@ instead of shipping a file the browser would silently misread.
    special key, same idea as items.json's `_metadata`.
 
 Outputs (web/data/):
-  meta.json, comps.json, matchups.json, comp_traits.json, items.json
+  meta.json, comps.json, matchups.json, comp_traits.json
       copied from data/processed/, re-serialized (indent=2).
   units.json, traits.json
       copied from data/static/, re-serialized (indent=2).
+  items.json
+      data/processed/items.json's {id, name, lift, n} entries, each joined
+      against data/static/items.json (2026-08-30, previously never copied to
+      web/data/ at all) to add an `icon` field — SPEC-WEB.md section 3.8 and
+      8's item-recommendation UI needs one, see enrich_items_with_icons().
   _selftest.json
       generated fresh each run — see build_selftest_cases()'s docstring.
 
@@ -283,6 +288,37 @@ def validate_items(data: dict, *, known_comp_ids: set[str]) -> None:
                     raise SchemaError(f"items.json: {comp_id}.{unit_id} entry.lift missing or not a number")
                 if not isinstance(entry.get("n"), int) or entry["n"] < 50:
                     raise SchemaError(f"items.json: {comp_id}.{unit_id} entry.n missing or below the documented min (50)")
+                if not isinstance(entry.get("icon"), str) or not entry["icon"].startswith("http"):
+                    raise SchemaError(f"items.json: {comp_id}.{unit_id} entry.icon missing or not an http(s) URL")
+
+
+def enrich_items_with_icons(items: dict, static_items: dict) -> dict:
+    """SPEC-WEB.md section 3.8 originally shipped items.json entries as
+    {id, name, lift, n} — no icon. The item-recommendation UI (section 8)
+    needs one, and data/static/items.json (static_data.py's output, never
+    previously copied to web/data/) already has it via the same _icon_url()
+    derivation used for units/traits (section 4) — verified live, 2026-08-30:
+    10 random completed-item URLs, 10/10 returned 200. This joins that icon
+    onto every entry rather than shipping the whole 502-item static catalog
+    to the browser, since items.json entries already carry their own name.
+    Returns a new dict; does not mutate `items`."""
+    enriched: dict = {"_metadata": items["_metadata"]}
+    for comp_id, per_unit in items.items():
+        if comp_id == "_metadata":
+            continue
+        enriched[comp_id] = {}
+        for unit_id, entries in per_unit.items():
+            new_entries = []
+            for entry in entries:
+                static_entry = static_items.get(entry["id"])
+                if static_entry is None or "icon" not in static_entry:
+                    raise SchemaError(
+                        f"enrich_items_with_icons: item {entry['id']!r} (in {comp_id}.{unit_id}) "
+                        "not found in data/static/items.json or missing an icon"
+                    )
+                new_entries.append({**entry, "icon": static_entry["icon"]})
+            enriched[comp_id][unit_id] = new_entries
+    return enriched
 
 
 # ---------------------------------------------------------------------------
@@ -336,6 +372,8 @@ def copy_processed_and_static(web_data_dir: Path) -> dict:
     _write_json(web_data_dir / "comp_traits.json", comp_traits)
 
     items = _load_json(DATA_PROCESSED / "items.json")
+    static_items = _load_json(DATA_STATIC / "items.json")
+    items = enrich_items_with_icons(items, static_items)
     validate_items(items, known_comp_ids=known_comp_ids)
     _write_json(web_data_dir / "items.json", items)
 

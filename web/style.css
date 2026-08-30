@@ -1,30 +1,57 @@
 :root {
-  --border: #d5d5d5;
-  --bg: #ffffff;
-  --bg-muted: #f6f6f6;
-  --text: #1c1c1c;
-  --text-muted: #6b6b6b;
-  --error-bg: #fdecea;
+  --bg: #0d0f16;
+  --bg-panel: #171a26;
+  --bg-panel-alt: #20243380;
+  --border: #333a4d;
+  --border-soft: #2a2f40;
+  --text: #e8e6f0;
+  --text-muted: #9298b3;
+  --gold: #c8aa6e;
+  --gold-bright: #f0c975;
+  --purple: #7c5cbf;
+  --purple-bright: #a684e8;
+  --error-bg: #3a1414;
   --error-border: #d93025;
-  --error-text: #8a1c14;
+  --error-text: #ffb3ab;
 
   /* Cost colors (SPEC-WEB.md section 4) — fixed across sets, not set data. */
-  --cost-1: #9a9a9a;
-  --cost-2: #3aa65b;
-  --cost-3: #3a7bd5;
-  --cost-4: #9b3adf;
-  --cost-5: #d5a83a;
+  --cost-1: #8f8f9c;
+  --cost-2: #2f9e57;
+  --cost-3: #3d84e0;
+  --cost-4: #a24bd6;
+  --cost-5: #e0a83a;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html, body {
+  height: 100%;
+}
+
+/* SPEC-WEB.md section 5.0 "sabit viewport kuralı": body dikey bir flex
+   konteyner, üç-bölgeli ızgara içinde esnek (flex:1) kalıyor, palet/kısıtlar/
+   footer sabit boyutlu (flex:0 0 auto) — sonuç paneli ne kadar uzarsa uzasın
+   sayfanın toplam yüksekliği büyümüyor, palet ekrandan düşmüyor. Gerçekten
+   her şey sığmazsa (çok kısa bir ekran) body'nin kendisi son çare olarak kayar. */
 body {
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   color: var(--text);
-  background: var(--bg-muted);
+  background: var(--bg);
+}
+
+.site-header,
+.palette-panel,
+.constraints-box,
+.site-footer,
+.banner {
+  flex: 0 0 auto;
 }
 
 .banner {
@@ -43,208 +70,236 @@ body {
   padding-left: 1.25rem;
 }
 
+/* --- Header / logo --- */
+
 .site-header {
   padding: 1rem 1.5rem 0.5rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
 }
 
 .site-header h1 {
   font-size: 1.25rem;
   margin: 0;
+  color: var(--gold-bright);
+  letter-spacing: 0.02em;
 }
 
-.columns {
+/* --- Genel panel görünümü --- */
+
+.side-column,
+.board-column,
+.palette-panel,
+.constraints-box,
+.result-panel-scroll {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.side-column h2,
+.board-column h2,
+.result-panel-scroll h2 {
+  font-size: 0.85rem;
+  margin: 0 0 0.75rem;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.9rem 0.9rem 0;
+}
+
+/* --- İki bölgeli üst yerleşim (SPEC-WEB.md section 5.0) — sonuç paneli
+   artık ızgaranın parçası değil, ayrı bir overlay (section 5.5). --- */
+
+.layout-grid {
   display: grid;
-  grid-template-columns: 260px minmax(420px, 1fr) 320px;
+  grid-template-columns: 260px 1fr;
+  grid-template-rows: minmax(0, 1fr); /* satırı içeriğe göre değil, mevcut alana göre sınırla */
   gap: 1rem;
   padding: 0 1rem 1rem;
-  align-items: start;
+  align-items: stretch;
+  flex: 1 1 auto; /* body'nin kalan yüksekliğini doldur */
+  min-height: 0; /* flex item'ın içerik boyutundan küçülebilmesi için şart */
 }
 
-.column {
-  background: var(--bg);
+.side-column {
+  padding-bottom: 0.75rem;
+  min-height: 0; /* grid item'ın kendi satırından küçülüp iç scroll'a geçebilmesi için şart */
+  overflow-y: auto;
+}
+
+.board-column {
+  padding: 0.9rem;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* --- Sonuç paneli — kayan overlay (section 5.5) --- */
+
+.result-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 360px;
+  max-width: 90vw;
+  height: 100vh;
+  /* KASITLI overflow:visible (varsayılan) — sekme (left:-28px ile dışarı
+     taşıyor) burada kırpılmasın diye. Scroll, iç .result-panel-scroll'da.
+     (2026-08-30 bulgusu: overflow-y'yi burada auto yapmak CSS'in "bir eksen
+     overflow'u visible-dışı olunca öteki eksen de auto sayılır" kuralı
+     yüzünden sekmeyi görünmez kılıyordu.) */
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  z-index: 50; /* board'un üstüne biner (section 5.5), layout'u sıkıştırmaz */
+}
+
+.result-panel.open {
+  transform: translateX(0);
+}
+
+.result-panel-scroll {
+  height: 100%;
+  overflow-y: auto;
+  border-radius: 0;
+  border-top: none;
+  border-bottom: none;
+  border-right: none;
+  box-shadow: -6px 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.result-toggle {
+  /* Dış konteynerin (overflow:visible) çocuğu, sol kenarından dışarı taşan
+     bir sekme — panel translateX ile kayınca sekme de onunla birlikte
+     kayar, ayrı bir senkronizasyon gerekmez. */
+  position: absolute;
+  top: 50%;
+  left: -28px;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 56px;
   border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 0.75rem;
-  min-height: 60vh;
-}
-
-.column h2 {
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  background: var(--bg-panel);
+  color: var(--gold-bright);
   font-size: 1rem;
-  margin: 0 0 0.75rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.palette-controls {
+/* --- Önerilen comp'lar paneli (section 5.3) --- */
+
+.collapsible-panel {
+  padding: 0 0 0.5rem;
+}
+
+.collapsible-panel summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.9rem;
+  list-style: none;
+}
+
+.collapsible-panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.collapsible-panel summary::before {
+  content: "▾ ";
+}
+
+.collapsible-panel:not([open]) summary::before {
+  content: "▸ ";
+}
+
+.suggestions-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
+  gap: 0.4rem;
+  padding: 0 0.6rem;
 }
 
-.palette-controls input,
-.palette-controls select {
-  padding: 0.4rem;
-  border: 1px solid var(--border);
-  border-radius: 4px;
+.suggestion-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  background: var(--bg-panel-alt);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  color: var(--text);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 
-.palette-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-  gap: 0.5rem;
+.suggestion-row:hover {
+  border-color: var(--gold);
 }
+
+.suggestion-name {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.suggestion-stats {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* --- Board (section 5.1) --- */
 
 .board-slots {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.6rem;
   margin-bottom: 1rem;
 }
 
 .board-slot {
-  width: 72px;
-  height: 72px;
+  width: 96px;
+  height: 128px;
   border: 2px dashed var(--border);
-  border-radius: 6px;
-  background: var(--bg-muted);
-}
-
-.active-traits-panel {
-  min-height: 3rem;
-  border-top: 1px solid var(--border);
-  padding-top: 0.75rem;
-}
-
-.empty-state {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-.site-footer {
-  padding: 1rem 1.5rem 2rem;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-}
-
-/* --- Unit kartı (palet + board slot içinde ortak) — SPEC-WEB section 4/5.2 --- */
-
-.unit-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.15rem;
-  width: 100%;
-  padding: 0.3rem;
-  border: 2px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
-  cursor: pointer;
-  font-size: 0.7rem;
-  text-align: center;
-  user-select: none;
-}
-
-.unit-card.cost-1 { border-color: var(--cost-1); }
-.unit-card.cost-2 { border-color: var(--cost-2); }
-.unit-card.cost-3 { border-color: var(--cost-3); }
-.unit-card.cost-4 { border-color: var(--cost-4); }
-.unit-card.cost-5 { border-color: var(--cost-5); }
-
-.unit-card.dimmed {
-  opacity: 0.35;
-  cursor: default;
-}
-
-.unit-card .unit-icon,
-.unit-card .unit-fallback {
-  width: 44px;
-  height: 44px;
-  border-radius: 4px;
-  object-fit: cover;
-  background: var(--bg-muted);
-}
-
-.unit-card .unit-fallback {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.unit-card .unit-name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-
-.unit-card .remove-btn {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  width: 18px;
-  height: 18px;
-  line-height: 16px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  font-size: 0.7rem;
-  padding: 0;
-  cursor: pointer;
-}
-
-.star-selector {
-  display: flex;
-  gap: 0.15rem;
-}
-
-.star-selector button {
-  width: 18px;
-  height: 18px;
-  padding: 0;
-  font-size: 0.65rem;
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  background: var(--bg-muted);
-  cursor: pointer;
-}
-
-.star-selector button.active {
-  background: var(--cost-5);
-  color: #fff;
-  border-color: var(--cost-5);
-}
-
-/* --- Board slot --- */
-
-.board-slot {
-  width: 88px;
-  height: 96px;
-  padding: 0.25rem;
+  border-radius: 8px;
+  background: var(--bg-panel-alt);
 }
 
 .board-slot.occupied {
   border-style: solid;
-  background: var(--bg);
+  background: transparent;
+  padding: 0;
 }
 
 .board-slot.drag-over {
-  border-color: var(--cost-3);
-  background: #eaf1fc;
+  border-color: var(--purple-bright);
+  background: #2a2140;
 }
 
 .toast {
   margin: 0 0 0.5rem;
   padding: 0.4rem 0.6rem;
   font-size: 0.8rem;
-  background: #fff4e5;
-  border: 1px solid #e0a83a;
+  background: #3a2e10;
+  border: 1px solid var(--gold);
   border-radius: 4px;
-  color: #7a4a00;
+  color: var(--gold-bright);
 }
 
 /* --- Aktif trait paneli (section 7.1) --- */
@@ -254,6 +309,9 @@ body {
   flex-wrap: wrap;
   gap: 0.5rem;
   align-content: flex-start;
+  border-top: 1px solid var(--border-soft);
+  padding-top: 0.75rem;
+  min-height: 2.5rem;
 }
 
 .trait-badge {
@@ -264,7 +322,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 999px;
   font-size: 0.75rem;
-  background: var(--bg);
+  background: var(--bg-panel-alt);
 }
 
 .trait-badge img,
@@ -278,15 +336,292 @@ body {
   opacity: 0.45;
 }
 
+/* --- Unit kartı — TFT kart estetiği (section 5.2) --- */
+
+.tft-card {
+  position: relative;
+  width: 92px;
+  height: 128px;
+  flex: 0 0 auto;
+  border: 3px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--bg-panel-alt);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  user-select: none;
+}
+
+.tft-card.cost-1 { border-color: var(--cost-1); }
+.tft-card.cost-2 { border-color: var(--cost-2); }
+.tft-card.cost-3 { border-color: var(--cost-3); }
+.tft-card.cost-4 { border-color: var(--cost-4); }
+.tft-card.cost-5 { border-color: var(--cost-5); }
+
+.tft-card.dimmed {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.tft-card-portrait,
+.tft-card-fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.tft-card-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-panel-alt);
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.tft-card-traits {
+  position: absolute;
+  left: 4px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 1;
+  max-width: calc(100% - 8px);
+}
+
+.trait-chip {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(10, 10, 16, 0.72);
+  border-radius: 3px;
+  padding: 1px 4px;
+  font-size: 0.55rem;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trait-chip img,
+.trait-chip .trait-fallback {
+  width: 11px;
+  height: 11px;
+  flex: 0 0 auto;
+}
+
+.tft-card-footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 5px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0));
+  z-index: 1;
+  font-size: 0.62rem;
+  color: #fff;
+}
+
+.tft-card-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tft-card-cost {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--gold-bright);
+  font-weight: 700;
+  flex: 0 0 auto;
+}
+
+.tft-card-cost svg {
+  width: 9px;
+  height: 9px;
+}
+
+.star-selector {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  display: flex;
+  gap: 2px;
+  z-index: 2;
+}
+
+.star-selector button {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  font-size: 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: rgba(10, 10, 16, 0.75);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.star-selector button.active {
+  background: var(--gold-bright);
+  color: #1a1400;
+  border-color: var(--gold-bright);
+}
+
+.remove-btn {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 18px;
+  height: 18px;
+  line-height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: rgba(10, 10, 16, 0.75);
+  color: var(--text);
+  font-size: 0.7rem;
+  padding: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* --- Unit paleti — yatay panel (section 5.4) --- */
+
+.palette-panel {
+  margin: 0 1rem 1rem;
+}
+
+.palette-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+  border-bottom: 1px solid var(--border-soft);
+  flex-wrap: wrap;
+}
+
+.palette-panel-title {
+  font-size: 0.85rem;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex: 0 0 auto;
+}
+
+.palette-controls {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1 1 auto;
+  min-width: 240px;
+}
+
+.palette-controls input,
+.palette-controls select {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.palette-controls input {
+  flex: 1 1 auto;
+}
+
+.palette-toggle {
+  flex: 0 0 auto;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--bg-panel-alt);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.palette-body {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem 0.9rem;
+}
+
+.cost-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 0 0 auto;
+}
+
+.cost-tab {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+.cost-tab.active {
+  opacity: 1;
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 6px rgba(240, 201, 117, 0.6);
+}
+
+.cost-tab.cost-1 { background: var(--cost-1); }
+.cost-tab.cost-2 { background: var(--cost-2); }
+.cost-tab.cost-3 { background: var(--cost-3); }
+.cost-tab.cost-4 { background: var(--cost-4); }
+.cost-tab.cost-5 { background: var(--cost-5); }
+
+.palette-grid {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 0.6rem;
+  padding-bottom: 0.4rem;
+}
+
+.palette-grid.expanded {
+  flex-wrap: wrap;
+  overflow-x: visible;
+  overflow-y: auto;
+  max-height: 45vh; /* section 5.0: genişletilmiş palet de kendi üst sınırını aşmasın */
+}
+
 /* --- Sonuç paneli (section 8) --- */
+
+#result-content {
+  padding: 0 0.9rem 0.9rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.empty-state {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
 
 .comp-report h3 {
   margin: 0 0 0.25rem;
+  color: var(--gold-bright);
 }
 
 .match-meta {
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   margin: 0 0 0.75rem;
 }
 
@@ -294,75 +629,102 @@ body {
   display: inline-block;
   margin-left: 0.4rem;
   padding: 0.1rem 0.4rem;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   border-radius: 4px;
-  background: #fff4e5;
-  color: #7a4a00;
-  border: 1px solid #e0a83a;
+  background: #3a2e10;
+  color: var(--gold-bright);
+  border: 1px solid var(--gold);
 }
 
-.stat-row {
-  display: flex;
-  gap: 1.25rem;
-  margin: 0 0 1rem;
-  font-size: 0.9rem;
-}
-
-.result-content h4 {
+.result-content h4,
+#result-content h4 {
   margin: 1rem 0 0.4rem;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: var(--text-muted);
+  letter-spacing: 0.03em;
+  color: var(--purple-bright);
 }
 
-.h2h-row,
-.trait-row,
-.item-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.25rem 0;
-  font-size: 0.85rem;
-  border-bottom: 1px solid var(--bg-muted);
-}
-
-.h2h-row .n-ci,
-.trait-row .n,
-.item-row .n {
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  white-space: nowrap;
+.h2h-sentence,
+.trait-sentence,
+.item-sentence {
+  margin: 0 0 0.4rem;
 }
 
 .low-confidence {
-  opacity: 0.55;
+  opacity: 0.6;
 }
 
-.low-confidence .n-ci::after {
-  content: " · düşük güven";
+.nearest-list {
+  padding-left: 1.1rem;
+  margin: 0.3rem 0;
 }
 
-.insufficient-note {
+/* --- Item önerileri — görsel gösterim (section 8.3) --- */
+
+.item-groups-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
   margin-top: 0.4rem;
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-.nearest-list li {
-  font-size: 0.85rem;
-  margin-bottom: 0.25rem;
 }
 
 .item-unit-group {
-  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  width: 64px;
 }
 
-.item-unit-group .unit-heading {
-  font-size: 0.8rem;
-  font-weight: 600;
-  margin-bottom: 0.2rem;
+.item-unit-icon,
+.item-unit-icon-fallback {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  border: 2px solid var(--gold);
+  object-fit: cover;
+}
+
+.item-unit-icon-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-panel-alt);
+  color: var(--text-muted);
+  font-size: 0.6rem;
+  font-weight: 700;
+}
+
+.item-icons-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.2rem;
+}
+
+.item-icon,
+.item-icon-fallback {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  object-fit: cover;
+  cursor: help;
+}
+
+.item-icon-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-panel-alt);
+  color: var(--text-muted);
+  font-size: 0.45rem;
+  font-weight: 700;
+}
+
+.item-no-data {
+  font-size: 0.65rem;
 }
 
 /* --- Kısıtlar (section 8/9) --- */
@@ -370,20 +732,23 @@ body {
 .constraints-box {
   margin: 0 1rem 1rem;
   padding: 0.6rem 1rem;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
 }
 
 .constraints-box summary {
   cursor: pointer;
   font-weight: 600;
-  color: var(--text);
+  color: var(--gold);
 }
 
 .constraints-box ul {
   margin: 0.5rem 0 0;
   padding-left: 1.25rem;
+}
+
+.site-footer {
+  padding: 1rem 1.5rem 2rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
 }
