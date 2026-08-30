@@ -1,0 +1,2342 @@
+{
+  "_metadata": {
+    "known_limitation": "This lift is confounded: reaching a completed item at all (let alone on the intended carry) correlates with a game that was already going well (enough gold/rolls, no early elimination) \u2014 the lift measures a mix of the item's own effect and 'was able to build this item at all', and the two can't be separated from placement data alone. Augments are comparatively exogenous (offered from a small random set), so this concern is much weaker in augments.json than it is here.",
+    "coverage": {
+      "total_cluster_unit_pairs": 166,
+      "pairs_with_at_least_1_item": 125,
+      "pairs_with_full_3_items": 93,
+      "cells_below_min_n": 10828,
+      "cells_total": 11679,
+      "cells_below_min_n_fraction": 0.927
+    },
+    "item_pool_usage": {
+      "other": {
+        "total": 430,
+        "never_used": 360,
+        "rare": 20,
+        "common": 50
+      },
+      "emblem": {
+        "total": 23,
+        "never_used": 2,
+        "rare": 0,
+        "common": 21
+      },
+      "completed": {
+        "total": 39,
+        "never_used": 0,
+        "rare": 0,
+        "common": 39
+      },
+      "component": {
+        "total": 10,
+        "never_used": 0,
+        "rare": 2,
+        "common": 8
+      }
+    }
+  },
+  "c_12": {
+    "DA_Krug18": [
+      {
+        "id": "DA_DragonsClaw",
+        "name": "Dragon's Claw",
+        "lift": -0.366,
+        "n": 241
+      },
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": -0.272,
+        "n": 1367
+      },
+      {
+        "id": "DA_Crownguard",
+        "name": "Crownguard",
+        "lift": -0.262,
+        "n": 200
+      }
+    ],
+    "DA_18_Sentry": [
+      {
+        "id": "DA_BlueBuff",
+        "name": "Blue Buff",
+        "lift": -0.346,
+        "n": 872
+      },
+      {
+        "id": "DA_StrikersFlail",
+        "name": "Striker's Flail",
+        "lift": -0.343,
+        "n": 108
+      },
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Archangel's Staff",
+        "lift": -0.324,
+        "n": 566
+      }
+    ],
+    "DA_Scuttlecrab18": [
+      {
+        "id": "DA_IonicSpark",
+        "name": "Ionic Spark",
+        "lift": -0.521,
+        "n": 61
+      },
+      {
+        "id": "DA_SunfireCape",
+        "name": "Sunfire Cape",
+        "lift": -0.244,
+        "n": 131
+      },
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "Adaptive Helm",
+        "lift": -0.203,
+        "n": 54
+      }
+    ],
+    "DA_Sentinel18": [
+      {
+        "id": "DA_Crownguard",
+        "name": "Crownguard",
+        "lift": -0.74,
+        "n": 107
+      },
+      {
+        "id": "DA_IonicSpark",
+        "name": "Ionic Spark",
+        "lift": -0.684,
+        "n": 59
+      },
+      {
+        "id": "DA_Evenshroud",
+        "name": "Evenshroud",
+        "lift": -0.605,
+        "n": 85
+      }
+    ],
+    "DA_Cinderling18": [
+      {
+        "id": "DA_StrikersFlail",
+        "name": "Striker's Flail",
+        "lift": -0.553,
+        "n": 136
+      },
+      {
+        "id": "DA_BlueBuff",
+        "name": "Blue Buff",
+        "lift": -0.304,
+        "n": 444
+      },
+      {
+        "id": "DA_LastWhisper",
+        "name": "Last Whisper",
+        "lift": -0.265,
+        "n": 795
+      }
+    ],
+    "DA_Murkwolf18": [
+      {
+        "id": "DA_SteraksGage",
+        "name": "Sterak's Gage",
+        "lift": -0.419,
+        "n": 77
+      },
+      {
+        "id": "DA_Bloodthirster",
+        "name": "Bloodthirster",
+        "lift": -0.333,
+        "n": 54
+      },
+      {
+        "id": "DA_Quicksilver",
+        "name": "Quicksilver",
+        "lift": -0.281,
+        "n": 52
+      }
+    ],
+    "DA_Brambleback18": [
+      {
+        "id": "DA_HandOfJustice",
+        "name": "Hand Of Justice",
+        "lift": -0.453,
+        "n": 103
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.427,
+        "n": 219
+      },
+      {
+        "id": "DA_Bloodthirster",
+        "name": "Bloodthirster",
+        "lift": -0.425,
+        "n": 168
+      }
+    ]
+  },
+  "c_03": {
+    "DA_Fiddlesticks18": [
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "Adaptive Helm",
+        "lift": -0.408,
+        "n": 706
+      },
+      {
+        "id": "DA_Crownguard",
+        "name": "Crownguard",
+        "lift": -0.358,
+        "n": 431
+      },
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Archangel's Staff",
+        "lift": -0.334,
+        "n": 111
+      }
+    ],
+    "DA_18_Rammus": [
+      {
+        "id": "DA_Crownguard",
+        "name": "Crownguard",
+        "lift": -0.552,
+        "n": 122
+      },
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Spirit Visage",
+        "lift": -0.519,
+        "n": 386
+      },
+      {
+        "id": "DA_BrambleVest",
+        "name": "Bramble Vest",
+        "lift": -0.475,
+        "n": 138
+      }
+    ],
+    "DA_18_Cassiopeia": [
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Archangel's Staff",
+        "lift": -0.104,
+        "n": 1636
+      },
+      {
+        "id": "DA_BlueBuff",
+        "name": "Blue Buff",
+        "lift": -0.096,
+        "n": 389
+      },
+      {
+        "id": "DA_HextechGunblade",
+        "name": "Hextech Gunblade",
+        "lift": -0.063,
+        "n": 1669
+      }
+    ],
+    "DA_18_Shen": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.361,
+        "n": 156
+      },
+      {
+        "id": "DA_SunfireCape",
+        "name": "Sunfire Cape",
+        "lift": -0.189,
+        "n": 61
+      }
+    ],
+    "DA_18_Lillia": [
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Protector's Vow",
+        "lift": -0.831,
+        "n": 216
+      },
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "Adaptive Helm",
+        "lift": -0.734,
+        "n": 172
+      },
+      {
+        "id": "DA_SteraksGage",
+        "name": "Sterak's Gage",
+        "lift": -0.563,
+        "n": 95
+      }
+    ],
+    "DA_18_Ornn": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.055,
+        "n": 50
+      }
+    ],
+    "DA_18_Leona": []
+  },
+  "c_07": {
+    "DA_18_Azir": [
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Giant Slayer",
+        "lift": -0.575,
+        "n": 69
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.505,
+        "n": 131
+      },
+      {
+        "id": "DA_RedBuff",
+        "name": "Red Buff",
+        "lift": -0.502,
+        "n": 50
+      }
+    ],
+    "DA_18_Soraka": [
+      {
+        "id": "DA_HextechGunblade",
+        "name": "Hextech Gunblade",
+        "lift": -0.506,
+        "n": 157
+      },
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Archangel's Staff",
+        "lift": -0.414,
+        "n": 304
+      },
+      {
+        "id": "DA_RabadonsDeathcap",
+        "name": "Rabadon's Deathcap",
+        "lift": -0.336,
+        "n": 784
+      }
+    ],
+    "DA_18_Malphite": [
+      {
+        "id": "DA_Crownguard",
+        "name": "Crownguard",
+        "lift": -0.366,
+        "n": 358
+      },
+      {
+        "id": "DA_BrambleVest",
+        "name": "Bramble Vest",
+        "lift": -0.336,
+        "n": 145
+      },
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Spirit Visage",
+        "lift": -0.326,
+        "n": 408
+      }
+    ],
+    "DA_18_Zyra": [
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "Adaptive Helm",
+        "lift": -0.599,
+        "n": 105
+      },
+      {
+        "id": "DA_HextechGunblade",
+        "name": "Hextech Gunblade",
+        "lift": -0.585,
+        "n": 103
+      },
+      {
+        "id": "DA_BlueBuff",
+        "name": "Blue Buff",
+        "lift": -0.483,
+        "n": 139
+      }
+    ],
+    "DA_Fiddlesticks18": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.344,
+        "n": 85
+      }
+    ],
+    "DA_Amumu18": [
+      {
+        "id": "DA_DragonsClaw",
+        "name": "Dragon's Claw",
+        "lift": -0.684,
+        "n": 66
+      },
+      {
+        "id": "DA_BrambleVest",
+        "name": "Bramble Vest",
+        "lift": -0.637,
+        "n": 53
+      },
+      {
+        "id": "DA_SunfireCape",
+        "name": "Sunfire Cape",
+        "lift": -0.598,
+        "n": 66
+      }
+    ],
+    "DA_18_Yorick": [],
+    "DA_18_Kennen": [
+      {
+        "id": "DA_EdgeOfNight",
+        "name": "Edge of Night",
+        "lift": -1.153,
+        "n": 148
+      },
+      {
+        "id": "DA_StrikersFlail",
+        "name": "Striker's Flail",
+        "lift": -1.136,
+        "n": 113
+      },
+      {
+        "id": "DA_IonicSpark",
+        "name": "Ionic Spark",
+        "lift": -1.087,
+        "n": 74
+      }
+    ]
+  },
+  "c_17": {
+    "DA_18_Sett": [
+      {
+        "id": "DA_IonicSpark",
+        "name": "Ionic Spark",
+        "lift": -0.451,
+        "n": 82
+      },
+      {
+        "id": "DA_Crownguard",
+        "name": "Crownguard",
+        "lift": -0.363,
+        "n": 135
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.277,
+        "n": 74
+      }
+    ],
+    "DA_Sentinel18": [
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "Adaptive Helm",
+        "lift": -0.805,
+        "n": 274
+      },
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Protector's Vow",
+        "lift": -0.612,
+        "n": 506
+      },
+      {
+        "id": "DA_Crownguard",
+        "name": "Crownguard",
+        "lift": -0.405,
+        "n": 149
+      }
+    ],
+    "DA_18_Ahri": [
+      {
+        "id": "DA_NashorsTooth",
+        "name": "Nashor's Tooth",
+        "lift": -0.296,
+        "n": 321
+      },
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Giant Slayer",
+        "lift": -0.162,
+        "n": 129
+      },
+      {
+        "id": "DA_StrikersFlail",
+        "name": "Striker's Flail",
+        "lift": -0.135,
+        "n": 837
+      }
+    ],
+    "DA_18_Morgana": [
+      {
+        "id": "DA_BlueBuff",
+        "name": "Blue Buff",
+        "lift": -0.436,
+        "n": 73
+      },
+      {
+        "id": "DA_RabadonsDeathcap",
+        "name": "Rabadon's Deathcap",
+        "lift": -0.395,
+        "n": 343
+      },
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Archangel's Staff",
+        "lift": -0.369,
+        "n": 158
+      }
+    ],
+    "DA_Krug18": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.432,
+        "n": 97
+      }
+    ],
+    "DA_18_Sentry": [],
+    "DA_Karma18": [],
+    "DA_Taric18": [
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": -0.649,
+        "n": 66
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.523,
+        "n": 59
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.471,
+        "n": 98
+      }
+    ]
+  },
+  "c_02": {
+    "DA_18_Leona": [
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "Adaptive Helm",
+        "lift": -0.919,
+        "n": 56
+      },
+      {
+        "id": "DA_BrambleVest",
+        "name": "Bramble Vest",
+        "lift": -0.856,
+        "n": 60
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.773,
+        "n": 157
+      }
+    ],
+    "DA_18_Kayle": [
+      {
+        "id": "DA_RabadonsDeathcap",
+        "name": "Rabadon's Deathcap",
+        "lift": -0.475,
+        "n": 412
+      },
+      {
+        "id": "DA_StrikersFlail",
+        "name": "Striker's Flail",
+        "lift": -0.136,
+        "n": 61
+      },
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Archangel's Staff",
+        "lift": -0.066,
+        "n": 139
+      }
+    ],
+    "DA_18_Sejuani": [
+      {
+        "id": "DA_BrambleVest",
+        "name": "Bramble Vest",
+        "lift": -1.178,
+        "n": 70
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -1.108,
+        "n": 227
+      },
+      {
+        "id": "DA_DragonsClaw",
+        "name": "Dragon's Claw",
+        "lift": -0.864,
+        "n": 104
+      }
+    ],
+    "DA_18_Xayah": [
+      {
+        "id": "DA_Quicksilver",
+        "name": "Quicksilver",
+        "lift": -0.809,
+        "n": 50
+      },
+      {
+        "id": "DA_StrikersFlail",
+        "name": "Striker's Flail",
+        "lift": -0.738,
+        "n": 72
+      },
+      {
+        "id": "DA_RedBuff",
+        "name": "Red Buff",
+        "lift": -0.703,
+        "n": 376
+      }
+    ],
+    "DA_18_Ornn": [
+      {
+        "id": "DA_Crownguard",
+        "name": "Crownguard",
+        "lift": -0.694,
+        "n": 58
+      },
+      {
+        "id": "DA_DragonsClaw",
+        "name": "Dragon's Claw",
+        "lift": -0.516,
+        "n": 129
+      },
+      {
+        "id": "DA_BrambleVest",
+        "name": "Bramble Vest",
+        "lift": -0.317,
+        "n": 74
+      }
+    ],
+    "DA_18_Rakan": [
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Protector's Vow",
+        "lift": -1.013,
+        "n": 85
+      },
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "Adaptive Helm",
+        "lift": -0.978,
+        "n": 67
+      },
+      {
+        "id": "DA_SteadfastHeart",
+        "name": "Steadfast Heart",
+        "lift": -0.895,
+        "n": 57
+      }
+    ]
+  },
+  "c_20": {
+    "DA_18_Diana": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.515,
+        "n": 99
+      }
+    ],
+    "DA_18_Aphelios": [
+      {
+        "id": "DA_StrikersFlail",
+        "name": "Striker's Flail",
+        "lift": -0.133,
+        "n": 75
+      },
+      {
+        "id": "DA_InfinityEdge",
+        "name": "Infinity Edge",
+        "lift": -0.122,
+        "n": 447
+      },
+      {
+        "id": "DA_Deathblade",
+        "name": "Deathblade",
+        "lift": -0.068,
+        "n": 594
+      }
+    ],
+    "DA_CrimsonRaptor18": [
+      {
+        "id": "DA_GuinsoosRageblade",
+        "name": "Guinsoo's Rageblade",
+        "lift": -0.171,
+        "n": 110
+      },
+      {
+        "id": "DA_LastWhisper",
+        "name": "Last Whisper",
+        "lift": -0.161,
+        "n": 320
+      },
+      {
+        "id": "DA_KrakensFury",
+        "name": "Kraken's Fury",
+        "lift": -0.063,
+        "n": 63
+      }
+    ],
+    "DA_Sentinel18": [
+      {
+        "id": "DA_Evenshroud",
+        "name": "Evenshroud",
+        "lift": -0.369,
+        "n": 120
+      },
+      {
+        "id": "DA_Crownguard",
+        "name": "Crownguard",
+        "lift": -0.351,
+        "n": 141
+      },
+      {
+        "id": "DA_DragonsClaw",
+        "name": "Dragon's Claw",
+        "lift": -0.212,
+        "n": 97
+      }
+    ],
+    "DA_Taric18": [
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": -0.436,
+        "n": 85
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.388,
+        "n": 56
+      },
+      {
+        "id": "DA_Evenshroud",
+        "name": "Evenshroud",
+        "lift": -0.36,
+        "n": 68
+      }
+    ],
+    "DA_Brambleback18": [
+      {
+        "id": "DA_Deathblade",
+        "name": "Deathblade",
+        "lift": -0.37,
+        "n": 121
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.249,
+        "n": 114
+      },
+      {
+        "id": "DA_EdgeOfNight",
+        "name": "Edge of Night",
+        "lift": -0.214,
+        "n": 366
+      }
+    ],
+    "DA_18_Hecarim": [
+      {
+        "id": "DA_Evenshroud",
+        "name": "Evenshroud",
+        "lift": -0.244,
+        "n": 72
+      },
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Spirit Visage",
+        "lift": -0.035,
+        "n": 68
+      },
+      {
+        "id": "DA_Crownguard",
+        "name": "Crownguard",
+        "lift": 0.033,
+        "n": 51
+      }
+    ],
+    "DA_18_Zyra": [
+      {
+        "id": "DA_VoidStaff",
+        "name": "Void Staff",
+        "lift": -0.334,
+        "n": 54
+      },
+      {
+        "id": "DA_BlueBuff",
+        "name": "Blue Buff",
+        "lift": -0.304,
+        "n": 53
+      },
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Archangel's Staff",
+        "lift": -0.293,
+        "n": 64
+      }
+    ]
+  },
+  "c_15": {
+    "DA_18_Sett": [
+      {
+        "id": "DA_Crownguard",
+        "name": "Crownguard",
+        "lift": -0.389,
+        "n": 91
+      },
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Spirit Visage",
+        "lift": -0.385,
+        "n": 246
+      },
+      {
+        "id": "DA_SunfireCape",
+        "name": "Sunfire Cape",
+        "lift": -0.332,
+        "n": 95
+      }
+    ],
+    "DA_18_Ahri": [
+      {
+        "id": "DA_BlueBuff",
+        "name": "Blue Buff",
+        "lift": -0.631,
+        "n": 106
+      },
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Archangel's Staff",
+        "lift": -0.342,
+        "n": 79
+      },
+      {
+        "id": "DA_NashorsTooth",
+        "name": "Nashor's Tooth",
+        "lift": -0.224,
+        "n": 238
+      }
+    ],
+    "DA_18_Yorick": [],
+    "DA_Karma18": [],
+    "DA_Vi18": [
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.253,
+        "n": 50
+      },
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": 0.066,
+        "n": 71
+      }
+    ],
+    "DA_18_Sivir": [
+      {
+        "id": "DA_Deathblade",
+        "name": "Deathblade",
+        "lift": -0.607,
+        "n": 114
+      },
+      {
+        "id": "DA_KrakensFury",
+        "name": "Kraken's Fury",
+        "lift": -0.535,
+        "n": 50
+      },
+      {
+        "id": "DA_InfinityEdge",
+        "name": "Infinity Edge",
+        "lift": -0.243,
+        "n": 174
+      }
+    ],
+    "DA_18_Ashe": [
+      {
+        "id": "DA_InfinityEdge",
+        "name": "Infinity Edge",
+        "lift": -1.014,
+        "n": 133
+      },
+      {
+        "id": "DA_LastWhisper",
+        "name": "Last Whisper",
+        "lift": -0.911,
+        "n": 220
+      },
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Giant Slayer",
+        "lift": -0.884,
+        "n": 95
+      }
+    ],
+    "DA_18_GnarSmall": [
+      {
+        "id": "DA_SteraksGage",
+        "name": "Sterak's Gage",
+        "lift": -1.053,
+        "n": 63
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.866,
+        "n": 75
+      }
+    ]
+  },
+  "c_14": {
+    "DA_18_MasterYi_AD": [
+      {
+        "id": "DA_Quicksilver",
+        "name": "Quicksilver",
+        "lift": -0.035,
+        "n": 184
+      },
+      {
+        "id": "DA_GuinsoosRageblade",
+        "name": "Guinsoo's Rageblade",
+        "lift": 0.019,
+        "n": 800
+      },
+      {
+        "id": "DA_EdgeOfNight",
+        "name": "Edge of Night",
+        "lift": 0.053,
+        "n": 658
+      }
+    ],
+    "DA_KogMaw18_AD": [
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Archangel's Staff",
+        "lift": -0.395,
+        "n": 79
+      },
+      {
+        "id": "DA_Morellonomicon",
+        "name": "Morellonomicon",
+        "lift": -0.392,
+        "n": 128
+      },
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Giant Slayer",
+        "lift": -0.391,
+        "n": 146
+      }
+    ],
+    "DA_Vi18": [
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Protector's Vow",
+        "lift": -0.534,
+        "n": 93
+      },
+      {
+        "id": "DA_BrambleVest",
+        "name": "Bramble Vest",
+        "lift": -0.393,
+        "n": 51
+      },
+      {
+        "id": "DA_SteadfastHeart",
+        "name": "Steadfast Heart",
+        "lift": -0.386,
+        "n": 95
+      }
+    ],
+    "DA_18_Yorick": [],
+    "DA_Nidalee18_AP": [
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Giant Slayer",
+        "lift": -0.643,
+        "n": 99
+      },
+      {
+        "id": "DA_HextechGunblade",
+        "name": "Hextech Gunblade",
+        "lift": -0.545,
+        "n": 60
+      },
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Archangel's Staff",
+        "lift": -0.544,
+        "n": 69
+      }
+    ],
+    "DA_Krug18": [
+      {
+        "id": "DA_BrambleVest",
+        "name": "Bramble Vest",
+        "lift": -0.676,
+        "n": 50
+      },
+      {
+        "id": "DA_SunfireCape",
+        "name": "Sunfire Cape",
+        "lift": -0.542,
+        "n": 63
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.36,
+        "n": 79
+      }
+    ],
+    "DA_18_Sett": [
+      {
+        "id": "DA_SunfireCape",
+        "name": "Sunfire Cape",
+        "lift": -0.699,
+        "n": 72
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.575,
+        "n": 111
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.575,
+        "n": 73
+      }
+    ]
+  },
+  "c_09": {
+    "DA_18_Alistar": [
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": -0.297,
+        "n": 64
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.17,
+        "n": 50
+      }
+    ],
+    "DA_18_Ornn": [
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": -0.1,
+        "n": 50
+      }
+    ],
+    "DA_18_Xayah": [
+      {
+        "id": "DA_LastWhisper",
+        "name": "Last Whisper",
+        "lift": -0.241,
+        "n": 81
+      },
+      {
+        "id": "DA_GuinsoosRageblade",
+        "name": "Guinsoo's Rageblade",
+        "lift": -0.092,
+        "n": 73
+      }
+    ],
+    "DA_18_Hecarim": [
+      {
+        "id": "DA_SteadfastHeart",
+        "name": "Steadfast Heart",
+        "lift": -0.557,
+        "n": 52
+      },
+      {
+        "id": "DA_BrambleVest",
+        "name": "Bramble Vest",
+        "lift": -0.49,
+        "n": 52
+      },
+      {
+        "id": "DA_Evenshroud",
+        "name": "Evenshroud",
+        "lift": -0.449,
+        "n": 145
+      }
+    ],
+    "DA_18_Aphelios": [
+      {
+        "id": "DA_InfinityEdge",
+        "name": "Infinity Edge",
+        "lift": -0.323,
+        "n": 302
+      },
+      {
+        "id": "DA_Deathblade",
+        "name": "Deathblade",
+        "lift": -0.309,
+        "n": 277
+      },
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Giant Slayer",
+        "lift": -0.299,
+        "n": 171
+      }
+    ],
+    "DA_18_Lillia": [
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "Adaptive Helm",
+        "lift": -0.563,
+        "n": 77
+      },
+      {
+        "id": "DA_Evenshroud",
+        "name": "Evenshroud",
+        "lift": -0.437,
+        "n": 129
+      },
+      {
+        "id": "DA_SunfireCape",
+        "name": "Sunfire Cape",
+        "lift": -0.406,
+        "n": 94
+      }
+    ],
+    "DA_18_GnarSmall": [
+      {
+        "id": "DA_SteraksGage",
+        "name": "Sterak's Gage",
+        "lift": -1.171,
+        "n": 107
+      },
+      {
+        "id": "DA_Bloodthirster",
+        "name": "Bloodthirster",
+        "lift": -1.168,
+        "n": 89
+      },
+      {
+        "id": "DA_HandOfJustice",
+        "name": "Hand Of Justice",
+        "lift": -0.977,
+        "n": 59
+      }
+    ],
+    "DA_18_LeBlanc": [
+      {
+        "id": "DA_JeweledGauntlet",
+        "name": "Jeweled Gauntlet",
+        "lift": -0.217,
+        "n": 52
+      }
+    ]
+  },
+  "c_21": {
+    "DA_18_Diana": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -1.033,
+        "n": 73
+      }
+    ],
+    "DA_CrimsonRaptor18": [
+      {
+        "id": "DA_GuinsoosRageblade",
+        "name": "Guinsoo's Rageblade",
+        "lift": -0.679,
+        "n": 82
+      },
+      {
+        "id": "DA_LastWhisper",
+        "name": "Last Whisper",
+        "lift": -0.296,
+        "n": 238
+      }
+    ],
+    "DA_18_Aphelios": [
+      {
+        "id": "DA_InfinityEdge",
+        "name": "Infinity Edge",
+        "lift": -0.375,
+        "n": 293
+      },
+      {
+        "id": "DA_KrakensFury",
+        "name": "Kraken's Fury",
+        "lift": -0.301,
+        "n": 304
+      },
+      {
+        "id": "DA_LastWhisper",
+        "name": "Last Whisper",
+        "lift": -0.234,
+        "n": 184
+      }
+    ],
+    "DA_Sentinel18": [
+      {
+        "id": "DA_SteadfastHeart",
+        "name": "Steadfast Heart",
+        "lift": -0.979,
+        "n": 59
+      },
+      {
+        "id": "DA_Evenshroud",
+        "name": "Evenshroud",
+        "lift": -0.712,
+        "n": 76
+      },
+      {
+        "id": "DA_DragonsClaw",
+        "name": "Dragon's Claw",
+        "lift": -0.625,
+        "n": 53
+      }
+    ],
+    "DA_Brambleback18": [
+      {
+        "id": "DA_InfinityEdge",
+        "name": "Infinity Edge",
+        "lift": -0.972,
+        "n": 69
+      },
+      {
+        "id": "DA_Deathblade",
+        "name": "Deathblade",
+        "lift": -0.882,
+        "n": 63
+      },
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Giant Slayer",
+        "lift": -0.741,
+        "n": 66
+      }
+    ],
+    "DA_18_Hecarim": [
+      {
+        "id": "DA_Evenshroud",
+        "name": "Evenshroud",
+        "lift": -1.052,
+        "n": 62
+      },
+      {
+        "id": "DA_SunfireCape",
+        "name": "Sunfire Cape",
+        "lift": -0.859,
+        "n": 53
+      },
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": -0.492,
+        "n": 98
+      }
+    ],
+    "DA_18_Zyra": [
+      {
+        "id": "DA_JeweledGauntlet",
+        "name": "Jeweled Gauntlet",
+        "lift": -0.86,
+        "n": 53
+      },
+      {
+        "id": "DA_SpearOfShojin",
+        "name": "Spear of Shojin",
+        "lift": -0.812,
+        "n": 75
+      },
+      {
+        "id": "DA_Morellonomicon",
+        "name": "Morellonomicon",
+        "lift": -0.799,
+        "n": 65
+      }
+    ]
+  },
+  "c_08": {
+    "DA_18_Veigar": [
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Giant Slayer",
+        "lift": -0.19,
+        "n": 57
+      },
+      {
+        "id": "DA_JeweledGauntlet",
+        "name": "Jeweled Gauntlet",
+        "lift": -0.08,
+        "n": 549
+      },
+      {
+        "id": "DA_BlueBuff",
+        "name": "Blue Buff",
+        "lift": -0.078,
+        "n": 392
+      }
+    ],
+    "DA_18_Kobuko": [
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": 0.06,
+        "n": 97
+      },
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Spirit Visage",
+        "lift": 0.073,
+        "n": 56
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": 0.091,
+        "n": 50
+      }
+    ],
+    "DA_18_RekSai": [
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Spirit Visage",
+        "lift": -0.39,
+        "n": 118
+      },
+      {
+        "id": "DA_SteadfastHeart",
+        "name": "Steadfast Heart",
+        "lift": -0.338,
+        "n": 68
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.146,
+        "n": 281
+      }
+    ],
+    "DA_18_Rammus": [
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Spirit Visage",
+        "lift": -0.396,
+        "n": 50
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.323,
+        "n": 55
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.202,
+        "n": 56
+      }
+    ],
+    "DA_Fiddlesticks18": [
+      {
+        "id": "DA_IonicSpark",
+        "name": "Ionic Spark",
+        "lift": -0.56,
+        "n": 65
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.292,
+        "n": 65
+      }
+    ],
+    "DA_18_Teemo": [
+      {
+        "id": "DA_RedBuff",
+        "name": "Red Buff",
+        "lift": -0.168,
+        "n": 91
+      },
+      {
+        "id": "DA_RabadonsDeathcap",
+        "name": "Rabadon's Deathcap",
+        "lift": -0.162,
+        "n": 63
+      },
+      {
+        "id": "DA_SpearOfShojin",
+        "name": "Spear of Shojin",
+        "lift": -0.043,
+        "n": 164
+      }
+    ]
+  },
+  "c_19": {
+    "DA_18_Morgana": [
+      {
+        "id": "DA_HextechGunblade",
+        "name": "Hextech Gunblade",
+        "lift": -0.424,
+        "n": 84
+      },
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Archangel's Staff",
+        "lift": -0.256,
+        "n": 121
+      },
+      {
+        "id": "DA_JeweledGauntlet",
+        "name": "Jeweled Gauntlet",
+        "lift": -0.174,
+        "n": 120
+      }
+    ],
+    "DA_Sentinel18": [
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.403,
+        "n": 255
+      },
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Protector's Vow",
+        "lift": -0.401,
+        "n": 387
+      },
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "Adaptive Helm",
+        "lift": -0.38,
+        "n": 222
+      }
+    ],
+    "DA_18_Diana": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.484,
+        "n": 74
+      }
+    ],
+    "DA_18_Hecarim": [
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.317,
+        "n": 58
+      },
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": 0.173,
+        "n": 55
+      }
+    ],
+    "DA_18_Sentry": [],
+    "DA_Brambleback18": [
+      {
+        "id": "DA_Bloodthirster",
+        "name": "Bloodthirster",
+        "lift": -0.556,
+        "n": 81
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.52,
+        "n": 53
+      },
+      {
+        "id": "DA_InfinityEdge",
+        "name": "Infinity Edge",
+        "lift": -0.446,
+        "n": 58
+      }
+    ],
+    "DA_KogMaw18_AD": [],
+    "DA_Taric18": [
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": -0.941,
+        "n": 55
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.802,
+        "n": 70
+      }
+    ],
+    "DA_18_Alune": [
+      {
+        "id": "DA_RabadonsDeathcap",
+        "name": "Rabadon's Deathcap",
+        "lift": -0.937,
+        "n": 56
+      },
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "Adaptive Helm",
+        "lift": -0.82,
+        "n": 53
+      },
+      {
+        "id": "DA_SpearOfShojin",
+        "name": "Spear of Shojin",
+        "lift": -0.748,
+        "n": 85
+      }
+    ]
+  },
+  "c_10": {
+    "DA_18_Ezreal": [
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Giant Slayer",
+        "lift": -0.495,
+        "n": 76
+      },
+      {
+        "id": "DA_StrikersFlail",
+        "name": "Striker's Flail",
+        "lift": -0.456,
+        "n": 98
+      },
+      {
+        "id": "DA_Deathblade",
+        "name": "Deathblade",
+        "lift": -0.348,
+        "n": 141
+      }
+    ],
+    "DA_Amumu18": [
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Protector's Vow",
+        "lift": -0.103,
+        "n": 54
+      },
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Spirit Visage",
+        "lift": 0.115,
+        "n": 50
+      },
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": 0.299,
+        "n": 91
+      }
+    ],
+    "DA_18_GnarSmall": [
+      {
+        "id": "DA_SteraksGage",
+        "name": "Sterak's Gage",
+        "lift": -0.591,
+        "n": 78
+      },
+      {
+        "id": "DA_TitansResolve",
+        "name": "Titan's Resolve",
+        "lift": -0.544,
+        "n": 56
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.432,
+        "n": 102
+      }
+    ],
+    "DA_18_Kennen": [
+      {
+        "id": "DA_EdgeOfNight",
+        "name": "Edge of Night",
+        "lift": -0.668,
+        "n": 92
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.48,
+        "n": 143
+      },
+      {
+        "id": "DA_RabadonsDeathcap",
+        "name": "Rabadon's Deathcap",
+        "lift": -0.454,
+        "n": 84
+      }
+    ],
+    "DA_18_Maokai": [
+      {
+        "id": "DA_BrambleVest",
+        "name": "Bramble Vest",
+        "lift": -0.584,
+        "n": 79
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.491,
+        "n": 239
+      },
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Spirit Visage",
+        "lift": -0.487,
+        "n": 196
+      }
+    ],
+    "DA_18_Alistar": [],
+    "DA_Draven18": [
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Giant Slayer",
+        "lift": -0.569,
+        "n": 109
+      },
+      {
+        "id": "DA_Deathblade",
+        "name": "Deathblade",
+        "lift": -0.244,
+        "n": 260
+      },
+      {
+        "id": "DA_KrakensFury",
+        "name": "Kraken's Fury",
+        "lift": -0.238,
+        "n": 350
+      }
+    ],
+    "DA_Taric18": [
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.295,
+        "n": 51
+      },
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": -0.196,
+        "n": 87
+      },
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Spirit Visage",
+        "lift": -0.041,
+        "n": 60
+      }
+    ],
+    "DA_18_Ivern": []
+  },
+  "c_05": {
+    "DA_18_Tristana": [
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Giant Slayer",
+        "lift": -0.394,
+        "n": 179
+      },
+      {
+        "id": "DA_Deathblade",
+        "name": "Deathblade",
+        "lift": -0.295,
+        "n": 138
+      },
+      {
+        "id": "DA_InfinityEdge",
+        "name": "Infinity Edge",
+        "lift": -0.248,
+        "n": 133
+      }
+    ],
+    "DA_18_Rammus": [
+      {
+        "id": "DA_SteadfastHeart",
+        "name": "Steadfast Heart",
+        "lift": -0.44,
+        "n": 77
+      },
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Protector's Vow",
+        "lift": -0.325,
+        "n": 69
+      },
+      {
+        "id": "DA_Evenshroud",
+        "name": "Evenshroud",
+        "lift": -0.226,
+        "n": 61
+      }
+    ],
+    "DA_18_Lillia": [
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "Adaptive Helm",
+        "lift": -0.856,
+        "n": 68
+      },
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Protector's Vow",
+        "lift": -0.825,
+        "n": 114
+      },
+      {
+        "id": "DA_SunfireCape",
+        "name": "Sunfire Cape",
+        "lift": -0.809,
+        "n": 54
+      }
+    ],
+    "DA_Vi18": [
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": -0.57,
+        "n": 125
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.456,
+        "n": 55
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.322,
+        "n": 72
+      }
+    ],
+    "DA_18_Sivir": [
+      {
+        "id": "DA_Deathblade",
+        "name": "Deathblade",
+        "lift": -0.772,
+        "n": 57
+      },
+      {
+        "id": "DA_RedBuff",
+        "name": "Red Buff",
+        "lift": -0.753,
+        "n": 136
+      },
+      {
+        "id": "DA_LastWhisper",
+        "name": "Last Whisper",
+        "lift": -0.55,
+        "n": 242
+      }
+    ],
+    "DA_18_Rakan": [],
+    "DA_18_Kobuko": []
+  },
+  "c_13": {
+    "DA_18_KhaZix": [
+      {
+        "id": "DA_RabadonsDeathcap",
+        "name": "Rabadon's Deathcap",
+        "lift": -0.302,
+        "n": 246
+      },
+      {
+        "id": "DA_EdgeOfNight",
+        "name": "Edge of Night",
+        "lift": -0.091,
+        "n": 398
+      },
+      {
+        "id": "DA_HandOfJustice",
+        "name": "Hand Of Justice",
+        "lift": -0.087,
+        "n": 417
+      }
+    ],
+    "DA_18_Diana": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.543,
+        "n": 61
+      }
+    ],
+    "DA_18_Hecarim": [
+      {
+        "id": "DA_SunfireCape",
+        "name": "Sunfire Cape",
+        "lift": -0.806,
+        "n": 55
+      },
+      {
+        "id": "DA_DragonsClaw",
+        "name": "Dragon's Claw",
+        "lift": -0.679,
+        "n": 78
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.342,
+        "n": 230
+      }
+    ],
+    "DA_18_Rengar": [
+      {
+        "id": "DA_SteraksGage",
+        "name": "Sterak's Gage",
+        "lift": -0.32,
+        "n": 64
+      },
+      {
+        "id": "DA_TitansResolve",
+        "name": "Titan's Resolve",
+        "lift": -0.25,
+        "n": 252
+      },
+      {
+        "id": "DA_Bloodthirster",
+        "name": "Bloodthirster",
+        "lift": -0.135,
+        "n": 51
+      }
+    ],
+    "DA_18_Ezreal": [],
+    "DA_18_LeBlanc": [],
+    "DA_18_Aphelios": [
+      {
+        "id": "DA_RedBuff",
+        "name": "Red Buff",
+        "lift": -0.604,
+        "n": 54
+      },
+      {
+        "id": "DA_LastWhisper",
+        "name": "Last Whisper",
+        "lift": -0.59,
+        "n": 70
+      }
+    ]
+  },
+  "c_16": {
+    "DA_18_Morgana": [
+      {
+        "id": "DA_RabadonsDeathcap",
+        "name": "Rabadon's Deathcap",
+        "lift": -0.525,
+        "n": 67
+      },
+      {
+        "id": "DA_RedBuff",
+        "name": "Red Buff",
+        "lift": -0.453,
+        "n": 54
+      },
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "Adaptive Helm",
+        "lift": -0.439,
+        "n": 65
+      }
+    ],
+    "DA_Sentinel18": [
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Spirit Visage",
+        "lift": -0.684,
+        "n": 57
+      },
+      {
+        "id": "DA_DragonsClaw",
+        "name": "Dragon's Claw",
+        "lift": -0.638,
+        "n": 66
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.531,
+        "n": 124
+      }
+    ],
+    "DA_18_Diana": [],
+    "DA_18_Cassiopeia": [
+      {
+        "id": "DA_HextechGunblade",
+        "name": "Hextech Gunblade",
+        "lift": -0.616,
+        "n": 56
+      },
+      {
+        "id": "DA_SpearOfShojin",
+        "name": "Spear of Shojin",
+        "lift": -0.277,
+        "n": 51
+      }
+    ],
+    "DA_18_Elise": [],
+    "DA_Fiddlesticks18": [],
+    "DA_18_Ahri": [
+      {
+        "id": "DA_StrikersFlail",
+        "name": "Striker's Flail",
+        "lift": -0.254,
+        "n": 139
+      },
+      {
+        "id": "DA_NashorsTooth",
+        "name": "Nashor's Tooth",
+        "lift": -0.247,
+        "n": 62
+      },
+      {
+        "id": "DA_SpearOfShojin",
+        "name": "Spear of Shojin",
+        "lift": -0.226,
+        "n": 178
+      }
+    ],
+    "DA_18_Alune": [
+      {
+        "id": "DA_SpearOfShojin",
+        "name": "Spear of Shojin",
+        "lift": -0.968,
+        "n": 81
+      },
+      {
+        "id": "DA_JeweledGauntlet",
+        "name": "Jeweled Gauntlet",
+        "lift": -0.922,
+        "n": 75
+      }
+    ],
+    "DA_Taric18": [
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": -0.564,
+        "n": 52
+      }
+    ]
+  },
+  "c_18": {
+    "DA_KogMaw18_AD": [],
+    "DA_Sentinel18": [
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.478,
+        "n": 135
+      },
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "Adaptive Helm",
+        "lift": -0.463,
+        "n": 127
+      },
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Spirit Visage",
+        "lift": -0.407,
+        "n": 78
+      }
+    ],
+    "DA_18_Morgana": [
+      {
+        "id": "DA_HextechGunblade",
+        "name": "Hextech Gunblade",
+        "lift": -0.68,
+        "n": 52
+      },
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Archangel's Staff",
+        "lift": -0.615,
+        "n": 71
+      },
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Giant Slayer",
+        "lift": -0.575,
+        "n": 54
+      }
+    ],
+    "DA_Nidalee18_AP": [
+      {
+        "id": "DA_RabadonsDeathcap",
+        "name": "Rabadon's Deathcap",
+        "lift": -0.635,
+        "n": 60
+      },
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Giant Slayer",
+        "lift": -0.141,
+        "n": 57
+      },
+      {
+        "id": "DA_StrikersFlail",
+        "name": "Striker's Flail",
+        "lift": -0.099,
+        "n": 149
+      }
+    ],
+    "DA_Vi18": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "Thief's Gloves",
+        "lift": -0.383,
+        "n": 51
+      }
+    ],
+    "DA_Scuttlecrab18": [],
+    "DA_18_Sentry": [],
+    "DA_Taric18": []
+  },
+  "c_04": {
+    "DA_Vi18": [],
+    "DA_18_Caitlyn": [
+      {
+        "id": "DA_Deathblade",
+        "name": "Deathblade",
+        "lift": -0.235,
+        "n": 65
+      },
+      {
+        "id": "DA_KrakensFury",
+        "name": "Kraken's Fury",
+        "lift": -0.1,
+        "n": 291
+      },
+      {
+        "id": "DA_GuinsoosRageblade",
+        "name": "Guinsoo's Rageblade",
+        "lift": -0.089,
+        "n": 270
+      }
+    ],
+    "DA_18_Rakan": [],
+    "DA_18_Sivir": [
+      {
+        "id": "DA_RedBuff",
+        "name": "Red Buff",
+        "lift": -0.489,
+        "n": 68
+      },
+      {
+        "id": "DA_LastWhisper",
+        "name": "Last Whisper",
+        "lift": -0.373,
+        "n": 133
+      },
+      {
+        "id": "DA_InfinityEdge",
+        "name": "Infinity Edge",
+        "lift": -0.36,
+        "n": 113
+      }
+    ],
+    "DA_Scuttlecrab18": [
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": 0.006,
+        "n": 76
+      },
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": 0.031,
+        "n": 146
+      },
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Spirit Visage",
+        "lift": 0.063,
+        "n": 101
+      }
+    ],
+    "DA_18_Tristana": [
+      {
+        "id": "DA_GuinsoosRageblade",
+        "name": "Guinsoo's Rageblade",
+        "lift": -0.33,
+        "n": 50
+      }
+    ],
+    "DA_18_Sejuani": [
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": -0.25,
+        "n": 67
+      },
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Spirit Visage",
+        "lift": -0.152,
+        "n": 66
+      }
+    ]
+  },
+  "c_11": {
+    "DA_Amumu18": [],
+    "DA_18_Maokai": [
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": -0.218,
+        "n": 105
+      },
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Spirit Visage",
+        "lift": -0.159,
+        "n": 60
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.136,
+        "n": 75
+      }
+    ],
+    "DA_18_ElderDragon": [
+      {
+        "id": "DA_LastWhisper",
+        "name": "Last Whisper",
+        "lift": -0.147,
+        "n": 56
+      },
+      {
+        "id": "DA_SteraksGage",
+        "name": "Sterak's Gage",
+        "lift": -0.138,
+        "n": 54
+      },
+      {
+        "id": "DA_StrikersFlail",
+        "name": "Striker's Flail",
+        "lift": -0.127,
+        "n": 70
+      }
+    ],
+    "DA_Sentinel18": [
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Protector's Vow",
+        "lift": -0.139,
+        "n": 54
+      }
+    ],
+    "DA_Taric18": [],
+    "DA_18_Kennen": [],
+    "DA_18_Ivern": [],
+    "DA_Draven18": [
+      {
+        "id": "DA_KrakensFury",
+        "name": "Kraken's Fury",
+        "lift": 0.072,
+        "n": 97
+      },
+      {
+        "id": "DA_GuinsoosRageblade",
+        "name": "Guinsoo's Rageblade",
+        "lift": 0.21,
+        "n": 133
+      },
+      {
+        "id": "DA_Deathblade",
+        "name": "Deathblade",
+        "lift": 0.217,
+        "n": 50
+      }
+    ]
+  },
+  "c_06": {
+    "DA_18_Sivir": [
+      {
+        "id": "DA_InfinityEdge",
+        "name": "Infinity Edge",
+        "lift": -0.329,
+        "n": 180
+      },
+      {
+        "id": "DA_SpearOfShojin",
+        "name": "Spear of Shojin",
+        "lift": -0.324,
+        "n": 80
+      },
+      {
+        "id": "DA_Deathblade",
+        "name": "Deathblade",
+        "lift": -0.239,
+        "n": 114
+      }
+    ],
+    "DA_Vi18": [],
+    "DA_Amumu18": [
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Spirit Visage",
+        "lift": -0.351,
+        "n": 72
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.301,
+        "n": 100
+      },
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": -0.238,
+        "n": 132
+      }
+    ],
+    "DA_18_Tristana": [],
+    "DA_18_Lillia": [],
+    "DA_18_Shen": [],
+    "DA_18_Ashe": [
+      {
+        "id": "DA_SpearOfShojin",
+        "name": "Spear of Shojin",
+        "lift": -0.551,
+        "n": 61
+      },
+      {
+        "id": "DA_LastWhisper",
+        "name": "Last Whisper",
+        "lift": -0.501,
+        "n": 59
+      }
+    ]
+  },
+  "c_00": {
+    "DA_18_Warwick": [
+      {
+        "id": "DA_SteraksGage",
+        "name": "Sterak's Gage",
+        "lift": -0.566,
+        "n": 70
+      },
+      {
+        "id": "DA_TitansResolve",
+        "name": "Titan's Resolve",
+        "lift": -0.193,
+        "n": 104
+      },
+      {
+        "id": "DA_SpearOfShojin",
+        "name": "Spear of Shojin",
+        "lift": -0.168,
+        "n": 105
+      }
+    ],
+    "DA_18_RekSai": [],
+    "DA_18_Malphite": [
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.706,
+        "n": 59
+      },
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": -0.521,
+        "n": 93
+      }
+    ],
+    "DA_18_Azir": [],
+    "DA_Krug18": [],
+    "DA_Murkwolf18": [
+      {
+        "id": "DA_HandOfJustice",
+        "name": "Hand Of Justice",
+        "lift": -0.555,
+        "n": 59
+      },
+      {
+        "id": "DA_EdgeOfNight",
+        "name": "Edge of Night",
+        "lift": -0.407,
+        "n": 54
+      }
+    ],
+    "DA_Brambleback18": []
+  },
+  "c_01": {
+    "DA_18_Sivir": [
+      {
+        "id": "DA_InfinityEdge",
+        "name": "Infinity Edge",
+        "lift": -0.159,
+        "n": 83
+      }
+    ],
+    "DA_Nidalee18_AP": [
+      {
+        "id": "DA_InfinityEdge",
+        "name": "Infinity Edge",
+        "lift": -0.303,
+        "n": 58
+      }
+    ],
+    "DA_Krug18": [],
+    "DA_KogMaw18_AD": [],
+    "DA_Sentinel18": [],
+    "DA_18_Malphite": [
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmogs Armor",
+        "lift": -0.413,
+        "n": 54
+      },
+      {
+        "id": "DA_GargoyleStoneplate",
+        "name": "Gargoyle Stoneplate",
+        "lift": -0.158,
+        "n": 116
+      }
+    ],
+    "DA_Cinderling18": [],
+    "DA_18_RekSai": []
+  }
+}

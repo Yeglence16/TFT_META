@@ -96,12 +96,16 @@ matching against traits.json's display names — resolves 21/23 Set 18
 emblems. "Phantom Emblem" (2 items) is the exception, **root-caused**: a
 trait literally named "Phantom" exists in cdragon, but registered under
 **Set 17** (`TFTEvent5YR_Phantom`, an anniversary-event trait) — Set 18
-genuinely has no such trait among its 36. The item is cross-set content
+genuinely has no such trait among its 35 (36 before extract_traits()
+dropped the non-stackable `DA_18_Eclipse` — see that function's docstring;
+unrelated to this Phantom finding either way, Set 17's Phantom was never
+in Set 18's raw trait list to begin with). The item is cross-set content
 bundled into Set 18's item pool via a `DA_`-prefixed apiName (unlike the
 champion/augment contamination, which used an obviously different prefix,
-so the `DA_` filter alone doesn't catch this one). traits.json's list is
-correct and unfiltered (`set_entry["traits"]`, no DA_/other filter applied)
-— left unmapped rather than force-matched. Written to `unit_aliases.json`'s
+so the `DA_` filter alone doesn't catch this one). traits.json's list
+otherwise passes through `set_entry["traits"]` unfiltered (no DA_/other
+filter, only the minUnits-based non-stackable check) — Phantom is left
+unmapped rather than force-matched. Written to `unit_aliases.json`'s
 sibling, `emblem_traits.json` — **not currently consumed by features.py**:
 verified against real match data that Riot's own `participant.traits`
 already includes an emblem-holder's contribution server-side in ~95% of
@@ -184,14 +188,53 @@ def _find_set(cdragon: dict, set_number: int) -> dict:
 
 
 def extract_traits(set_entry: dict) -> dict[str, dict]:
+    """Drops non-stackable "trait" records — same idea as extract_units()
+    dropping PvE/global champion entries via the empty-traits-list check.
+
+    **Found via SPEC-WEB.md's web build validator (2026-08-30):**
+    `DA_18_Eclipse` has a single effect with `minUnits: null` and a
+    description ("After 10 seconds of combat, the Eclipse kills the lowest
+    Health enemy") that's a combat-encounter hazard, not a champion
+    origin/class you stack by playing units. It's the only one of Set 18's
+    37 raw trait records with this shape — checked directly, every other
+    trait's every effect has an int `minUnits`. A trait with zero effects
+    left after dropping null `minUnits` has no breakpoint a board's unit
+    count could ever satisfy, so it isn't real comp-building content and is
+    excluded the same way `TFT18_Gromp` is excluded from units.
+
+    **`minUnits` is deduped, not just sorted (fixed 2026-08-30, found via the
+    web build validator).** Two effects can share the same `minUnits` — a
+    real cdragon shape, not malformed data — because a single breakpoint can
+    carry more than one effect record (e.g. a distinct visual `style` on top
+    of the stat effect at that same threshold). `DA_18_Rival`'s raw effects
+    are `minUnits=[1, 1, 2]`: two effects both fire at 1 unit, one at 2. A
+    plain `sorted()` kept the duplicate, so a board with exactly 1 native
+    Rival unit computed as clearing *two* breakpoints (tier 2) instead of
+    one — verified against real match data, every sampled case showed
+    Riot's own `tier_current` reporting 1 there, not 2. It was the only one
+    of Set 18's 35 stackable traits with a repeated `minUnits` value —
+    checked directly. Deduping is structural (`set()` over every effect's
+    `minUnits`, independent of which trait it belongs to), not a
+    `DA_18_Rival`-specific carve-out, so it holds for any future set's
+    dump without a code change.
+    """
     traits = {}
+    dropped = []
     for t in set_entry["traits"]:
-        breakpoints = sorted(e["minUnits"] for e in t["effects"])
+        breakpoints = sorted({e["minUnits"] for e in t["effects"] if e.get("minUnits") is not None})
+        if not breakpoints:
+            dropped.append(f"{t['apiName']} ({t['name']})")
+            continue
         traits[t["apiName"]] = {
             "name": t["name"],
             "breakpoints": breakpoints,
             "icon": _icon_url(t["icon"]),
         }
+    if dropped:
+        logger.info(
+            "Traits: %d stackable traits, %d non-stackable entr(ies) dropped (no int minUnits on any effect): %s",
+            len(traits), len(dropped), "; ".join(dropped),
+        )
     return traits
 
 
@@ -315,7 +358,7 @@ def _emblem_trait_id(item_display_name: str, trait_name_to_id: dict[str, str]) -
     grant (`associatedTraits` is empty on every one) — derived instead by
     stripping " Emblem" from the item's own display name and matching
     against traits.json's display names. Verified: 21/23 Set 18 emblems
-    resolve this way; "Phantom Emblem" (2 items) matches none of the 36
+    resolve this way; "Phantom Emblem" (2 items) matches none of the 35
     known traits and is left unmapped — root-caused (not just observed):
     a "Phantom" trait exists in cdragon but belongs to Set 17
     (TFTEvent5YR_Phantom, an anniversary-event trait), not Set 18. The item

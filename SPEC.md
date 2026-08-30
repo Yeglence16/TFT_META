@@ -162,7 +162,49 @@ kayıtlarında **yok** — sınıflandırma yapısal sinyallerle yapılıyor, s�
 
 Emblem→trait eşlemesi `emblem_traits.json`'a yazılıyor: emblem isminden
 " Emblem" çıkarılıp trait ismiyle eşleştirilerek 23'ün 21'i çözülüyor.
-- augment ID → display name **ve tier (silver / gold / prismatic)**
+
+**Düzeltildi — `DA_18_Rival`'ın tekrarlanan `minUnits`'i (2026-08-30, web
+build validator'ı sırasında bulundu, aynı gün düzeltildi).**
+`extract_traits()` her trait'in breakpoint listesini `sorted(e["minUnits"]
+for e in t["effects"])` ile kuruyordu, dedupe etmeden. Set 18'in 36 ham
+trait kaydının **sadece birinde** (`DA_18_Rival`) bu bir soruna yol
+açıyordu: cdragon'da aynı eşikte (`minUnits=1`) iki ayrı `effect` kaydı var
+(biri stil varyantı), bu yüzden çıkan breakpoint listesi `[1, 1, 2]` idi —
+tekil olması gereken ilk eşik iki kez sayılıyordu. Düzeltme yapısal:
+`sorted({e["minUnits"] for e in t["effects"] if ...})` — `set()` üzerinden
+dedupe, trait ismi/ID'si üzerinden özel durum yok, gelecekteki bir set'te
+aynı desen çıkarsa kod değişmeden çalışır. Yeni breakpoints: **`[1, 2]`**.
+
+**Ölçüldü — düzeltme yalnızca `DA_18_Rival`'ı etkiliyor, boyut değişmiyor.**
+Düzeltilmiş `extract_traits()` gerçek cdragon dump'ına karşı (dosyaya
+yazmadan, bellekte) çalıştırılıp diskteki eski `traits.json` ile
+karşılaştırıldı: **diğer 34 trait'in breakpoint listesi birebir aynı**,
+sadece `DA_18_Rival` değişti. Trait sayısı (dict anahtar sayısı) **35'te
+35** — değişmedi. Vektör boyutu trait sayısına bağlı (`trait_order` =
+`sorted(traits.keys())`, `features.py` `breakpoints` alanını hiç okumuyor —
+doğrulandı), breakpoint listesinin *uzunluğuna* değil; dolayısıyla **board
+vektörünün boyutu (100 = 65 unit + 35 trait) değişmiyor.**
+
+`breakpoints`'i gerçekten kullanan tek pipeline aşaması `traits.py`
+(comp_traits.json) — `high_thresholds[trait] = len(breakpoints)` ile
+"maxed tier" eşiğini kuruyor. Rival için bu eşik 3'ten 2'ye düştü. Gerçek
+veride ölçüldü: bu eşiğin yakaladığı board sayısı 478'den (`tier_current==3`)
+480'e çıkıyor (+2, `tier_current==2` olan 2 board da dahil oluyor) —
+`comp_traits.json`'ı gözle görülür şekilde değiştirmesi beklenmez ama
+`traits.py` yeniden çalıştırılmadan mevcut çıktı hâlâ eski (düzeltilmemiş)
+eşiği yansıtıyor. `features.py`, `clustering.py`, `matchups.py`, `items.py`
+— hiçbiri `breakpoints` alanını okumuyor (kod genelinde doğrulandı),
+bunların yeniden çalıştırılmasına gerek yok.
+
+**Düzeltme Rival'ı tam açıklamıyor — yeni, çözülmemiş bir bulgu.** Gerçek
+`tier_current` dağılımı ölçülünce beklenmedik bir desen çıktı: native=1 →
+`tier_current`=1 (969 board, düzeltilmiş formülle birebir tutuyor) ama
+native=2 → `tier_current`=**3** (478 board, %99.8 tutarlılıkla) — düzeltilmiş
+`[1, 2]` breakpoint listesiyle native=2 için hesaplanabilecek en yüksek tier
+2, asla 3 değil. Yani Rival'ın gerçek tier skalası basit "kaç breakpoint
+aşıldı" sayımıyla **hâlâ** tam örtüşmüyor; dedupe gerçek ve doğrulanmış bir
+düzeltme ama Rival'ın tüm davranışını açıklamıyor. Kök nedeni bu oturumda
+araştırılmadı — ayrı bir bulgu olarak kaydedildi, düzeltme kararı yok.
 
 **Augment tier'ı için:** cdragon augment kayıtlarında bir `rarity` alanı var.
 Önce onu incele ve gerçekten tier'a karşılık geldiğini birkaç bilinen augment'le
@@ -345,6 +387,44 @@ Board vektörü:
 - Item'lar v1'de dışarıda kalabilir; bırakılırsa README'de belirt
 
 Vektörü L2 normalize et. Clustering cosine mesafesiyle çalışacak.
+
+**Bilinen kısıt — board/bench ayrımı yok (2026-08-30, web build validator'ı
+sırasında bulundu, düzeltilmedi — kasıtlı karar).** `participant.units`
+listesinin API'de böyle bir alanı yok: her unit kaydında sadece
+`character_id`, `itemNames`, `name`, `rarity`, `tier` var — pozisyon da,
+board/bench bayrağı da yok. SPEC.md'nin "Riot API pozisyon vermiyor" notu
+(bölüm 0, 5) sanılandan daha köklü: hangi hex'te olduğunu değil, board'da mı
+bench'te mi olduğunu bile bilmiyoruz.
+
+Bunun somut etkisi ölçüldü: 23496 board'un **1686'sında (%7.2)** `units`
+listesinin uzunluğu `level`'i (nominal board kapasitesi) aşıyor —
+matematiksel olarak bunun bir kısmı bench içermek zorunda. Ama bu basit bir
+"fazlalığı at" düzeltmesiyle çözülemiyor:
+
+- **Fazlalık her zaman bench değil.** +1 fazlalıklı board'ların **%69'unda**,
+  hiçbir unit çıkarılmadan tüm listeyle trait'ler Riot'un `tier_current`'ıyla
+  **birebir** hesaplanıyor — yani o "fazladan" unit gerçekten oynanıyordu.
+  Fazlalık büyüdükçe bu oran çöküyor (+2: %55, +3: %5, +4-5: %0) — büyük
+  fazlalıklarda gerçekten açıklanamayan bir şey var, ama ne olduğu **bilinmiyor**.
+- **Denenen "en düşük yatırımlı unit = bench" heuristiği (0 item → en düşük
+  yıldız → en düşük maliyet sırasıyla fazlalık kadarını sil) test edildi ve
+  yanlış çıktı.** İstatistiksel olarak temiz bir ayrım üretiyor (silinenlerin
+  %99.7'si 0 item, kalanların sadece %37.2'si) ama gerçek `tier_current`'a
+  karşı test edilince uyumsuzluk **%39'dan %92'ye çıktı** — yani heuristik,
+  board'da gerçekten oynanan unit'leri bench sanıp siliyor. Somut örnek: bir
+  board'da 0 item/1 yıldız görünen bir unit (`DA_18_Azir`) heuristikle
+  silinince 3 farklı trait'in tier'ı bozuldu; oysa o unit gerçekten
+  board'daydı. **Bu yüzden hiçbir düzeltme uygulanmadı** — yanlış bir
+  düzeltme, bilinen bir kısıttan kötüdür.
+- Etkinin büyüklüğü (heuristik simülasyonundan): board başına unit vektörü
+  değişimi küçük (ortalama cosine mesafesi 0.029, medyan 0.019), etkilenen
+  board'lar 22 cluster'a da orantılı yayılmış (tek bir comp'ta yoğunlaşma
+  yok, %2.2-%11.4 arası).
+
+Sonuç: **board vektörünün unit bileşeni, bir kısım board'da (en az %7.2)
+gerçekte board'da olmayan unit'leri de içeriyor olabilir, ve bunu ayıklamanın
+güvenilir bir yolu yok.** Kısıt olarak kabul edildi, düzeltilmedi (bkz. Ek:
+Karar geçmişi).
 
 Ayrıca her katılımcı için sakla: `placement`, `augments`, `match_id`, `puuid`,
 `last_round`, `level`.
@@ -625,7 +705,11 @@ bir düzeltme tetiklemedi.
 
 ## 17. Yapılmayacaklar (kapsam disiplini)
 
-- Web arayüzü yok. CLI yeter.
+- Web arayüzü bu dokümanın kapsamı dışında — ayrı bir spec'te tanımlı:
+  **SPEC-WEB.md**. CLI (bölüm 14) bu pipeline'ın birincil arayüzü olmaya
+  devam ediyor; web arayüzü CLI'nin yerini almıyor, aynı
+  `data/processed/`/`data/static/` çıktılarını tarayıcıda gösteren ayrı,
+  ek bir katman.
 - Canlı/otomatik güncelleme yok. Tek yama, tek koşu.
 - Pozisyon (unit dizilimi) analizi yok — API zaten vermiyor.
 - Ekonomi / roll timing analizi yok — final board'dan çıkarılamaz.
@@ -667,6 +751,20 @@ kontaminasyon "sıfır" değil **"ölçülemiyor"** — referans verilecek alanl
 Trait listesi bu arada doğrulandı: hiçbir filtreden geçmiyor, 36'sı da eksiksiz;
 sorun trait tarafında değil. Phantom'a zorla eşleştirme yapılmadı.
 
+**Güncelleme (2026-08-30, web build validator'ı sırasında bulundu):** "36'sı
+da eksiksiz" artık doğru değil — `extract_traits()` şimdi bir filtre
+uyguluyor, çıktı 35 trait. `DA_18_Eclipse` cdragon'da diğer 36 kayıtla
+birlikte trait listesine giriyordu ama tek `effect`'i `minUnits: null`
+taşıyor ve açıklaması ("kills the lowest Health enemy") bir champion
+origin/class'ı değil, bir PvE/encounter mekaniğini tarif ediyor — canlı
+maç verisinde 86 board'da `tier_current=1` olarak görüldü, yani sahte bir
+"veri henüz gelmedi" durumu değil, gerçek katılımcılarda oluşan bir sinyal.
+`extract_traits()` artık hiçbir effect'inde sayısal `minUnits` kalmayan
+trait'leri (champion filtresindeki `traits: []` mantığının trait
+tarafındaki eşdeğeri) dışlıyor. Bu, yukarıdaki paragrafın "trait tarafında
+sorun yok" sonucunu geçersiz kılmıyor (Phantom'la ilgisi yok, ayrı bir
+bulgu) — sadece "36'sı da eksiksiz" sayısını düzeltiyor.
+
 **Kullanım tabanlı item filtresi — reddedildi.** 502 item'ın %72.1'i maç
 verisinde hiç görünmüyor. Yine de `DA_` filtresi kullanım tabanlı bir filtreyle
 değiştirilmedi, çünkü: (a) false negative üretmiyor — maçta görülen 140 item'ın
@@ -694,3 +792,37 @@ duplicate yok; `items.py` yalnızca `completed` işlediği için hiçbir
 **Uyarı:** ileride emblem istatistiği eklenirse Flora Fatalis bölünmesi aynı
 item'ın verisini ikiye böler ve her iki parça da `n<50`'nin altına düşebilir.
 O noktada isimden türetilmiş kanonik anahtar gerekir.
+
+**Bench unit'lerini board vektöründen çıkarma — reddedildi (2026-08-30).**
+Bölüm 8'in belgelediği kısıt (`participant.units`'te board/bench ayrımı yok,
+board'ların %7.2'sinde unit sayısı `level`'i aşıyor) için bir düzeltme
+denendi: fazlalık kadar unit'i "0 item → en düşük yıldız → en düşük maliyet"
+sırasıyla en bench'e-benzeyen'den seçip vektörden/trait sayımından çıkarmak.
+Reddedildi çünkü **kanıtla çelişiyor**, varsayımla değil:
+
+- Heuristik gerçek `tier_current`'a karşı test edildi. Uyumsuzluk **%39'dan
+  %92'ye çıktı** — yani heuristik gerçek board unit'lerini bench sanıp
+  siliyordu, rastgele gürültü eklemekten de kötüydü.
+- Somut örnek: bir board'da heuristiğin "en bench'e benzer" seçtiği unit
+  (`DA_18_Azir`, 0 item, 1 yıldız) aslında board'daydı — silinince 3 farklı
+  trait'in hesaplanan tier'ı (Executioner, Blackthorn, Summoner) gerçek
+  değerinden saptı, oysa tüm listeyle (hiç kesmeden) o board zaten
+  `tier_current`'la birebir tutuyordu.
+- Fazlalık miktarına göre kırılım tek bir mekanizma olmadığını gösterdi:
+  +1 fazlalıklı board'ların %69'u tam listeyle zaten doğru (o unit gerçekten
+  oynanıyordu), +3 ve üstünde bu oran %5'e ve %0'a düşüyor (orada gerçekten
+  açıklanamayan bir şey var, ama heuristik onu da bulamıyor).
+- Sebep muhtemelen `level` alanının board kapasitesini her zaman güvenilir
+  temsil etmemesi (bkz. +1 fazlalığın çoğunun meşru çıkması) — ama bu
+  kanıtlanmadı, sadece heuristiğin başarısızlığı kanıtlandı.
+
+Yapılan: hiçbir şey — düzeltme uygulanmadı, kısıt olarak belgelendi (bölüm
+8). Yanlış bir düzeltme, bilinen bir kısıttan kötüdür: en azından kısıt
+dürüst, heuristik ise board'un %39'unu değil %92'sini bozan sessiz bir
+hataydı. `unit_count > level` sinyali (kesin bench kanıtı olan %7.2'lik
+kesim) ile "gizli, kapasitede/altında kalan bench" arasındaki ayrım da
+çözülmedi — bölüm 8'deki dolaylı kontrol (tam-kapasite board'larda "çıplak"
+unit oranı %30.4, kapasite-altındakilerde %24.5-28.4) net bir sıçrama
+göstermedi, yani en azından tam-kapasite board'larda yaygın bir gizli-bench
+kirliliğine dair güçlü bir kanıt yok — ama bu profilin kendisi de yukarıdaki
+heuristik testinde güvenilmez çıktığı için zayıf bir kanıt.

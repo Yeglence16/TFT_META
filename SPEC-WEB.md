@@ -4,6 +4,8 @@ Uygulama spesifikasyonu · Ağustos 2026
 
 Bu doküman, ayrı bir spec ile üretilmiş olan **TFT Comp Analyzer** analiz pipeline'ının çıktılarını gösteren web arayüzünü tarif eder. Pipeline (veri toplama, clustering, istatistik) bu dokümanın kapsamı **dışındadır** — burada anlatılan sadece arayüzdür ve pipeline'ın ürettiği JSON dosyalarının hazır olduğu varsayılır.
 
+> **SPEC.md ile ilişki:** SPEC.md'nin (pipeline spec'i) 17. bölümü daha önce "web arayüzü yok, CLI yeter" diyordu; bu doküman yazılırken o madde güncellendi. CLI (SPEC.md bölüm 14) pipeline'ın birincil arayüzü olmaya devam ediyor — web arayüzü onun yerini almıyor, CLI'nin de okuduğu aynı `data/processed/`/`data/static/` çıktılarını tarayıcıda gösteren ayrı, ek bir katman.
+
 ## 1. Kapsam ve temel mimari kararı
 
 Kullanım senaryosu: geliştirici ve 4-5 arkadaşı. Public bir ürün değil, dar bir grup için özel bir araç.
@@ -31,9 +33,9 @@ web/
     traits.json
     comps.json
     matchups.json
-    augments.json
     comp_traits.json
     items.json
+    (augments.json şu an yok — bkz. bölüm 3.6)
   README.md
 ```
 
@@ -137,6 +139,8 @@ board sayısı; `n_total` = early_death dahil atanan tüm board sayısı.
 popülasyonunun büyüklüğünü gösterir (`n_total - n_full` = o comp'a atanan
 erken-ölüm board sayısı).
 
+> **`off_meta` — normal bir comp anahtarı değil (2026-08-30, web build validator'ında bulundu, önceden belgelenmemişti).** `comps.json`'da her zaman bir `off_meta` anahtarı da vardır (HDBSCAN gürültüsünden ve early_death'ten hiçbir centroid'e yeterince yakın çıkmayan board'ların toplandığı kova — bkz. SPEC.md bölüm 9). Bu anahtarın değeri yukarıdaki şemadan **farklı ve daha dar**: sadece `n_full`, `n_total`, `avg_placement`, `top4_rate` var — `name`, `centroid`, `core_units`, `common_traits` **yok**, çünkü off_meta gerçek bir comp değil. items.json'daki `_metadata` gibi alt çizgiyle başlamıyor (ismi `c_NN` kalıbına da uymuyor), o yüzden arayüz kodu bunu "bilinmeyen/bozuk comp" sanıp atlamamalı ama tam comp şeması da beklememeli. Palet/eşleştirme mantığı `comps.json`'ı dolaşırken `off_meta` anahtarını (varsa) comp listesinden ayrı tutmalı — bir centroid'i olmadığı için asla bir board'un "eşleştiği comp"u olamaz, sadece bölüm 7.3'ün "hiçbir comp'a uymuyor" yolunda referans istatistik olarak kullanılabilir.
+
 ### 3.5 matchups.json
 
 Head-to-head sıralama oranları. Yetersiz örnekli hücreler pipeline tarafından zaten elenmiş olmalı, ama arayüz yine de `n` kontrolü yapsın.
@@ -153,7 +157,11 @@ Head-to-head sıralama oranları. Yetersiz örnekli hücreler pipeline tarafınd
 
 `rate` = c_07'nin, aynı lobide c_12 varken ondan **yukarıda bitirme oranı.** Savaş kazanma oranı değil. Bu ayrım kritik, bölüm 8'e bak.
 
+> **İki hücre şekli var — üsttekinin bir varyantı, önceden belgelenmemişti (2026-08-30, web build validator'ında bulundu).** "Yetersiz örnekli hücreler zaten elenmiş olmalı" cümlesi yanıltıcı: `matchups.py` (SPEC.md bölüm 10) `n<100` çiftleri **silmiyor**, görünür tutup `{ "n": 91, "insufficient_data": true }` şeklinde işaretliyor — `rate`/`ci` alanları o hücrede hiç yok. Gerçek veride 484 çiftin 177'si (%36.6) bu ikinci şekilde. Arayüz her hücreyi okurken önce `insufficient_data === true` kontrolü yapmalı; true ise `rate`/`ci` okumaya çalışmadan "yetersiz veri" göstermeli (bölüm 8.1'in zaten istediği davranış — burada eksik olan şema tarafıydı, davranış tarafı değil).
+
 ### 3.6 augments.json
+
+> **v1'de bu dosya üretilmiyor, sekme de yok.** SPEC.md bölüm 11: augment analizi askıya alındı — Riot API'nin katılımcı nesnesinde `augments` alanı hiç yok (0/23984, örneklemin tamamı tarandı). Bu bir "veri henüz gelmedi" durumu değil, yapısal bir eksiklik; kısa vadede düzelmesi beklenmiyor. Aşağıdaki şema, Riot bir gün bu alanı doldurmaya başlarsa diye **referans olarak** tutuluyor. Arayüz kodu `augments.json`'ın var olmadığını varsaymalı — bu dosyayı `fetch` etmeye çalışmamalı, augment sekmesini hiç göstermemeli (bkz. bölüm 8, 11).
 
 ```json
 {
@@ -295,6 +303,23 @@ const unit = norm > 0 ? vec.map(v => v / norm) : vec;
 
 > **Kritik:** Bu vektörün pipeline'ın ürettiğiyle birebir aynı olması gerekiyor. Doğrulama yolu: pipeline birkaç örnek board'u ve onlar için hesapladığı vektörü ve eşleştiği comp'u bir test dosyasına yazsın (`data/_selftest.json`). Arayüz açılışta bunu okuyup kendi hesabıyla karşılaştırsın, tutmuyorsa konsola yüksek sesle hata bassın. Bu, projedeki en sinsi hata sınıfına karşı tek savunma.
 
+#### 7.2.1 `_selftest.json`'ın kapsamı — ne test ediyor, ne test etmiyor
+
+`_selftest.json`, `data/`'nin geri kalanı gibi rastgele board'lardan değil, **özenle seçilmiş** board'lardan oluşuyor — ve seçim kriteri arayüzü kuracak kişinin bilmesi gereken gerçek bir kısıt getiriyor.
+
+**Neden seçici davranmak gerekti.** Board'un trait bileşeni Riot'un kendi `tier_current`'ı (bölüm 7.1, 8), ama bu değer bazen board'daki unit'lerin salt native üyeliğinden **daha yüksek** çıkıyor — SPEC.md bölüm 15'in belgelediği emblem etkisi bunun bilinen bir örneği (bir emblem, sahibi olmadığı bir trait'i "sanal üye" olarak ekliyor). v1 arayüzü item/emblem girişini desteklemediği için (bölüm 11), JS'in hesabı **her zaman** salt native unit sayımına dayanıyor. Gerçek bir maçtan alınan, item/emblem etkisi taşıyan bir board'u self-test'e koymak, doğru bir JS implementasyonunu haksız yere "FAIL" gösterirdi — bu yüzden `_selftest.json`'ı üreten `build_web_data.py`, her aday board için salt unit-üyeliğinden türetilen trait tier'larının gerçek `raw_traits` değeriyle **birebir** tuttuğunu önce doğruluyor; tutmayan board'lar fixture olarak hiç kullanılmıyor.
+
+**Ölçülen oran, beklenenden çok daha büyük çıktı — açık söylüyoruz.** 23496 gerçek ranked board'un **12410'u (%52.8)** bu birebir-eşleşme testini geçiyor; **11086'sı (%47.2)** eleniyor. (Bu sayılar `DA_18_Rival` düzeltmesinden [bkz. altta, SPEC.md bölüm 4] sonraki hal — düzeltme öncesi %52.0/%48.0'dı, fark küçük çünkü Rival'ın kendisi tek başına büyük bir pay değildi.) İkiye ayrıştırılmış hali:
+
+- **Lux'lu board'lar: %99.0 elendi (2479/2504).** Lux'ın "Avatar" mekaniği, hangi köken origin'ini kopyaladığına göre değişen bir trait veriyor; `static_data.py` onun 9 köken-varyantını (`unit_aliases.json`) tek bir kanonik unit'e (`DA_Lux18_Base`) topluyor ve bu sırada hangi origin'in kopyalandığı bilgisi kayboluyor — salt unit listesinden o origin trait'i geri türetilemiyor.
+- **Lux'suz board'larda bile %41.0 elendi (8608/20992) — bileşenleri artık biliniyor.** `emblem_traits.json`'daki 21 bilinen emblem'in katkısı da sayıma katılınca oran **%41.0'dan %11.0'a** düşüyor — yani bu oranın büyük çoğunluğu zaten bilinen emblem etkisi (SPEC.md bölüm 15). Kalan %11.0'lık dilim şu kaynaktan geliyor:
+  - **Board/bench ayrımının API'de hiç olmaması (SPEC.md bölüm 8'in belgelediği kısıt, kabul edildi/düzeltilmedi).** `participant.units` board'da mı bench'te mi olduğunu söylemiyor; board'ların %7.2'sinde unit sayısı `level`'i aşıyor. Bunun kalıntı uyumsuzluğa katkısı düzensiz: kapasiteyi aşan board'larda kalıntı oranı %39, aşmayanlarda %12 — ama basit bir "fazlalığı sil" düzeltmesi denendi ve **kanıtla reddedildi** (uyumsuzluğu %39'dan %92'ye çıkardı, gerçek board unit'lerini bench sanıp siliyordu). Ayrıntı SPEC.md bölüm 8 ve "Ek: Karar geçmişi".
+  - **`DA_18_Rival`'ın tekrarlanan breakpoint'i — düzeltildi (SPEC.md bölüm 4, 2026-08-30).** `extract_traits()` artık `minUnits`'i dedupe ediyor, Rival'ın breakpoints'i `[1, 1, 2]`'den `[1, 2]`'ye düzeldi. Etkisi ölçüldü: Rival'ın rol oynadığı mismatch sayısı 878'den 455'e düştü, ama **tek başına açıklayıcı olduğu board sayısı 206'dan sadece 4'e indi** — çünkü düzeltme öncesinin asıl sorunu (native=1 board'larda yanlışlıkla tier=2 hesaplanması, gerçek tier=1) artık yok. Geriye kalan 455 vaka, düzeltmenin **çözmediği ayrı bir bulgudan** geliyor: native=2 olan board'ların **%99.8'inde (478/479)** Riot'un gerçek `tier_current`'ı **3** — düzeltilmiş `[1, 2]` breakpoint listesiyle native=2'den hesaplanabilecek en yüksek tier 2, asla 3 değil. Rival'ın gerçek tier skalası basit breakpoint-sayımıyla hâlâ tam örtüşmüyor; kök nedeni araştırılmadı, SPEC.md bölüm 4'te ayrı bir çözülmemiş bulgu olarak duruyor.
+
+**Bunun anlamı — ve anlamadığı şey.** Bu, arayüzün ya da self-test'in bir kusuru **değil**: kullanıcının sürükle-bırakla kurduğu bir board'da hiç item yok (v1 kapsamı), dolayısıyla salt unit sayımı o board için zaten **tanımı gereği doğru** hesap — %47'lik oran, "gerçek geçmiş maçlardan hangilerinin fixture olarak güvenilir olduğu" sorusuyla ilgili, "kullanıcının kurduğu board'ların %47'si yanlış hesaplanıyor" ile ilgili değil. Ama şunu da gösteriyor: item/emblem girişi ileride eklenirse (şu an bölüm 11'de kapsam dışı), aynı boşluk o zaman gerçek bir doğruluk sorunu haline gelir ve önce çözülmesi gerekir.
+
+Elenen board'lar arasından, farklı comp'ları temsil edecek şekilde (cluster başına bir örnek) **23 board** seçilip `_selftest.json`'a yazıldı — 22 gerçek comp + bir "hiçbir comp'a uymuyor" (off-meta) örneği.
+
 ### 7.3 Comp eşleştirme
 
 Normalize vektör ile `comps.json`'daki her centroid arasında cosine mesafesi hesapla, en küçüğünü seç.
@@ -312,9 +337,10 @@ Yukarıdan aşağıya sıra:
 | Comp kimliği | Comp adı, eşleşme mesafesi, örnek sayısı (n). Mesafe eşiğe yakınsa "zayıf eşleşme" rozeti. |
 | Temel istatistik | Ortalama placement ve top-4 oranı. n mutlaka görünsün. |
 | Head-to-head | En iyi 5 ve en kötü 5 eşleşme. Her satırda oran, n ve güven aralığı. |
-| Augment | Üç sekme: silver / gold / prismatic. Her birinde 3 öneri, lift ve n ile. |
 | Trait analizi | Zorlandığı 5 ve rahat ettiği 5 trait, delta ve n ile. |
 | Kısıtlar | Sayfanın altında sabit duran, kapanabilir bir kutu. İçeriği bölüm 9'da. |
+
+> **Augment sekmesi v1'de yok.** İlk taslakta burada bir "Augment: silver / gold / prismatic" satırı vardı; kaldırıldı çünkü `augments.json` üretilmiyor (bölüm 3.6, SPEC.md bölüm 11 — Riot API'de `augments` alanı hiç yok). Veri bir gün gelirse bu sekme geri eklenir, şema referans olarak bölüm 3.6'da duruyor.
 
 ### 8.1 Her yerde geçerli kurallar
 
@@ -332,9 +358,10 @@ Sayfanın altındaki kısıtlar kutusunda şunlar yazacak:
 
 - Bu oranlar savaş sonuçlarını değil, aynı lobide bulunan iki comp'un final sıralamalarının karşılaştırmasını gösterir.
 - Veri yalnızca yüksek elo (Master ve üzeri) maçlarından toplanmıştır, tüm oyuncu tabanını temsil etmez.
-- Augment istatistikleri yalnızca seçilmiş augment'leri içerir; hangi augment'lerin teklif edildiği veride yoktur. Bu bir seçim yanlılığıdır.
 - Veri hangi yamadan toplandıysa o yazılacak (`meta.json`'dan oku, elle yazma). Denge yamalarıyla sonuçlar eskir.
 - Dizilim, ekonomi ve item verisi analize dahil değildir.
+
+> **v1'de listede olmayan madde:** "Augment istatistikleri yalnızca seçilmiş augment'leri içerir..." satırı ilk taslaktaydı, kaldırıldı — augment sekmesi v1'de hiç yok, gösterilmeyen bir şeyin seçim yanlılığını uyarmanın anlamı yok. `augments.json` üretilmeye başlarsa (bölüm 3.6) bu satır kısıtlar kutusuna geri eklenmeli.
 
 ## 10. Yaygın hata listesi
 
@@ -351,6 +378,7 @@ Sayfanın altındaki kısıtlar kutusunda şunlar yazacak:
 
 ## 11. Kapsam dışı (v1'de yapılmayacak)
 
+- Augment önerisi/sekmesi. Pipeline tarafında augment analizi askıya alındı (SPEC.md bölüm 11) — Riot API'nin katılımcı nesnesinde `augments` alanı hiç yok, `augments.json` üretilmiyor. Şema referans olarak bölüm 3.6'da duruyor; veri gelirse bu sekme eklenir.
 - Item / ekipman girişi ve item bazlı öneri.
 - Unit dizilimi (pozisyon) — API veri vermiyor.
 - Emblem ve trait ekleyen item'lar.

@@ -1,0 +1,596 @@
+{
+  "DA_Gromp18_AP": {
+    "name": "Gromp",
+    "cost": 2,
+    "traits": [
+      "DA_Riftbeast18",
+      "DA_18_Adaptor"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_gromp/skins/base/images/t_18_gromp_teamplannersplash.png"
+  },
+  "DA_Murkwolf18": {
+    "name": "Murkwolf",
+    "cost": 2,
+    "traits": [
+      "DA_Riftbeast18",
+      "DA_18_Slayer"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_murkwolf/skins/base/images/t_18_murkwolf_teamplannersplash.png"
+  },
+  "DA_18_Sentry": {
+    "name": "Pebbles",
+    "cost": 1,
+    "traits": [
+      "DA_Riftbeast18",
+      "DA_18_Invoker"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_sentry/skins/base/images/t_18_sentry_teamplannersplash.png"
+  },
+  "DA_Cinderling18": {
+    "name": "Cinderling",
+    "cost": 1,
+    "traits": [
+      "DA_Riftbeast18",
+      "DA_18_Hunter"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_cinderling/skins/base/images/t_18_cinderling_teamplannersplash.png"
+  },
+  "DA_Scuttlecrab18": {
+    "name": "Scuttlecrab",
+    "cost": 2,
+    "traits": [
+      "DA_Riftbeast18",
+      "DA_Juggernaut18"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_scuttlecrab/skins/base/images/t_18_scuttlecrab_teamplannersplash.png"
+  },
+  "DA_Krug18": {
+    "name": "Krug",
+    "cost": 3,
+    "traits": [
+      "DA_Riftbeast18",
+      "DA_18_Brawler"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_krug/skins/base/images/t_18_krug_teamplannersplash.png"
+  },
+  "DA_Sentinel18": {
+    "name": "Sentinel",
+    "cost": 4,
+    "traits": [
+      "DA_Riftbeast18",
+      "DA_18_Vanguard",
+      "DA_18_Invoker"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_sentinel/skins/base/images/t_18_sentinel_teamplannersplash.png"
+  },
+  "DA_Brambleback18": {
+    "name": "Brambleback",
+    "cost": 4,
+    "traits": [
+      "DA_Riftbeast18",
+      "DA_18_Slayer"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_brambleback/skins/base/images/t_18_brambleback_teamplannersplash.png"
+  },
+  "DA_18_Xayah": {
+    "name": "Xayah",
+    "cost": 1,
+    "traits": [
+      "DA_18_Elderwood",
+      "DA_18_Fae",
+      "DA_18_Rapidfire"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_xayah/skins/base/images/tft18_xayah_splash_tile_8.png"
+  },
+  "DA_18_Ornn": {
+    "name": "Ornn",
+    "cost": 1,
+    "traits": [
+      "DA_18_Elderwood",
+      "DA_18_Defender"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_ornn/skins/base/images/tft18_ornn_splash_tile_2.png"
+  },
+  "DA_Nidalee18_AP": {
+    "name": "Nidalee",
+    "cost": 4,
+    "traits": [
+      "DA_Primal18",
+      "DA_18_Adaptor"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_nidalee/skins/base/images/tft18_nidalee_splash_tile_0.png"
+  },
+  "DA_18_Hecarim": {
+    "name": "Hecarim",
+    "cost": 3,
+    "traits": [
+      "DA_18_Elderwood",
+      "DA_18_Vanguard"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_hecarim/skins/base/images/tft18_hecarim_splash_tile_5.png"
+  },
+  "DA_18_Ezreal": {
+    "name": "Ezreal",
+    "cost": 4,
+    "traits": [
+      "DA_18_Elderwood",
+      "DA_18_Executioner"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_ezreal/skins/base/images/tft18_ezreal_splash_tile_1.png"
+  },
+  "DA_18_Azir": {
+    "name": "Azir",
+    "cost": 3,
+    "traits": [
+      "DA_18_Blackthorn",
+      "DA_18_Executioner",
+      "DA_18_Summoner"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_azir/skins/base/images/tft18_azir_splash_tile_5.png"
+  },
+  "DA_18_RekSai": {
+    "name": "Rek'Sai",
+    "cost": 1,
+    "traits": [
+      "DA_18_Blackthorn",
+      "DA_18_Brawler"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_reksai/skins/base/images/tft18_reksai_splash_tile_17.png"
+  },
+  "DA_18_Veigar": {
+    "name": "Veigar",
+    "cost": 1,
+    "traits": [
+      "DA_18_Blackthorn",
+      "DA_18_Sprykin",
+      "DA_18_Spellweaver"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_veigar/skins/base/images/tft18_veigar_splash_tile_13.png"
+  },
+  "DA_18_Maokai": {
+    "name": "Maokai",
+    "cost": 5,
+    "traits": [
+      "DA_18_Maokai_UniqueTrait",
+      "DA_Juggernaut18"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_maokai/skins/base/images/tft18_maokai_splash_tile_0.png"
+  },
+  "DA_18_Malphite": {
+    "name": "Malphite",
+    "cost": 4,
+    "traits": [
+      "DA_18_Blackthorn",
+      "DA_18_Battlemage"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_malphite/skins/base/images/tft18_malphite_splash_tile_27.png"
+  },
+  "DA_18_Yorick": {
+    "name": "Yorick",
+    "cost": 1,
+    "traits": [
+      "DA_18_Blossom",
+      "DA_Juggernaut18",
+      "DA_18_Summoner"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_yorick/skins/base/images/tft18_yorick_splash_tile_30.png"
+  },
+  "DA_18_Yunara": {
+    "name": "Yunara",
+    "cost": 2,
+    "traits": [
+      "DA_18_Blossom",
+      "DA_18_Executioner"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_yunara/skins/base/images/tft18_yunara_splash_tile_0.png"
+  },
+  "DA_18_Sett": {
+    "name": "Sett",
+    "cost": 4,
+    "traits": [
+      "DA_18_Blossom",
+      "DA_18_Brawler"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_sett/skins/base/images/tft18_sett_splash_tile_38.png"
+  },
+  "DA_18_Ahri": {
+    "name": "Ahri",
+    "cost": 4,
+    "traits": [
+      "DA_18_Blossom",
+      "DA_18_Spellweaver"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_ahri/skins/base/images/tft18_ahri_splash_tile_27.png"
+  },
+  "DA_18_Ashe": {
+    "name": "Ashe",
+    "cost": 5,
+    "traits": [
+      "DA_18_Blossom",
+      "DA_18_Hunter"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_ashe/skins/base/images/tft18_ashe_splash_tile_76.png"
+  },
+  "DA_18_Elise": {
+    "name": "Elise",
+    "cost": 2,
+    "traits": [
+      "DA_18_Coven",
+      "DA_18_Vanguard"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_elise/skins/base/images/tft18_elise_splash_tile_24.png"
+  },
+  "DA_18_Caitlyn": {
+    "name": "Caitlyn",
+    "cost": 2,
+    "traits": [
+      "DA_18_Coven",
+      "DA_18_Hunter"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_caitlyn/skins/base/images/tft18_caitlyn_splash_tile_30.png"
+  },
+  "DA_18_Cassiopeia": {
+    "name": "Cassiopeia",
+    "cost": 3,
+    "traits": [
+      "DA_18_Coven",
+      "DA_18_Spellweaver"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_cassiopeia/skins/base/images/tft18_cassiopeia_splash_tile_18.png"
+  },
+  "DA_18_Morgana": {
+    "name": "Morgana",
+    "cost": 4,
+    "traits": [
+      "DA_18_Coven",
+      "DA_18_Invoker"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_morgana/skins/base/images/tft18_morgana_splash_tile_26.png"
+  },
+  "DA_18_Rakan": {
+    "name": "Rakan",
+    "cost": 1,
+    "traits": [
+      "DA_18_Fae",
+      "DA_Juggernaut18",
+      "DA_18_Vanguard"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_rakan/skins/base/images/tft18_rakan_splash_tile_9.png"
+  },
+  "DA_18_Lillia": {
+    "name": "Lillia",
+    "cost": 4,
+    "traits": [
+      "DA_18_Fae",
+      "DA_18_Defender"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_lillia/skins/base/images/tft18_lillia_splash_tile_28.png"
+  },
+  "DA_18_Kobuko": {
+    "name": "Kobuko",
+    "cost": 1,
+    "traits": [
+      "DA_18_Sprykin",
+      "DA_18_Brawler"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_kobuko/skins/base/images/tft18_kobuko_splash_tile_2.png"
+  },
+  "DA_18_Teemo": {
+    "name": "Teemo",
+    "cost": 2,
+    "traits": [
+      "DA_18_Sprykin",
+      "DA_18_Invoker"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_teemo/skins/base/images/tft18_teemo_splash_tile_0.png"
+  },
+  "DA_18_Rammus": {
+    "name": "Rammus",
+    "cost": 3,
+    "traits": [
+      "DA_18_Sprykin",
+      "DA_18_Defender"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_rammus/skins/base/images/tft18_rammus_splash_tile_26.png"
+  },
+  "DA_18_GnarSmall": {
+    "name": "Gnar",
+    "cost": 5,
+    "traits": [
+      "DA_18_Elderwood",
+      "DA_18_Sprykin",
+      "DA_18_Brawler"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_gnar/skins/base/images/tft18_gnar_splash_tile_0.png"
+  },
+  "DA_18_Tristana": {
+    "name": "Tristana",
+    "cost": 3,
+    "traits": [
+      "DA_18_Fae",
+      "DA_18_Sprykin",
+      "DA_18_Hunter"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_tristana/skins/base/images/tft18_tristana_splash_tile_61.png"
+  },
+  "DA_18_Sivir": {
+    "name": "Sivir",
+    "cost": 4,
+    "traits": [
+      "DA_Primal18",
+      "DA_18_Hunter"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_sivir/skins/base/images/tft18_sivir_splash_tile_61.png"
+  },
+  "DA_Vi18": {
+    "name": "Vi",
+    "cost": 3,
+    "traits": [
+      "DA_Primal18",
+      "DA_Juggernaut18"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_vi/skins/base/images/tft18_vi_splash_tile_39.png"
+  },
+  "DA_18_Akali_AD": {
+    "name": "Akali",
+    "cost": 1,
+    "traits": [
+      "DA_18_Inferno",
+      "DA_18_Adaptor",
+      "DA_18_Slayer"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_akali/skins/base/images/tft18_akali_splash_tile_2.png"
+  },
+  "DA_18_Varus": {
+    "name": "Varus",
+    "cost": 1,
+    "traits": [
+      "DA_18_Inferno",
+      "DA_18_Rapidfire"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_varus/skins/base/images/tft18_varus_splash_tile_9.png"
+  },
+  "DA_Amumu18": {
+    "name": "Amumu",
+    "cost": 4,
+    "traits": [
+      "DA_18_Inferno",
+      "DA_Juggernaut18"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_amumu/skins/base/images/tft18_amumu_splash_tile_17.png"
+  },
+  "DA_18_Kennen": {
+    "name": "Kennen",
+    "cost": 5,
+    "traits": [
+      "DA_18_Inferno",
+      "DA_18_Executioner"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_kennen/skins/base/images/tft18_kennen_splash_tile_8.png"
+  },
+  "DA_18_Aphelios": {
+    "name": "Aphelios",
+    "cost": 4,
+    "traits": [
+      "DA_18_Lunar",
+      "DA_18_Rapidfire"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_aphelios/skins/base/images/tft18_aphelios_splash_tile_0.png"
+  },
+  "DA_18_Diana": {
+    "name": "Diana",
+    "cost": 3,
+    "traits": [
+      "DA_18_Lunar",
+      "DA_18_Slayer",
+      "DA_18_Vanguard"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_diana/skins/base/images/tft18_diana_splash_tile_0.png"
+  },
+  "DA_18_Alune": {
+    "name": "Alune",
+    "cost": 5,
+    "traits": [
+      "DA_AluneUniqueTrait18",
+      "DA_18_Lunar",
+      "DA_18_Spellweaver"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_alune/skins/base/images/tft18_alune_splash_tile_15.png"
+  },
+  "DA_18_Leona": {
+    "name": "Leona",
+    "cost": 1,
+    "traits": [
+      "DA_18_Solar",
+      "DA_18_Defender"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_leona/skins/base/images/tft18_leona_splash_tile_10.png"
+  },
+  "DA_18_Kayle": {
+    "name": "Kayle",
+    "cost": 2,
+    "traits": [
+      "DA_18_Solar",
+      "DA_18_Rapidfire"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_kayle/skins/base/images/tft18_kayle_splash_tile_42.png"
+  },
+  "DA_18_Sejuani": {
+    "name": "Sejuani",
+    "cost": 2,
+    "traits": [
+      "DA_18_Solar",
+      "DA_Juggernaut18"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_sejuani/skins/base/images/tft18_sejuani_splash_tile_26.png"
+  },
+  "DA_18_KhaZix": {
+    "name": "Kha'Zix",
+    "cost": 3,
+    "traits": [
+      "DA_18_Rival"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_khazix/skins/base/images/tft18_khazix_splash_tile_0.png"
+  },
+  "DA_18_Rengar": {
+    "name": "Rengar",
+    "cost": 3,
+    "traits": [
+      "DA_18_Rival"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_rengar/skins/base/images/tft18_rengar_splash_tile_0.png"
+  },
+  "DA_KogMaw18_AD": {
+    "name": "Kog'Maw",
+    "cost": 3,
+    "traits": [
+      "DA_18_Caustic",
+      "DA_18_Adaptor",
+      "DA_18_Invoker"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_kogmaw/skins/base/images/tft18_kogmaw_splash_tile_3.png"
+  },
+  "DA_18_Zyra": {
+    "name": "Zyra",
+    "cost": 4,
+    "traits": [
+      "DA_18_ZyraUniqueTrait",
+      "DA_18_Summoner"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_zyra/skins/base/images/tft18_zyra_splash_tile_0.png"
+  },
+  "DA_Fiddlesticks18": {
+    "name": "Fiddlesticks",
+    "cost": 3,
+    "traits": [
+      "DA_FloraFatalis18",
+      "DA_18_Defender",
+      "DA_18_Spellweaver"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_fiddlesticks/skins/base/images/tft18_fiddlesticks_splash_tile_46.png"
+  },
+  "DA_18_Soraka": {
+    "name": "Soraka",
+    "cost": 4,
+    "traits": [
+      "DA_FloraFatalis18",
+      "DA_18_Executioner"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_soraka/skins/base/images/tft18_soraka_splash_tile_53.png"
+  },
+  "DA_Taric18": {
+    "name": "Taric",
+    "cost": 5,
+    "traits": [
+      "DA_Emerald18",
+      "DA_18_Vanguard"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_taric/skins/base/images/tft18_taric_splash_tile_1.png"
+  },
+  "DA_18_Ivern": {
+    "name": "Ivern",
+    "cost": 5,
+    "traits": [
+      "DA_18_Greenfather"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_ivern/skins/base/images/tft18_ivern_splash_tile_0.png"
+  },
+  "DA_Lux18_Base": {
+    "name": "Lux",
+    "cost": 5,
+    "traits": [
+      "DA_18_LuxUniqueTrait"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_lux/skins/base/images/tft18_lux_splash_tile_7.png"
+  },
+  "DA_18_Alistar": {
+    "name": "Alistar",
+    "cost": 2,
+    "traits": [
+      "DA_18_Elderwood",
+      "DA_18_Brawler"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_alistar/skins/base/images/tft18_alistar_splash_tile_40.png"
+  },
+  "DA_Draven18": {
+    "name": "Draven",
+    "cost": 5,
+    "traits": [
+      "DA_DravenUniqueTrait18"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_draven/skins/base/images/tft18_draven_splash_tile_5.png"
+  },
+  "DA_18_ElderDragon": {
+    "name": "Elder Dragon",
+    "cost": 5,
+    "traits": [
+      "DA_18_ApexPredator",
+      "DA_Riftbeast18"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_elderdragon/skins/base/images/t_18_elderdragon_teamplannersplash.png"
+  },
+  "DA_Karma18": {
+    "name": "Karma",
+    "cost": 1,
+    "traits": [
+      "DA_18_Blossom",
+      "DA_18_Spellweaver"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_karma/skins/base/images/tft18_karma_splash_tile_70.png"
+  },
+  "DA_18_LeBlanc": {
+    "name": "LeBlanc",
+    "cost": 2,
+    "traits": [
+      "DA_18_Elderwood",
+      "DA_18_Spellweaver"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_leblanc/skins/base/images/tft18_leblanc_splash_tile_5.png"
+  },
+  "DA_18_MasterYi_AD": {
+    "name": "Master Yi",
+    "cost": 3,
+    "traits": [
+      "DA_18_Blossom",
+      "DA_18_Adaptor"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_masteryi/skins/base/images/tft18_masteryi_splash_tile_52.png"
+  },
+  "DA_18_Shen": {
+    "name": "Shen",
+    "cost": 2,
+    "traits": [
+      "DA_18_Inferno",
+      "DA_18_Defender"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_shen/skins/base/images/tft18_shen_splash_tile_16.png"
+  },
+  "DA_18_Warwick": {
+    "name": "Warwick",
+    "cost": 2,
+    "traits": [
+      "DA_18_Blackthorn",
+      "DA_18_Slayer"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_warwick/skins/base/images/tft18_warwick_splash_tile_35.png"
+  },
+  "DA_18_Camille": {
+    "name": "Camille",
+    "cost": 1,
+    "traits": [
+      "DA_18_Coven",
+      "DA_18_Slayer"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_camille/skins/base/images/tft18_camille_splash_tile_2.png"
+  },
+  "DA_CrimsonRaptor18": {
+    "name": "Mama Beak",
+    "cost": 3,
+    "traits": [
+      "DA_Riftbeast18",
+      "DA_18_Summoner",
+      "DA_18_Rapidfire"
+    ],
+    "icon": "https://raw.communitydragon.org/latest/game/assets/characters/tft18_raptor/skins/base/images/t_18_crimsonraptor_teamplannersplash.png"
+  }
+}

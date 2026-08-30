@@ -63,9 +63,13 @@ missing-key default — not a copy of an explicit API null. This is why
 Outputs:
   data/processed/features_vectors.npy   float32 (N, D), L2-normalized, rows
                                          aligned 1:1 with features_meta.jsonl.
-                                         D is now fixed (74 units + 36
-                                         traits = 110 for Set 18), independent
-                                         of sample size.
+                                         D is now fixed (65 units + 35
+                                         traits = 100 for Set 18 — see
+                                         static_data.py's docstring on the
+                                         74->65 champion-variant collapse and
+                                         extract_traits()'s non-stackable-
+                                         trait filter), independent of
+                                         sample size.
   data/processed/features_meta.jsonl    per-row: match_id, puuid, placement,
                                          augments, last_round, level,
                                          early_death, plus raw_units/raw_traits
