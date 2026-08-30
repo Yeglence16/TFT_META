@@ -68,3 +68,30 @@ def test_cells_below_min_n_excluded_from_ranked_lists():
     # n=1 for cluster 1 facing T -> below MIN_N=100, must not appear at all
     assert comp_traits["c_01"]["strong_against"] == []
     assert comp_traits["c_01"]["weak_against"] == []
+
+
+def test_tied_delta_tie_break_is_order_independent_and_by_trait_id():
+    # Regression (2026-08-30): compute_trait_exposure() builds `exposure` by
+    # iterating active_traits/high_traits, which are Python sets of strings —
+    # hash-randomized per process, so which of two exactly-tied traits was
+    # inserted first (and therefore sorted first by the old delta-only sort
+    # key) varied between runs on identical input. build_comp_traits() now
+    # sorts by (delta, trait), so the two possible insertion orders below
+    # must produce byte-identical output regardless of which trait's cell
+    # happened to land in `exposure` first.
+    baseline = {1: [4] * 100}  # baseline mean = 4.0
+    exposure_a_first = {
+        (1, "A", "active"): [6] * 100,
+        (1, "Z", "active"): [6] * 100,
+    }
+    exposure_z_first = {
+        (1, "Z", "active"): [6] * 100,
+        (1, "A", "active"): [6] * 100,
+    }
+
+    result_a_first = build_comp_traits(baseline, exposure_a_first)
+    result_z_first = build_comp_traits(baseline, exposure_z_first)
+
+    assert result_a_first == result_z_first
+    assert [e["trait"] for e in result_a_first["c_01"]["strong_against"]] == ["A", "Z"]
+    assert [e["trait"] for e in result_a_first["c_01"]["weak_against"]] == ["Z", "A"]

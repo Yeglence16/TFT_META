@@ -176,8 +176,19 @@ def build_comp_traits(
                 }
             )
 
-        active_sorted = sorted(entries_by_bucket["active"], key=lambda e: e["delta"])
-        high_sorted = sorted(entries_by_bucket["high"], key=lambda e: e["delta"])
+        # (delta, trait) tie-break, not just delta: `trait_id` is unique within
+        # a (cluster, bucket) pair, so this makes the sort fully deterministic
+        # regardless of entries_by_bucket's insertion order — which otherwise
+        # depends on Python's hash-randomized `set[str]` iteration order in
+        # compute_trait_exposure() (active_traits/high_traits), a different
+        # order every process run. Found 2026-08-30: two runs on identical
+        # input produced different comp_traits.json — sorted() alone is a
+        # stable sort, but "stable" only preserves whatever pre-sort order a
+        # tied delta arrived in, and that order wasn't deterministic. Fixing
+        # PYTHONHASHSEED would paper over this for one process's set order
+        # without making the sort itself order-independent.
+        active_sorted = sorted(entries_by_bucket["active"], key=lambda e: (e["delta"], e["trait"]))
+        high_sorted = sorted(entries_by_bucket["high"], key=lambda e: (e["delta"], e["trait"]))
 
         result[comp_id] = {
             "strong_against": active_sorted[:TOP_K],
