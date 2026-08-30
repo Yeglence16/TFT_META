@@ -1,0 +1,74 @@
+# TFT Comp Analyzer configuration.
+#
+# set_number, queue_id, regions, target_match_count, ladder, features,
+# clustering, and augment_shrinkage_k are all read by the pipeline
+# (scrape_ladder.py through items.py). augment_shrinkage_k stays named after
+# augments.py (SPEC.md section 11) even though items.py (section 15) is its
+# only real user today — augments.py is unimplemented since Riot's API
+# returns no augment data at all right now (see README).
+
+# set_number: confirmed from `python src/inspect_live.py` (2026-08-30) against
+# ~30 live matches on euw1+na1 (grandmaster/master, challenger was empty on
+# both regions at sample time) — every match returned tft_set_number = 18.
+set_number: 18
+
+# queue_id: confirmed 1100 on every one of those ~30 matches, matching
+# SPEC.md section 7's assumption for ranked TFT. Read by scrape_matches.py's
+# filter step — never hardcode 1100 in code.
+queue_id: 1100
+
+# There is intentionally no patch_prefix field. Set 18 is TFT's first
+# Unreal-engine set; every sampled live match returns the exact same
+# placeholder game_version string ("TFT Unreal Version ?.?.?.?") with no
+# parseable version number, and there is currently only one patch's data
+# obtainable anyway (the set is 5 days old). SPEC.md section 7 now filters on
+# set_number + queue_id only. src/patch_filter.py was deleted since it has
+# nothing to parse right now — see SPEC.md section 7 for the full history if
+# Riot starts populating a real game_version again later.
+
+regions:
+  - euw1
+  - na1
+
+# DEV SAMPLE — temporarily 3000 instead of the real target of 25000. Read by
+# scrape_matches.py's collect_match_ids() to stop once roughly this many
+# unique match ids are known, so a dev run doesn't walk the entire ladder.
+# Set back to 25000 before a full-scale run.
+target_match_count: 3000
+
+# Ladder scrape (SPEC.md section 5). Ranked resets every set, so 5 days into
+# Set 18 challenger/grandmaster/master are empty or near-empty — expected,
+# not a bug. high_tiers are tried first and included automatically once they
+# repopulate.
+#
+# PLATINUM/EMERALD added for the dev sample: this early in the set, the
+# Platinum/Emerald pool is full of last set's Diamond+/Master+ players who
+# haven't climbed back yet, so player quality there is not what the rank
+# label alone suggests. DIAMOND stays in the list — it's mostly empty right
+# now but will fill in and get included automatically, no code change needed.
+ladder:
+  high_tiers: [challenger, grandmaster, master]
+  paginated_tiers: [PLATINUM, EMERALD, DIAMOND]
+  divisions: [I, II, III, IV]
+  max_pages_per_division: 1    # dev-sample cap, kept low since PLATINUM/EMERALD are populous; raise for the full run
+
+# Feature extraction (SPEC.md section 8). SPEC.md describes the early-elim
+# cutoff as "roughly before stage 4", but Set 18's `last_round` is a flat
+# round counter that doesn't obviously line up with classic stage notation —
+# empirically (2937-match dev sample, 2026-08-30), average placement stays
+# pinned near 8th for every last_round up to 26 (i.e. those boards are
+# overwhelmingly "died basically immediately"), and only starts showing real
+# variance from round 27 on, where sample size also jumps an order of
+# magnitude. 27 was picked from that elbow, not guessed.
+features:
+  min_last_round: 27
+
+clustering:
+  min_cluster_size_fraction: 0.003   # 0.2%-0.5% of sample count, per spec section 9
+  noise_distance_threshold: 0.35     # max cosine distance before a noise point stays off-meta
+
+augment_shrinkage_k: 50       # empirical Bayes shrinkage constant. Used by items.py
+                               # (section 15) today; will be shared by augments.py
+                               # (section 11) too whenever Riot's API actually
+                               # returns augment data — same shrinkage concept,
+                               # one knob, no need for a second near-identical key.

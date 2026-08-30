@@ -33,6 +33,7 @@ web/
     matchups.json
     augments.json
     comp_traits.json
+    items.json
   README.md
 ```
 
@@ -124,7 +125,17 @@ Clustering çıktısı. Centroid vektörleri burada.
 }
 ```
 
-`centroid` dizisi `unit_order` ile aynı uzunlukta olmalı.
+`centroid` dizisi `unit_order` ile aynı uzunlukta olmalı. `core_units` **sabit
+uzunlukta değil** — comp'taki board'ların en az %50'sinde görülen unit'ler,
+5 ile 12 arasında sınırlı (bkz. `clustering.py`'deki `select_core_units`).
+Arayüz uzunluğunu varsaymasın, ne gelirse onu göstersin.
+
+`n_full` = HDBSCAN eğitim alt kümesinden (early_death hariç) bu comp'a düşen
+board sayısı; `n_total` = early_death dahil atanan tüm board sayısı.
+`avg_placement`/`top4_rate`/`core_units`/`common_traits` hepsi `n_total`
+üzerinden hesaplanır, `n_full` hiçbir hesaba girmez — sadece eğitim
+popülasyonunun büyüklüğünü gösterir (`n_total - n_full` = o comp'a atanan
+erken-ölüm board sayısı).
 
 ### 3.5 matchups.json
 
@@ -170,6 +181,33 @@ Head-to-head sıralama oranları. Yetersiz örnekli hücreler pipeline tarafınd
 ```
 
 `delta` = o trait rakip board'larda aktifken comp'un ortalama placement'ının genel ortalamasından farkı.
+
+### 3.8 items.json
+
+```json
+{
+  "_metadata": {
+    "known_limitation": "...",
+    "coverage": {
+      "total_cluster_unit_pairs": 166,
+      "pairs_with_at_least_1_item": 125,
+      "pairs_with_full_3_items": 93,
+      "cells_below_min_n": 10829,
+      "cells_total": 11680,
+      "cells_below_min_n_fraction": 0.927
+    }
+  },
+  "c_07": {
+    "TFT18_Ahri": [{ "id": "TFT18_Item_JeweledGauntlet", "name": "Jeweled Gauntlet", "lift": -0.34, "n": 212 }],
+    "...": []
+  },
+  "...": {}
+}
+```
+
+Item **vektörün bir parçası değil** — comp tanımı (bölüm 3.4'teki `centroid`) item'dan bağımsız, aynı comp'u oynayan iki oyuncu farklı item taşıyabilir. Bu dosya ayrı bir katman: her comp için, o comp'un en sık oynanan unit'lerinden (`comps.json`'daki `core_units`) her biri üzerinde en iyi 3 item, `lift` ve `n` ile. `lift` = augment'lerdeki gibi comp'un kendi ortalama placement'ına göre fark, shrinkage uygulanmış; negatif iyi. Sadece tamamlanmış item'lar var, component'ler yok. Bir unit için `n < 50` olan hiçbir hücre bu listeye girmez (tamamen dışlanır, boş liste `[]` görebilirsin — "veri yok" demektir, "kötü item" demek değil).
+
+**`_metadata` — normal bir comp anahtarı değil.** Comp anahtarları her zaman `c_NN` biçiminde; `_metadata` bunun dışında, alt çizgiyle başlıyor ki karıştırılmasın. `known_limitation`: bu dosyadaki `lift`'in ciddi bir confounding taşıdığını açıklayan sabit bir metin — bir oyuncunun bir item'ı tamamlayabilmiş olması zaten iyi giden bir maçla ilişkili, yani ölçülen kısmen "item'ı toplayabilmiş olmak", item'ın kendi katkısı değil. **Arayüz bu metni kullanıcıya göstermeli** (ör. bir tooltip/uyarı ikonuyla) — `lift`'i temiz bir nedensellik gibi sunma. `coverage`: `n<50` eşiğinin kaç (comp, core_unit) çiftini tamamen boş bıraktığını, kaçını tam 3 item ile doldurduğunu gösterir — bir unit için boş `[]` dönmesi normal olabilir, `coverage` bunun ne kadar yaygın olduğunu açıklar.
 
 ## 4. Görseller
 

@@ -104,16 +104,31 @@ Routing iki seviyeli, karıştırma:
 
 ## 3. Resumability
 
-Scraper'ın her aşaması **kaldığı yerden devam edebilir** olacak. Diske durum
-yazsın (basit bir JSON state dosyası veya SQLite yeter):
+Scraper'ın her aşaması **kaldığı yerden devam edebilir** olacak.
 
-- işlenmiş PUUID'ler
-- indirilmiş maç ID'leri
-- bekleyen kuyruk
+**Uygulandı** — `src/state_store.py`, SQLite üzerine `StateStore`. Tek tablo,
+`namespace` alanıyla bölünmüş (`namespace, key, status`), `status` ∈
+`{pending, done}`. Her yazma anında commit ediliyor; süreç ortasında ölürse
+diskteki durum gerçek ilerlemeyi yansıtmaya devam ediyor. Bu tek tablo üç
+kullanım için yeterli:
+
+- **işlenmiş PUUID'ler** → `scrape_matches.py` faz 1'de namespace
+  `puuids_matchid_collected`, her puuid'nin maç ID'leri çekildikçe `mark_done`
+- **indirilmiş maç ID'leri** → namespace `match_ids`, indirilince (veya 404
+  onaylanınca) `mark_done`
+- **bekleyen kuyruk** → aynı `match_ids` namespace'i, `pending_keys()` ile
+  okunuyor (faz 1'de `add_pending` ile eklenen, henüz indirilmemiş ID'ler)
+
+Ayrıca `scrape_ladder.py` sayfalama ilerlemesi için `ladder_pages` namespace'i
+kullanıyor (`{platform}:{tier}:{division}:{page}` anahtarıyla), ve
+`data/processed/puuids.json`'ı her çalıştırmada önce okuyup mevcut PUUID
+kümesini bellekte tutuyor, böylece kesinti sonrası kaldığı yerden devam
+ediyor.
 
 Süreç öldüğünde, key expire olduğunda veya bilgisayar kapandığında baştan
-başlanmayacak. Bu opsiyonel değil — 20-30k maçlık scrape dev key'le ~11 saat
-sürüyor.
+başlanmıyor — canlı testte doğrulandı: aynı komut ikinci kez çalıştırıldığında
+0 yeni PUUID / 0 bekleyen maç ID'si buldu ve hiçbir şeyi tekrar indirmedi. Bu
+opsiyonel değildi — 20-30k maçlık scrape dev key'le ~11 saat sürüyor.
 
 ---
 
@@ -127,6 +142,26 @@ Kaynak: CommunityDragon TFT dump'ı
 - `character_id` → unit display name, cost, traits
 - trait ID → display name, breakpoint'ler
 - item ID → display name
+**Item sınıflandırması (uygulandı).** Ham dump'ta 773 item var; augment'lerde
+doğrulanan aynı `DA_` önek filtresi 502'ye indiriyor (271'i başka setlerden
+taşınan legacy kayıt). SPEC'in augment için varsaydığı `rarity` alanı item
+kayıtlarında **yok** — sınıflandırma yapısal sinyallerle yapılıyor, sırayla:
+
+- `component` (10) — `DA_Component_*` öneki. 9 klasik bileşen + `FryingPan`.
+- `emblem` (23) — isim sinyali (`Emblem`). 16'sı composition'dan türüyor
+  (Spatula×8 + FryingPan×8), 7'sinin composition'ı boş (ödül/encounter yoluyla
+  veriliyor olabilir).
+- `completed` (39) — composition dolu. Sayı doğrulandı: 10 bileşenden 55
+  kombinasyon çıkar, 16'sı emblem olarak sınıflandığı için (emblem kontrolü
+  composition kontrolünden **önce** çalışır) geriye 39 kalır. Kalan 3'ü
+  Tactician's Crown/Shield/Cape.
+- `other` (430) — geri kalan. **Doğrulanmış tek bir kategori değil**;
+  örnekleme Radiant'ları, gerçek `DA_Artifact_*`'ları ve support/encounter
+  mekanik item'larını birlikte gösterdi. Daha önce "artifact" adlandırılmıştı,
+  doğrulanmamış etiket olduğu için `other`'a çevrildi.
+
+Emblem→trait eşlemesi `emblem_traits.json`'a yazılıyor: emblem isminden
+" Emblem" çıkarılıp trait ismiyle eşleştirilerek 23'ün 21'i çözülüyor.
 - augment ID → display name **ve tier (silver / gold / prismatic)**
 
 **Augment tier'ı için:** cdragon augment kayıtlarında bir `rarity` alanı var.
@@ -141,25 +176,61 @@ Config'teki set numarasına göre filtrele — dump tüm setleri içeriyor.
 
 ## 5. Ladder scrape (`scrape_ladder.py`)
 
-Endpoint'ler (platform host):
+**Bulgu (2026-08-30): Set 18, 25 Ağustos 2026'da çıktı — bu yazıldığında 5
+günlük.** Ranked ladder her sette sıfırlanıyor, yani `challenger` boş,
+`grandmaster`/`master` neredeyse boş dönüyor. Bu bir API/key sorunu değil,
+gerçek durum; canlıda doğrulandı (euw1 challenger: 0, grandmaster: 1, master:
+4-6 entry). Bu yüzden yüksek tier endpoint'lerine ek olarak **sayfalı**
+endpoint kullanılıyor:
+
 ```
-/tft/league/v1/challenger
-/tft/league/v1/grandmaster
-/tft/league/v1/master
+/tft/league/v1/challenger              (platform host, LeagueListDTO)
+/tft/league/v1/grandmaster             (platform host, LeagueListDTO)
+/tft/league/v1/master                  (platform host, LeagueListDTO)
+/tft/league/v1/entries/{tier}/{division}?page=N   (platform host, düz LeagueEntryDTO listesi)
 ```
 
-Bunlar `LeagueListDTO` döndürür. Entry'lerde `puuid` alanı varsa doğrudan onu
-kullan; yoksa `summonerId` üzerinden `/tft/summoner/v1/summoners/{summonerId}`
-ile çöz. (Riot summoner ID'lerden PUUID'ye geçiş yapıyor, alan varlığını runtime'da
-kontrol et, varsayma.)
+Yüksek tier'lar (`challenger`/`grandmaster`/`master`) **önce denenir**; boş
+dönerse sessizce atlanır (log'lanır ama hata sayılmaz). Sayfalı endpoint için
+tier (`DIAMOND`, `EMERALD`, ...) ve division (`I`-`IV`) listesi, sayfa üst
+sınırı `config.yaml`'ın `ladder:` anahtarından okunur — kodda hiçbir tier/
+division/sayfa sayısı sabit yazılı değil:
 
-Bölge önerisi: `euw1` + `na1`. Hacim yetmezse `kr` ekle.
+```yaml
+ladder:
+  high_tiers: [challenger, grandmaster, master]
+  paginated_tiers: [DIAMOND, EMERALD]
+  divisions: [I, II, III, IV]
+  max_pages_per_division: 50
+```
+
+Ladder tekrar dolduğunda (set olgunlaştıkça) kod değişmeden `high_tiers`
+otomatik olarak dolu dönmeye başlar ve dahil edilir — bunun için ayrı bir
+kod yolu yok, aynı fonksiyon.
+
+Canlıda doğrulandı: `/tft/league/v1/entries/{tier}/{division}?page=N` düz bir
+liste döndürüyor, her elemanda doğrudan `puuid` alanı var (`DIAMOND/I` için
+`summonerId`'ye düşmeye hiç gerek kalmadı). Yine de entry'lerde `puuid` alanı
+yoksa `summonerId` üzerinden `/tft/summoner/v1/summoners/{summonerId}` ile
+çözme kodu duruyor — alan varlığı runtime'da kontrol ediliyor, varsayılmıyor.
+
+Bölge önerisi: `euw1` + `na1`. Hacim yetmezse `kr` eklenebilir.
 
 Yüksek elo seçilmesinin sebebi: comp'lar daha temiz oynanıyor, cluster'lar daha
 net ayrışıyor. Bunu README'de bir kapsam kısıtı olarak yaz — sonuçlar yüksek elo
 metasını temsil eder, tüm oyuncu tabanını değil.
 
-Çıktı: `data/processed/puuids.json`
+Her tier/sayfadan kaç yeni PUUID geldiği loglanır (`[platform] tier: N entries,
+M new puuids`).
+
+Resumability (bölüm 3): sayfalama durumu `StateStore`'un `ladder_pages`
+namespace'inde tutulur (`{platform}:{tier}:{division}:{page}`), zaten
+tamamlanmış sayfalar tekrar çekilmez.
+
+Çıktı: `data/processed/puuids.json` — `{"puuid": ..., "platform": ...}`
+nesnelerinden oluşan, puuid'e göre dedupe edilmiş bir liste. `platform` alanı
+tutuluyor çünkü maç ID toplama (bölüm 6) hangi regional host'un (europe/
+americas/asia) kullanılacağını bundan çıkarıyor.
 
 ---
 
@@ -172,6 +243,15 @@ Regional host:
 
 Her lobide 8 oyuncu olduğu için aynı maç ID'si defalarca gelecek. **Set halinde
 dedupe et.** Dedupe oranını logla — beklenen ciddi bir çakışma.
+
+Regional host, `puuids.json`'daki her puuid'nin `platform` alanından
+çözülüyor (bölüm 5). Maç indirme adımında (bölüm 7) ise her maç ID'sinin
+kendi platform ön eki (`EUW1_...` gibi) kullanılıyor — faz 1'in puuid→platform
+eşlemesine ihtiyaç yok, ID kendi kendini yönlendiriyor.
+
+Resumability (bölüm 3): işlenmiş puuid'ler `puuids_matchid_collected`
+namespace'inde, toplanan maç ID'leri `match_ids` namespace'inde `pending`
+olarak tutuluyor.
 
 Hedef: 20-30k benzersiz maç ID'si.
 
@@ -186,20 +266,43 @@ Hedef: 20-30k benzersiz maç ID'si.
 **Ham JSON'u olduğu gibi sakla.** Gzipli jsonl shard'ları halinde
 (`data/raw/matches_0001.jsonl.gz` gibi, shard başına ~5000 maç). Sadece işlenmiş
 feature'ları saklamak yetmez — feature tanımı değişince yeniden scrape etmek
-zorunda kalmayalım.
+zorunda kalmayalım. Resumability (bölüm 3): bir maç ancak shard'a fiilen
+yazıldıktan (veya 404 olarak onaylandıktan) sonra `match_ids` namespace'inde
+`done` işaretlenir — süreç shard yazımı ortasında ölürse o parti bir dahaki
+çalıştırmada tekrar denenir, veri kaybolmaz.
 
-Filtreleme **indirmeden sonra**, ayrı bir adımda yapılacak (ham veri korunsun):
+Filtreleme **indirmeden sonra**, ayrı bir adımda yapılacak (ham veri korunsun,
+`data/raw/` hiç değiştirilmez):
 
-- `info.tft_set_number` == config'teki set
-- `info.game_version` config'teki yama prefix'iyle başlıyor
-- `info.queue_id` == normal ranked TFT
+- `info.tft_set_number` == config'teki `set_number`
+- `info.queue_id` == config'teki `queue_id`
 
-Queue ID için: ranked TFT'nin `1100`, Hyper Roll'un `1130`, Double Up'ın `1160`
-olduğunu biliyoruz ama **bunu veriden doğrula** — birkaç yüz maçın queue_id
-dağılımını çıkar, katılımcı sayısı ve `last_round` desenleriyle karşılaştır.
-Double Up ve Hyper Roll maçları veri setine karışırsa cluster'lar bozulur.
+**`info.game_version` KULLANILMIYOR — bulgu (2026-08-30):** Set 18, TFT'nin
+Unreal Engine'e geçtiği ilk set. Canlıda örneklenen ~30 maçın (iki bölge, iki
+tier) **hepsi** birebir aynı, rakamsız placeholder'ı döndürdü:
+`"TFT Unreal Version ?.?.?.?"`. Bu alandan çıkarılabilecek bir yama numarası
+yok — `startswith` de, regex de fark etmez, veri orada değil. Bu yüzden
+patch bazlı filtre kaldırıldı; `config.yaml`'da `patch_prefix` alanı yok,
+`src/patch_filter.py` silindi. Şu an zaten tek bir yamanın verisi elde
+edilebildiği için (set 5 günlük) `tft_set_number` + `queue_id` filtresi
+yeterli. Riot bu alana gerçek bir sürüm yazmaya başlarsa, patch bazlı filtre
+ayrı bir iş olarak yeniden değerlendirilecek.
 
-Kaç maçın hangi filtreyle elendiğini logla.
+Queue ID için: ranked TFT'nin `1100` olduğu **canlı veriyle doğrulandı** —
+~30 örnek maçın hepsi `1100` döndürdü, bu `config.yaml`'ın `queue_id`
+alanına yazıldı, kodda sabit yazılmadı. Double Up (`1160`) / Hyper Roll
+(`1130`) karışırsa cluster'lar bozulur; bu yüzden filtre koddan değil
+config'ten okunuyor.
+
+Her maçın `game_datetime` alanı (zaten `info` içinde) filtrelenmiş çıktıya
+olduğu gibi taşınıyor. Toplama sonunda tutulan maçların **min/max
+`game_datetime`'ı loglanıyor** — bu, README'deki "şu tarihler arasında
+toplandı" satırının kaynağı olacak.
+
+Kaç maçın hangi filtreyle elendiği loglanıyor (`N raw matches -> M kept (X
+wrong tft_set_number, Y wrong queue_id)`).
+
+Çıktı: `data/processed/matches_filtered.jsonl.gz`.
 
 ---
 
@@ -207,9 +310,34 @@ Kaç maçın hangi filtreyle elendiğini logla.
 
 Her maçta 8 katılımcı var, her katılımcı bir örnek.
 
-**Ön eleme:** çok erken elenen oyuncuları at (`last_round` eşiği, kabaca stage 4
-öncesi). Bunların board'ları yarım kalmış, cluster'ları kirletir. Eşiği config'e
-koy ve kaç örnek elendiğini logla.
+**Ön eleme — early_death (düzeltildi, 2026-08-30: bu bölümün önceki "at"
+ifadesi yanlıştı, kod atmıyor).** `last_round` eşiğinin altında kalan
+katılımcıların board'ları yarım kalmış olsa da **atılmıyor** — `early_death:
+bool` olarak işaretlenip pipeline'da tutuluyor. Eşik `config.yaml`'ın
+`features.min_last_round` alanından okunuyor, şu an **27**. Gerçek sayılar
+(2937 maçlık örneklem): toplam **23496** board'un **3344'ü (%14.2)** eşik
+altı (`early_death=true`), eğitim seti (eşik üstü) **20152** board.
+
+Bu bayrak dört aşamada farklı kullanılıyor:
+- **(a) Vektör üretimi (bu dosya):** early_death board'lar da dahil her
+  katılımcı için vektör üretiliyor — hiçbiri `features_vectors.npy`'den
+  çıkarılmıyor.
+- **(b) HDBSCAN fit'i (bölüm 9):** sadece `early_death=false` olan alt küme
+  (20152 board) ile eğitiliyor — yarım kalmış board'lar centroid konumunu
+  bozmasın diye.
+- **(c) Fit sonrası atama (bölüm 9):** early_death board'lar, HDBSCAN
+  gürültü noktalarıyla aynı en-yakın-centroid + mesafe-eşiği mantığıyla bir
+  cluster'a (veya off-meta'ya) atanıyor.
+- **(d) Raporlama (bölüm 9, 10, 12, 13, 15):** early_death board'lar dahil
+  tam popülasyon üzerinden hesaplanıyor — yalnızca HDBSCAN'in centroid
+  hesaplamasından çıkarılıyorlar, hiçbir raporlanan istatistikten değil.
+  Sebebi: early_death board'ları raporlamadan da atmak her comp'u olduğundan
+  iyi gösterirdi (erken ölüm placement'ı sert biçimde 7./8.'ye çeker, bunu
+  çıkarmak geri kalanın ortalamasını yapay şekilde iyileştirir) — kullanıcının
+  bilmek istediği "bunu oynarsam ne olur" sorusu, oynayanların bir kısmının
+  erken öldüğü gerçeğini de içermeli.
+
+Eşiği config'e koy ve kaç örneğin `early_death` işaretlendiğini logla.
 
 Board vektörü:
 - **Unit bileşeni:** o setteki her unit için bir boyut, değer = star level (0/1/2/3)
@@ -245,9 +373,32 @@ için:
 düşerse ikinciye ayırt edici bir ikinci unit ekle.
 
 **İnsan denetimi çıktısı.** Her cluster için şunları bir tabloya bas:
-cluster boyutu, ortalama placement, top-4 oranı, en sık 8 unit (frekansla), en sık
-3 trait. Bu tabloyu gözle inceleyeceğiz — cluster'ların anlamlı olup olmadığını
-ölçecek ground truth yok, tek doğrulama yolu bu.
+cluster boyutu, ortalama placement, top-4 oranı, **core unit'ler** (frekansla),
+en sık 3 trait. Bu tabloyu gözle inceleyeceğiz — cluster'ların anlamlı olup
+olmadığını ölçecek ground truth yok, tek doğrulama yolu bu.
+
+`comps.json`/`cluster_review.txt`'deki `avg_placement`, `top4_rate`, core
+unit frekansları ve `common_traits`'in hepsi n_total üzerinden (bölüm 8'in
+early_death bayraklı tam popülasyonu dahil) hesaplanıyor — bölüm 8'deki (d)
+maddesine bakın. `n_full` = HDBSCAN eğitim alt kümesinden (early_death
+hariç) bu cluster'a düşen üye sayısı; hiçbir hesaplamada kullanılmıyor, ama
+`n_total - n_full` o cluster'a atanan erken-ölüm board sayısını verir.
+
+**Core unit sayısı sabit 8 değil (bulgu, 2026-08-30, düzeltildi).** İlk
+uygulama sabit top-8 kesiyordu. Gerçek veride ölçüldü: 22 cluster'ın 20'sinde
+board'ların **≥%50'sinde** görülen unit sayısı, gözle bakılan doğal düşüş
+noktasıyla birebir örtüşüyor (kalan 2'si — biri eşiğin 0.9pp altında kalan
+sınır durumu, diğeri kademeli düşüşe sahip bir outlier — sabit 8'de zaten
+belirsizdi). Bu yüzden core unit tanımı **frekans eşiğine** çevrildi: bir
+unit, cluster'daki board'ların `CORE_UNIT_FREQUENCY_THRESHOLD`'ü (`clustering.py`
+modül sabiti, %50) kadarında görülüyorsa core sayılır — config.yaml'da değil,
+kodda adlandırılmış bir sabit (`select_core_units` fonksiyonu). `CORE_UNIT_MIN`
+(5) / `CORE_UNIT_MAX` (12) ile sınırlı — eşik tek başına çok az/çok fazla unit
+verirse sırasıyla en yüksek frekanslı 5'e tamamlanır veya ilk 12'de kesilir.
+Gerçek veride taban/tavan hiç bağlamadı (gözlenen aralık: 6-9 unit/cluster).
+Sonuç: 22 cluster'ın 11'inde core unit sayısı küçüldü, 3'ünde büyüdü (sabit
+top-8'in, %50'yi geçen 9. bir unit'i yanlışlıkla dışarıda bıraktığı 3 cluster
+dahil), 8'i değişmedi.
 
 Model ve centroid'ler `models/` altına kaydedilsin.
 
@@ -272,6 +423,19 @@ Aynı cluster'ın kendisiyle eşleşmesi (A vs A) anlamlı, tut — mirror durum
 
 ## 11. Augment analizi (`augments.py`)
 
+**Uygulanmadı — askıya alındı, beklemekle gelmeyecek (bulgu, 2026-08-30).**
+`augments.py` kasıtlı olarak 4 satırlık bir stub ("Not yet implemented").
+Sebep: katılımcı nesnesinde `augments` anahtarı **hiç yok** — `null` değer
+değil, anahtarın kendisi mevcut değil. Doğrulandı: `data/raw/`'daki ham veri
+baştan sona tarandı (örneklem değil, tamamı) — 3005 maç, 23984 katılımcı —
+ve **0/23984** katılımcıda `augments` anahtarı bulundu. Bu Set 18'e özgü de
+değil: aynı taramada bulunan Set 16 (`queue_id=1210`, 11 maç) ve Set 17
+(`queue_id=1100`/`1160`, 17 maç) kayıtlarında da anahtar yok; hepsinin
+`metadata.data_version` alanı `"6"`. Yani "set 5 günlük, veri henüz gelmedi"
+açıklaması geçersiz — sorun set'e özgü değil. Aşağıdaki metodoloji bu yüzden
+**planlanan bir iş değil**; Riot bu alanı bir gün doldurmaya başlarsa diye
+referans olarak bırakılıyor, silinmedi:
+
 Her (cluster, augment) çifti için ortalama placement ve `n`.
 
 Ham ortalama kullanma. İki düzeltme:
@@ -285,12 +449,13 @@ Ham ortalama kullanma. İki düzeltme:
 Neden gerekli: ~40 cluster × ~250 augment = 10k hücre, 240k board ile hücre başına
 ~70 gözlem düşüyor. Düzeltmesiz sonuçlar gürültü olur.
 
-Çıktı: tier başına (silver / gold / prismatic) en iyi 3 augment, yanında `n` ve
-shrink edilmiş lift.
+Çıktı (veri gelirse): tier başına (silver / gold / prismatic) en iyi 3 augment,
+yanında `n` ve shrink edilmiş lift.
 
-**README'ye yazılacak kısıt:** veri sadece *alınan* augment'leri içeriyor, *teklif
-edilen*leri değil. Yani ölçtüğümüz şey "iyi augment" değil, "alındığında iyi
-sonuç veren augment". Seçim yanlılığı var, gizleme.
+**README'ye yazılacak kısıt (veri gelirse geçerli olacak):** veri sadece
+*alınan* augment'leri içeriyor, *teklif edilen*leri değil. Yani ölçtüğümüz şey
+"iyi augment" değil, "alındığında iyi sonuç veren augment". Seçim yanlılığı
+var, gizleme.
 
 ---
 
@@ -317,6 +482,14 @@ LightGBM regressor: board feature vektörü → placement (1-8).
 - Metrikler: MAE ve Spearman korelasyonu.
 - Baseline karşılaştırması: her şeye 4.5 tahmin eden dummy. Model bunu geçmiyorsa
   bir sorun var demektir.
+- **Tahminler [1, 8]'e kırpılır (bulgu + düzeltme, 2026-08-30).** Ham
+  LightGBM çıktısı bu aralığa sınırlı değil — bu veri setinde ham test
+  tahminleri [0.66, 8.68] arasına yayılıyordu, matematiksel olarak imkânsız
+  placement değerleri. Kırpma `model.py`'de tanımlanan tek bir fonksiyonla
+  (`clip_predictions`) yapılır; `cli.py` dahil her tüketici bunu import
+  edip kullanır, kendi kırpmasını yazmaz. Kırpma öncesi/sonrası MAE ve
+  Spearman ayrı raporlanır — kırpma metrikleri bozmamalı, bozarsa bir şey
+  yanlıştır.
 
 Kullanım amacı: kullanıcı hiçbir cluster'a yakın olmayan bir board girdiğinde
 lookup tablosu çöker, model yine de tahmin üretir.
@@ -338,31 +511,186 @@ Akış:
 Çıktı:
 - Eşleşen comp adı + eşleşme mesafesi
 - Ortalama placement, top-4 oranı, örnek sayısı
-- En iyi ve en kötü head-to-head eşleşmeler (oran + `n` + güven aralığı)
-- Tier başına 3 augment tavsiyesi (lift + `n`)
+- Head-to-head eşleşmeler (oran + `n` + güven aralığı): yeterli veri olan
+  (n≥100) eşleşme sayısı `2×TOP_K`'nin altındaysa tek sıralı liste,
+  üstündeyse en yüksek/en düşük üstünlük 5'erli liste — "en iyi/en kötü"
+  değil "üstünlük" dili kullanılır (bölüm 0); hiçbir eşleşme %50 sınırını
+  geçmiyorsa bunu belirten bir not eklenir.
+- Augment durumu: sabit bir "veri yok" açıklama satırı — tier bazlı öneri
+  YOK, augment analizi askıya alındı (bölüm 11)
 - Zorlandığı / rahat ettiği trait'ler
-- Modelin tahmin ettiği placement
+- Modelin tahmin ettiği placement ([1, 8]'e kırpılmış, bkz. bölüm 13)
 
 ---
 
-## 15. Bitmiş sayılma kriterleri
+## 15. Item analizi (`items.py`)
 
-- [ ] Her aşama tek başına, kaldığı yerden çalıştırılabiliyor
+**Item vektöre eklenmiyor.** Comp tanımı (clustering, bölüm 9) item'dan
+bağımsız kalır — aynı comp'u oynayan iki oyuncu farklı item taşıyabilir,
+item board vektörünün star level + trait bileşenini bozmamalı. Bu, ayrı,
+tamamen bağımsız bir analiz katmanı: "bu comp'ta, şu carry unit üzerinde
+hangi item ortalama placement'ı iyileştiriyor?" sorusuna cevap veriyor.
+
+Her (cluster, unit, item) üçlüsü için ortalama placement ve `n`.
+
+Ham ortalama kullanma — bölüm 11'de augment için planlanan iki düzeltmenin
+aynısı:
+
+1. **Lift'e çevir:** cluster'ın kendi ortalama placement'ından farkı ölç.
+2. **Empirical Bayes shrinkage:** hücre ortalamasını item'in global
+   ortalamasına doğru çek —
+   `shrunk = (n * cell_mean + k * global_mean) / (n + k)`, `k` config'ten.
+
+Sadece tamamlanmış item'ları raporla, component'leri değil (component'ler
+zaten tamamlanmışın parçası, ayrı raporlamak çift sayım/gürültü olur).
+
+Çıktı: her cluster için, cluster'ın carry unit'leri (core_units) üzerinde en
+iyi 3 item, yanında `n` ve shrink edilmiş lift. `n < 50` olan hücreleri
+bastır (sıralamaya hiç dahil etme — tek bir şanslı/şanssız gözlem "en iyi 3"
+listesine sessizce sızmasın).
+
+Çıktı dosyası: `data/processed/items.json` (SPEC-WEB.md bölüm 3.8).
+
+`other` kovasının büyük kısmı (430'unun 360'ı, %83.7) gerçek maç verisinde
+hiç görünmeyen ölü kayıt — bilinçli olarak filtrelenmiyor çünkü bu kova zaten
+hiçbir aşamada okunmuyor (`items.py` sadece `completed`'i işliyor, o da
+39/39 temiz); sayılar sadece gözlem olarak `items.json`'ın
+`_metadata.item_pool_usage` alanında tutuluyor.
+
+**Bilinen kısıt — confounding (2026-08-30, düzeltilmedi, sadece belgelendi).**
+Bu lift ölçümü ayrıştıramadığı bir karışıklık taşıyor: bir item'ı
+tamamlamış olmak (özellikle niyet edilen carry üzerinde) zaten iyi giden bir
+maçla korelasyon içinde — yeterli altın/roll, erken elenmemiş olmak. Yani
+ölçülen şey kısmen item'ın kendi katkısı, kısmen de "bu item'ı toplayabilmiş
+olmak"; placement verisinden ikisi ayrıştırılamaz. Augment seçimi göreceli
+olarak dışsal (küçük rastgele bir kümeden sunuluyor) olduğu için bu kaygı
+augment'te zayıf, item'da güçlü. Shrinkage veya lift-vs-baseline bunu
+düzeltmez — bu, hücrenin ortalamasında bir gürültü sorunu değil, "bu hücre
+hangi board'larda var" sorusunda bir seçim etkisi. Kod değiştirilmedi;
+`items.json`'ın `_metadata.known_limitation` alanında açıkça yazılı, frontend
+gösterebilsin diye.
+
+**Kapsam istatistiği.** `n < 50` eşiği (cluster, unit, item) üçlüsü üzerinde
+çalıştığı için kombinatorik olarak çok şey eleyebiliyor. `items.py` her
+çalıştığında konsola ve `items.json`'ın `_metadata.coverage` alanına
+şunları yazar: toplam (cluster, core_unit) çifti sayısı, en az 1 item
+üretebilen çift sayısı, tam 3 item üretebilen çift sayısı, ve eşik yüzünden
+düşen hücre oranı. 2937 maçlık örneklemde: 166 çiftin 125'i en az 1 item
+üretti, 93'ü tam 3'ü, ham hücrelerin %92.7'si `n<50` yüzünden elendi.
+
+**Emblem — kontrol edildi, features.py'de düzeltme yapılmadı (bulgu,
+2026-08-30).** Önce varsayım şuydu: `itemNames` içindeki emblem item'ları
+(`DA_18_EmblemFloraFatalisAugment` gibi) bir trait ekliyor ama aktif trait
+sayımına dahil değil. **Gerçek veride doğrulandı, varsayım yanlış çıktı:**
+Riot'un `participant.traits` alanı (`tier_current`/`num_units`) emblem'in
+katkısını **sunucu tarafında zaten hesaba katıyor** — örnek: Cassiopeia
+"Flora Fatalis Emblem" taşıyor, board'da native olarak sadece Fiddlesticks o
+trait'e sahip (1 unit), ama API `num_units=2` diyor (Fiddlesticks + emblem
+sayesinde Cassiopeia). Set genelinde emblem taşıyan (katılımcı, trait)
+çiftlerinin **%95'inde** `num_units` = native + emblem sayımı birebir
+tutuyor. **Bu yüzden features.py'ye emblem için +1 eklemek çift sayıma yol
+açardı — yapılmadı.**
+
+Kalan ~%4.6'lık uyumsuzlukta API'nin sayısı native+emblem'den de **bir
+fazla** çıkıyor — muhtemelen bölüm 4'teki `other` kovasındaki (430 item,
+sınıflandırılamamış — bkz. aşağıdaki düzeltme notu) bazı item'ların da trait
+verdiğini gösteriyor, ama bu ayrı ve çözülmemiş bir soru; kapsam dışı
+bırakıldı.
+
+`static_data.py` yine de emblem→trait eşlemesini üretir
+(`emblem_traits.json`) — statik veri olarak değerli, sadece features.py'de
+bir düzeltme tetiklemedi.
+
+---
+
+## 16. Bitmiş sayılma kriterleri
+
+- [ ] Her aşama tek başına, kaldığı yerden çalıştırılabiliyor (canlı
+      doğrulandı — bölüm 3; otomatik test kapsam dışı, SPEC bunu istemedi)
 - [ ] Kodda tek bir hardcoded unit/trait/item/augment ismi yok
 - [ ] `403` scraper'ı sessizce bozmuyor
 - [ ] Cluster inceleme tablosu basılıyor ve gözle bakınca comp'lar tanınıyor
-- [ ] Her oran yanında `n` ve güven aralığı ile geliyor
+- [ ] Oransal metrikler (head-to-head placement oranı §10, trait exposure
+      §12) her zaman `n` ve güven aralığıyla geliyor — Wilson/normal-approx
+      CI sadece oranlar/ortalamalar için tanımlı. Item lift (§15, iki
+      ortalama arasındaki fark, oran değil) bu kurala girmiyor, sadece `n`
+      ile raporlanır; bölüm 15 ile çelişmiyor.
 - [ ] Model train/test bölmesi match bazında
 - [ ] README'de: veri toplama tarihi, yama, bölgeler, elo aralığı, maç sayısı,
-      ve kısıtlar bölümü (head-to-head ≠ counter, augment seçim yanlılığı,
-      yüksek elo örneklemi, yama ömrü)
+      ve kısıtlar bölümü (head-to-head ≠ counter, yüksek elo örneklemi,
+      yama ömrü) — augment seçim yanlılığı kısıtı yok, augment analizi kapsam
+      dışı (bölüm 11)
 
 ---
 
-## 16. Yapılmayacaklar (kapsam disiplini)
+## 17. Yapılmayacaklar (kapsam disiplini)
 
 - Web arayüzü yok. CLI yeter.
 - Canlı/otomatik güncelleme yok. Tek yama, tek koşu.
 - Pozisyon (unit dizilimi) analizi yok — API zaten vermiyor.
 - Ekonomi / roll timing analizi yok — final board'dan çıkarılamaz.
 - Birden fazla set desteği yok. Kod parametrik olsun ama tek sete koşulacak.
+- Augment analizi yok — veri yok (ayrıntı bölüm 11'de).
+
+---
+
+## Ek: Karar geçmişi — denenip reddedilen yaklaşımlar
+
+Bu bölüm sadece **uygulanmamış** kararları kaydeder. Uygulanmış olanlar ilgili
+bölümlerde yazılı (emblem düzeltmesi §15, confounding §15, core_units §9,
+early_death eğitim/raporlama ayrımı §8, game_version §7). Amaç: gelecekteki
+bir session aynı çıkmaz yollara girmesin.
+
+**early_death board'larını tamamen atma — reddedildi.** SPEC'in ilk taslağı
+(bölüm 8) "çok erken elenen oyuncuları at" diyordu — vektör üretiminden ve
+her raporlanan istatistikten tam çıkarmayı öneriyordu; ilk uygulama da
+buydu. Reddedildi çünkü survivorship bias'a yol açtı: early_death board'ları
+raporlamadan da atmak her cluster'ın `avg_placement`/`top4_rate`'ini
+olduğundan iyi gösteriyordu (erken ölüm placement'ı sert biçimde 7./8.'ye
+çekiyor, bunları çıkarmak geri kalanın ortalamasını yapay şekilde
+iyileştiriyor). Bir dummy-baseline testinde yakalandı: her şeye 4.5 tahmin
+eden modelin MAE'sinin üniform 1-8 dağılımda tam 2.0 olması beklenirken,
+sadece eğitim alt kümesi (early_death'siz) üzerinde 1.81 ölçüldü. Yapılan:
+eğitimden çıkar/raporlamada tut ayrımı — early_death board'lar HDBSCAN
+fit'inden çıkarılıyor (yarım board centroid'i bozmasın), ama fit sonrası
+en-yakın-centroid ile bir cluster'a atanıp tüm raporlanan istatistiklere
+dahil ediliyor. Ayrıntı bölüm 8 ve 9'da.
+
+**Set aidiyeti üzerinden kontaminasyon ölçümü — yöntem çıkmaz.** "Phantom
+Emblem `DA_` önekiyle geliyor ama Set 17 içeriği, öyleyse 502 item içinde başka
+kaçı yabancı?" sorusu ölçülmeye çalışıldı. Yöntem çalışmıyor: 502/502 item
+yalnızca Set 18'in kendi listesinde geçiyor, çünkü her set kendi kopyasını farklı
+`apiName` ile tutuyor. Phantom'u yakalayan şey item'ın başka sette listelenmesi
+değil, **verdiği trait'in** başka setin trait listesinde olmasıydı
+(`TFTEvent5YR_Phantom`). Dolayısıyla `component` ve `other` kovalarında
+kontaminasyon "sıfır" değil **"ölçülemiyor"** — referans verilecek alanları yok.
+Trait listesi bu arada doğrulandı: hiçbir filtreden geçmiyor, 36'sı da eksiksiz;
+sorun trait tarafında değil. Phantom'a zorla eşleştirme yapılmadı.
+
+**Kullanım tabanlı item filtresi — reddedildi.** 502 item'ın %72.1'i maç
+verisinde hiç görünmüyor. Yine de `DA_` filtresi kullanım tabanlı bir filtreyle
+değiştirilmedi, çünkü: (a) false negative üretmiyor — maçta görülen 140 item'ın
+140'ı havuzda; (b) `items.py`'nin okuduğu tek kova olan `completed` zaten %100
+temiz (39/39 yaygın kullanımda); (c) ölü kayıtların tamamı hiçbir aşamada
+okunmayan `other`'da. Asıl gerekçe: `static_data.py` şu an maç verisinden
+**bağımsız**, ve bu korunması gereken bir özellik — kullanım tabanlı filtre
+çıktıyı dataset büyüklüğüne bağımlı hale getirir, kırılganlık ekler, karşılığında
+hiçbir şey kazandırmaz. Sayılar sadece gözlem olarak
+`_metadata.item_pool_usage`'da.
+
+**`n < 50` eşiği — korundu.** Ham hücrelerin %92.7'sinin elenmesi endişe
+yarattı ama asıl kontrol şuydu: item üretemeyen (cluster, unit) çiftleri nerede
+yoğunlaşıyor? Cevap: `n_total < 300` olan cluster'larda 5/8, `n_total > 1000`
+olanlarda 0-2. Net bir örneklem-büyüklüğü etkisi; o cluster'lar zaten güvenilmez,
+item yokluğu doğru davranış. Eşik sorunu değil, eşik değiştirilmedi.
+
+**İsim bazında yinelenen ID'ler — tespit edildi, düzeltilmedi.** 502 item'da 163
+duplicate-isim grubu var (aynı isim, farklı ID). 161'i tamamen `other` içinde ve
+her varyantı 0 kullanım. 2'si emblem'de: "Flora Fatalis Emblem"
+(`DA_18_EmblemFloraFatalis`=548 kullanım / `...Augment`=774 — **gerçek bir
+bölünme**) ve "Phantom Emblem" (0/0). `completed` ve `component` kovalarında hiç
+duplicate yok; `items.py` yalnızca `completed` işlediği için hiçbir
+(cluster, unit, item) hücresi etkilenmiyor, aggregation ID bazında kaldı.
+**Uyarı:** ileride emblem istatistiği eklenirse Flora Fatalis bölünmesi aynı
+item'ın verisini ikiye böler ve her iki parça da `n<50`'nin altına düşebilir.
+O noktada isimden türetilmiş kanonik anahtar gerekir.

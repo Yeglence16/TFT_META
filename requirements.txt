@@ -1,0 +1,9 @@
+httpx
+pandas
+numpy
+scikit-learn>=1.3
+scipy
+lightgbm
+pyyaml
+tqdm
+pytest
