@@ -966,3 +966,46 @@ geri kazanılıyor: nihai (kullanıcıya yansıyan) off_meta oranı %14.41 (eski
 → %14.98 (yeni) — ham noise'daki %12.9→%30.1 sıçramasının izlenimi verdiği
 kadar dramatik değil. Yapılan: hiçbir şey — `min_cluster_size_fraction`
 config değeri (%0.3) korundu, sabit mutlak değere geçilmedi.
+
+**Az örneklemde sahte cluster ayrımı (2026-08-31, 15k koşusuyla ortaya
+çıktı, geriye dönük doğrulandı).** 2937 maçlık ilk koşuda `c_20` ("Aphelios
+— Vanguard") ve `c_21` ("Aphelios & Sentinel — Vanguard") iki ayrı comp
+olarak çıkmıştı. Geriye dönük ölçüldü (orijinal ham shard'lardan yeniden
+kurulan 23496 board'luk veri + backup'taki orijinal `cluster_labels.npy`
+üzerinden, `data/processed/`'a hiçbir şey yazılmadan):
+
+- **Centroid'ler anormal derecede yakındı.** 22 cluster arasındaki 231
+  çiftin cosine mesafesi sıralandığında c_20-c_21 çifti **0.0467** ile açık
+  ara en yakını — ikinci en yakın çift (`c_10`-`c_11`) **0.3017**, yani
+  **6.46 kat** daha uzak. Tipik bir çift-cluster mesafesinin çok altında.
+- **Tek gerçek ayırt edici Taric'ti.** `c_20`'de board'ların **%95.2**'sinde
+  `DA_Taric18` var, `c_21`'de sadece **%0.8**'inde (94.4 puan fark, en büyük
+  fark bu). **Düzeltme — ilk taslakta "diğer tüm unit'lerde fark %1'in
+  altında" deniyordu, bu iddia yeniden ölçülünce doğrulanmadı:** Elise
+  (%3.1 vs %35.9, 32.8 puan), Rakan (%5.7 vs %36.1, 30.4 puan) ve Alune
+  (%28.9 vs %10.1, 18.8 puan) da belirgin farklar gösteriyor — Taric kadar
+  büyük değil ama %1'in çok üstünde. Doğru ifade: Taric **en baskın ve tek
+  başına açıklayıcı** fark (94.4 puan, ikinci sıradaki Elise'in >2.5 katı),
+  ama tek sinyal o değil.
+- **avg_placement 4.082 (`c_20`) vs 5.42 (`c_21`)** — 1.3 sıralık fark,
+  `comps.json`'daki kayıtlı değerlerle birebir doğrulandı.
+- **"Erken ölenler ayrı cluster olmuş" hipotezi test edildi ve
+  ÇÜRÜTÜLDÜ.** `c_21`'in geç ölen (early_death=false) alt kümesi (n=684)
+  avg_placement **4.917**'de kaldı — `c_20`'nin KENDİ geç-ölen alt
+  kümesinin (n=1100) **3.81**'ine hiç yaklaşmadı (yakınsaması beklenirdi,
+  yakınsamadı). Ayrıca `c_20`'nin erken-ölen alt kümesinde (n=83) Taric
+  hâlâ **%94.0** — yani Taric ayrımı early_death'ten bağımsız, board'un ne
+  zaman öldüğüyle ilgisi yok.
+- **14513 maçlık koşuda bu ayrım kayboldu.** `c_20` ve `c_21`'in ikisi de
+  yeni `c_17`'ye (core_units jaccard sırasıyla **1.000** ve **0.875**) tek
+  bir comp olarak birleşti. Aynı desen `c_11` ("Elder Dragon — Juggernaut")
+  ve `c_10` ("Draven — Elderwood") için de geçerli — ikisi de yeni `c_09`'a
+  birleşti (jaccard **1.000** ve **0.545**).
+
+**Ders:** küçük örneklemde HDBSCAN, tek bir unit'in (burada Taric) varlığı/
+yokluğu üzerinden — centroid'leri neredeyse çakışan, avg_placement'ı gerçekten
+farklı ama başka hiçbir yapısal temeli olmayan — gerçek olmayan comp ayrımları
+üretebiliyor. 22'den 19'a düşen cluster sayısı bir bilgi kaybı değil, bu tür
+sahte ayrımların 5 kat veriyle kendiliğinden düzelmesi. Yapılan: hiçbir kod
+değişikliği — bu bir HDBSCAN parametre hatası değil, küçük örneklemin doğal
+bir sonucu; büyük veri onu zaten çözdü.
