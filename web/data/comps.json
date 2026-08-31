@@ -3139,11 +3139,16 @@
     "top4_rate": 0.399
   },
   "_metadata": {
-    "avg_placement_quartiles": {
-      "q1": 4.271,
-      "q2": 4.519,
-      "q3": 4.682,
-      "n_comps": 19
+    "avg_placement_tiers": {
+      "mean": 4.468,
+      "stdev": 0.254,
+      "n_comps": 19,
+      "bounds": {
+        "s_max": 4.087,
+        "a_max": 4.341,
+        "b_max": 4.595,
+        "c_max": 4.849
+      }
     }
   }
 }

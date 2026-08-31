@@ -161,7 +161,7 @@ def _load_comp_baselines() -> dict[int, float]:
     baselines = {}
     for comp_id, info in comps.items():
         if not comp_id.startswith("c_"):
-            continue  # skips "off_meta" (no coherent comp) and "_metadata" (2026-09-01, avg_placement_quartiles — not a comp)
+            continue  # skips "off_meta" (no coherent comp) and "_metadata" (2026-09-01, avg_placement_tiers — not a comp)
         cluster_id = int(comp_id.split("_")[1])
         baselines[cluster_id] = info["avg_placement"]
     return baselines

@@ -818,9 +818,12 @@ body {
   text-decoration-color: var(--gold-bright);
 }
 
-/* --- Meta-tier rozeti (section 8, 2026-09-01) — renk sırası kullanıcı
-   isteğiyle güçlüden zayıfa yeşil→sarı→turuncu→gri. Sayısal sınırlar
-   comps.json'dan geliyor (app.js), burada sadece görsel. --- */
+/* --- Meta-tier rozeti (section 8) — S/A/B/C/D (2026-08-31, kullanıcı
+   kararı; önceki Güçlü/Ortalama üstü/Ortalama altı/Zayıf 4-banlı şemanın
+   yerine geçti). Renkler kullanıcı isteğiyle: S altın (+ hafif parıltı, en
+   üst tier — .unit-star-badge'in 3★'ıyla aynı "dikkat çekici" dil), A yeşil,
+   B mavi, C gri, D sönük kırmızı. Sayısal sınırlar comps.json'dan geliyor
+   (app.js), burada sadece görsel. --- */
 
 .tier-badge {
   display: inline-block;
@@ -835,28 +838,35 @@ body {
   vertical-align: middle;
 }
 
-.tier-badge-strong {
+.tier-badge-s {
+  background: #4a3f14;
+  color: var(--gold-bright);
+  border: 1px solid var(--gold);
+  box-shadow: 0 0 5px rgba(240, 201, 117, 0.6);
+}
+
+.tier-badge-a {
   background: #1e4d2e;
   color: #6fd98a;
   border: 1px solid #2f9e57;
 }
 
-.tier-badge-above-average {
-  background: #4a3f14;
-  color: var(--gold-bright);
-  border: 1px solid var(--gold);
+.tier-badge-b {
+  background: #14304a;
+  color: #6fb0f0;
+  border: 1px solid #3d84e0;
 }
 
-.tier-badge-below-average {
-  background: #4a2f10;
-  color: #e0a565;
-  border: 1px solid #a2601f;
-}
-
-.tier-badge-weak {
+.tier-badge-c {
   background: #33363f;
   color: #a8adbd;
   border: 1px solid #565b6b;
+}
+
+.tier-badge-d {
+  background: #3a1f1f;
+  color: #c47b7b;
+  border: 1px solid #7a3a3a;
 }
 
 /* --- Comp modal (section 8, 2026-08-31) — head-to-head/nearest-comp

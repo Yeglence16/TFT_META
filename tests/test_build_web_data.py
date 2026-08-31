@@ -136,9 +136,17 @@ def _valid_comp(**overrides):
 
 
 def _valid_metadata():
-    # SPEC-WEB.md section 8 (2026-09-01) — meta-tier band boundaries, always
-    # present in real pipeline output (clustering.py writes it every run).
-    return {"avg_placement_quartiles": {"q1": 4.27, "q2": 4.52, "q3": 4.68, "n_comps": 19}}
+    # SPEC-WEB.md section 8 (S/A/B/C/D scheme since 2026-08-31) — meta-tier
+    # band boundaries, always present in real pipeline output (clustering.py
+    # writes it every run).
+    return {
+        "avg_placement_tiers": {
+            "mean": 4.468,
+            "stdev": 0.254,
+            "n_comps": 19,
+            "bounds": {"s_max": 4.087, "a_max": 4.341, "b_max": 4.595, "c_max": 4.849},
+        }
+    }
 
 
 def test_validate_comps_accepts_valid_data():
@@ -150,8 +158,28 @@ def test_validate_comps_rejects_missing_metadata():
         validate_comps({"c_00": _valid_comp()}, vector_dim=2)
 
 
-def test_validate_comps_rejects_non_ascending_quartiles():
-    bad_metadata = {"avg_placement_quartiles": {"q1": 4.7, "q2": 4.5, "q3": 4.6, "n_comps": 19}}
+def test_validate_comps_rejects_non_ascending_tier_bounds():
+    bad_metadata = {
+        "avg_placement_tiers": {
+            "mean": 4.468,
+            "stdev": 0.254,
+            "n_comps": 19,
+            "bounds": {"s_max": 4.7, "a_max": 4.5, "b_max": 4.6, "c_max": 4.8},
+        }
+    }
+    with pytest.raises(SchemaError):
+        validate_comps({"c_00": _valid_comp(), "_metadata": bad_metadata}, vector_dim=2)
+
+
+def test_validate_comps_rejects_negative_tier_stdev():
+    bad_metadata = {
+        "avg_placement_tiers": {
+            "mean": 4.468,
+            "stdev": -0.1,
+            "n_comps": 19,
+            "bounds": {"s_max": 4.087, "a_max": 4.341, "b_max": 4.595, "c_max": 4.849},
+        }
+    }
     with pytest.raises(SchemaError):
         validate_comps({"c_00": _valid_comp(), "_metadata": bad_metadata}, vector_dim=2)
 

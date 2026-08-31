@@ -158,20 +158,32 @@ def validate_traits(data: dict) -> None:
             raise SchemaError(f"traits.json: {trait_id}.icon missing or not an http(s) URL")
 
 
-def validate_avg_placement_quartiles(metadata: dict) -> None:
-    """comps.json's `_metadata.avg_placement_quartiles` (SPEC-WEB.md section
-    8, added 2026-09-01) — meta-tier band boundaries, recomputed every run
-    by clustering.py, never hardcoded downstream."""
-    quartiles = metadata.get("avg_placement_quartiles")
-    if not isinstance(quartiles, dict):
-        raise SchemaError("comps.json: _metadata.avg_placement_quartiles missing or not an object")
-    for key in ("q1", "q2", "q3"):
-        if not isinstance(quartiles.get(key), (int, float)) or isinstance(quartiles.get(key), bool):
-            raise SchemaError(f"comps.json: _metadata.avg_placement_quartiles.{key} missing or not a number")
-    if not (quartiles["q1"] <= quartiles["q2"] <= quartiles["q3"]):
-        raise SchemaError(f"comps.json: _metadata.avg_placement_quartiles not ascending (q1<=q2<=q3): {quartiles}")
-    if not isinstance(quartiles.get("n_comps"), int) or quartiles["n_comps"] <= 0:
-        raise SchemaError("comps.json: _metadata.avg_placement_quartiles.n_comps missing or not a positive int")
+def validate_avg_placement_tiers(metadata: dict) -> None:
+    """comps.json's `_metadata.avg_placement_tiers` (SPEC-WEB.md section 8;
+    S/A/B/C/D stdev-based scheme since 2026-08-31, replacing an earlier
+    Q1/Q2/Q3 quartile split) — meta-tier band boundaries, recomputed every
+    run by clustering.py, never hardcoded downstream."""
+    tiers = metadata.get("avg_placement_tiers")
+    if not isinstance(tiers, dict):
+        raise SchemaError("comps.json: _metadata.avg_placement_tiers missing or not an object")
+    for key in ("mean", "stdev"):
+        if not isinstance(tiers.get(key), (int, float)) or isinstance(tiers.get(key), bool):
+            raise SchemaError(f"comps.json: _metadata.avg_placement_tiers.{key} missing or not a number")
+    if tiers["stdev"] < 0:
+        raise SchemaError(f"comps.json: _metadata.avg_placement_tiers.stdev is negative: {tiers['stdev']}")
+    if not isinstance(tiers.get("n_comps"), int) or tiers["n_comps"] <= 0:
+        raise SchemaError("comps.json: _metadata.avg_placement_tiers.n_comps missing or not a positive int")
+    bounds = tiers.get("bounds")
+    if not isinstance(bounds, dict):
+        raise SchemaError("comps.json: _metadata.avg_placement_tiers.bounds missing or not an object")
+    for key in ("s_max", "a_max", "b_max", "c_max"):
+        if not isinstance(bounds.get(key), (int, float)) or isinstance(bounds.get(key), bool):
+            raise SchemaError(f"comps.json: _metadata.avg_placement_tiers.bounds.{key} missing or not a number")
+    if not (bounds["s_max"] <= bounds["a_max"] <= bounds["b_max"] <= bounds["c_max"]):
+        raise SchemaError(
+            f"comps.json: _metadata.avg_placement_tiers.bounds not ascending "
+            f"(s_max<=a_max<=b_max<=c_max): {bounds}"
+        )
 
 
 def validate_comps(data: dict, *, vector_dim: int) -> None:
@@ -181,8 +193,8 @@ def validate_comps(data: dict, *, vector_dim: int) -> None:
         raise SchemaError("comps.json: root is not a non-empty object")
 
     if "_metadata" not in data:
-        raise SchemaError("comps.json: missing _metadata key (SPEC-WEB.md section 8, avg_placement_quartiles)")
-    validate_avg_placement_quartiles(data["_metadata"])
+        raise SchemaError("comps.json: missing _metadata key (SPEC-WEB.md section 8, avg_placement_tiers)")
+    validate_avg_placement_tiers(data["_metadata"])
 
     for comp_id, info in data.items():
         if comp_id == "_metadata":

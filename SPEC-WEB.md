@@ -121,11 +121,14 @@ Clustering çıktısı. Centroid vektörleri burada.
     "avg_placement": 4.12,
     "top4_rate": 0.548,
     "core_units": ["TFT18_Ahri", "TFT18_Lux", "..."],
-    "core_unit_avg_stars": {"TFT18_Ahri": 1.84, "TFT18_Lux": 2.71, "...": "..."},
+    "core_unit_avg_stars": {"TFT18_Ahri": {"avg": 1.84, "n": 3821}, "TFT18_Lux": {"avg": 2.71, "n": 3120}, "...": "..."},
     "common_traits": [["TFT18_Sorcerer", 6], ["TFT18_Wisp", 4]]
   },
   "_metadata": {
-    "avg_placement_quartiles": {"q1": 4.271, "q2": 4.519, "q3": 4.682, "n_comps": 19}
+    "avg_placement_tiers": {
+      "mean": 4.468, "stdev": 0.254, "n_comps": 19,
+      "bounds": {"s_max": 4.087, "a_max": 4.341, "b_max": 4.595, "c_max": 4.849}
+    }
   },
   "...": {}
 }
@@ -143,29 +146,36 @@ board sayısı; `n_total` = early_death dahil atanan tüm board sayısı.
 popülasyonunun büyüklüğünü gösterir (`n_total - n_full` = o comp'a atanan
 erken-ölüm board sayısı).
 
-> **`core_unit_avg_stars` (2026-09-01, ölçüldü, eklendi).** Her `core_units`
-> ID'sini o unit'in gerçek ortalama yıldız seviyesine (float, [1.0, 3.0])
-> eşler — anahtarlar `core_units` ile **birebir** aynı olmalı, `build_web_data.py`
-> bunu doğruluyor. Ortalama, sadece unit'in GERÇEKTEN bulunduğu board'lar
-> üzerinden hesaplanıyor (o comp'un tüm `n_total` board'u üzerinden değil —
-> bir board'da olmayan bir unit'in yıldızı yoktur, ortalamaya girmez). Ölçüm
-> gerekçesi (SPEC.md bölüm 9): sabit "2 yıldız" varsayımı 144 (cluster,
-> core_unit) çiftinin sadece %13.2'sinde 2.0'a ±0.1 yakın çıktı — carry'ler
-> bilinçli 3-yıldızlanıyor (2.9'a kadar), düşük öncelikli unit'ler (ör.
-> `DA_Taric18`, göründüğü her cluster'da) 1'den kurtulamıyor. Bölüm 5.3'ün
-> `loadSuggestedComp()`'u board'u artık bu gerçek değerle dolduruyor.
+> **`core_unit_avg_stars` (2026-09-01, ölçüldü, eklendi; şekli 2026-08-31'de
+> `{unit_id: float}`'tan `{unit_id: {"avg", "n"}}`'e genişledi).** Her
+> `core_units` ID'sini bir nesneye eşler — `avg`: o unit'in gerçek ortalama
+> yıldız seviyesi (float, [1.0, 3.0]); `n`: o cluster'da o unit'i barındıran
+> board sayısı. Anahtarlar `core_units` ile **birebir** aynı olmalı,
+> `build_web_data.py` bunu doğruluyor. Ortalama, sadece unit'in GERÇEKTEN
+> bulunduğu board'lar üzerinden hesaplanıyor (o comp'un tüm `n_total` board'u
+> üzerinden değil — bir board'da olmayan bir unit'in yıldızı yoktur,
+> ortalamaya girmez); `n` de aynı denominatör. Ölçüm gerekçesi (SPEC.md
+> bölüm 9): sabit "2 yıldız" varsayımı 144 (cluster, core_unit) çiftinin
+> sadece %13.2'sinde 2.0'a ±0.1 yakın çıktı — carry'ler bilinçli
+> 3-yıldızlanıyor (2.9'a kadar), düşük öncelikli unit'ler (ör. `DA_Taric18`,
+> göründüğü her cluster'da) 1'den kurtulamıyor. Bölüm 5.3'ün
+> `loadSuggestedComp()`'u board'u bu gerçek değerle (`.avg`) dolduruyor;
+> `n` eklenme sebebi bölüm 8.3'ün core unit yıldız rozeti — tooltip'te ham
+> ortalamayla birlikte örneklem büyüklüğü de gerekti, "n olmadan ortalama
+> gösterilmeyecek" kuralının aynısı.
 >
 > **`_metadata` — normal bir comp anahtarı değil (2026-09-01, items.json'daki
-> `_metadata` ile aynı desen).** `comps.json`'da her zaman bir `_metadata`
-> anahtarı da bulunur: `avg_placement_quartiles` — 19 real comp'un
+> `_metadata` ile aynı desen; içeriği 2026-08-31'de çeyreklikten S/A/B/C/D
+> tier sistemine değişti).** `comps.json`'da her zaman bir `_metadata`
+> anahtarı da bulunur: `avg_placement_tiers` — 19 real comp'un
 > `avg_placement`'ından `clustering.py`'nin her koşuda yeniden hesapladığı
-> çeyreklikler (`q1`/`q2`/`q3`) + kaç comp'tan hesaplandığı (`n_comps`).
-> Bölüm 8'in meta-tier rozeti için — sınırlar arayüz koduna hiç gömülmüyor,
-> `app.js` bunları buradan okuyup her comp'un `avg_placement`'ını bu üç
-> sınıra karşı sınıflandırıyor. `off_meta` gibi `c_NN` kalıbına uymuyor,
-> `comps.json`'ı dolaşan her kod yolu (`build_web_data.py`, `items.py`,
-> `app.js`) bunu comp listesinden ayrı tutmalı — 2026-09-01'de bu üç dosyanın
-> hepsinde denetlenip düzeltildi.
+> `mean`/`stdev`/`n_comps` + tier sınırları (`bounds.s_max/a_max/b_max/c_max`,
+> `mean ± 0.5σ/1.5σ`). Bölüm 8.5'in meta-tier rozeti için — sınırlar arayüz
+> koduna hiç gömülmüyor, `app.js` bunları buradan okuyup her comp'un
+> `avg_placement`'ını bu dört sınıra karşı sınıflandırıyor. `off_meta` gibi
+> `c_NN` kalıbına uymuyor, `comps.json`'ı dolaşan her kod yolu
+> (`build_web_data.py`, `items.py`, `app.js`) bunu comp listesinden ayrı
+> tutmalı — hepsinde denetlenip düzeltildi (bkz. karar geçmişi).
 
 > **`off_meta` — normal bir comp anahtarı değil (2026-08-30, web build validator'ında bulundu, önceden belgelenmemişti).** `comps.json`'da her zaman bir `off_meta` anahtarı da vardır (HDBSCAN gürültüsünden ve early_death'ten hiçbir centroid'e yeterince yakın çıkmayan board'ların toplandığı kova — bkz. SPEC.md bölüm 9). Bu anahtarın değeri yukarıdaki şemadan **farklı ve daha dar**: sadece `n_full`, `n_total`, `avg_placement`, `top4_rate` var — `name`, `centroid`, `core_units`, `core_unit_avg_stars`, `common_traits` **yok**, çünkü off_meta gerçek bir comp değil. items.json'daki `_metadata` gibi alt çizgiyle başlamıyor (ismi `c_NN` kalıbına da uymuyor), o yüzden arayüz kodu bunu "bilinmeyen/bozuk comp" sanıp atlamamalı ama tam comp şeması da beklememeli. Palet/eşleştirme mantığı `comps.json`'ı dolaşırken `off_meta` anahtarını (varsa) comp listesinden ayrı tutmalı — bir centroid'i olmadığı için asla bir board'un "eşleştiği comp"u olamaz, sadece bölüm 7.3'ün "hiçbir comp'a uymuyor" yolunda referans istatistik olarak kullanılabilir.
 
@@ -537,13 +547,30 @@ Davranış:
 - **Zincirleme gezinme, üst üste modal değil.** Modal içindeki head-to-head'in kendi comp isimleri de aynı `.comp-link` mekanizmasına bağlı — tıklanınca YENİ bir modal açılmaz, `#comp-modal-content`'in içeriği o comp'un raporuyla değiştirilir (`openCompModal()` idempotent: hangi comp'tan çağrılırsa çağrılsın aynı tek overlay/panel'i yeniden doldurur). Canlı doğrulandı (headless tarayıcı): modal açıldıktan sonra içindeki bir comp linkine tıklanınca `document.querySelectorAll('.comp-modal-overlay').length` hem tıklamadan önce hem sonra **1** kaldı, başlık tıklanan comp'a göre değişti.
 - `renderCompReport()`'un gövdesi (item→özet→head-to-head→trait, bölüm 8'in sırası) `buildCompReportBody()` adıyla ortak bir fonksiyona çıkarıldı — ana sonuç paneli ve modal AYNI fonksiyonu çağırıyor, ikisi birbirinden sürüklenmesin diye.
 
-### 8.5 Meta-tier rozeti (2026-09-01, kullanıcı kararı — sınırlar veriden, ölçüldü)
+### 8.5 Meta-tier rozeti (S/A/B/C/D — sınırlar veriden, ölçüldü)
 
-Comp adının yanında dört bantlı bir rozet: **Güçlü / Ortalama üstü / Ortalama altı / Zayıf**, sırasıyla yeşil→sarı(altın)→turuncu→gri. Görüldüğü üç yer: sol sütunun önerilen comp'lar listesi (bölüm 5.3), ana sonuç panelinin başlığı (bölüm 8), ve comp modalının başlığı (bölüm 8.4).
+Comp adının yanında beş bantlı bir rozet: **S / A / B / C / D**, sırasıyla altın(+hafif parıltı)→yeşil→mavi→gri→sönük kırmızı. Görüldüğü üç yer: sol sütunun önerilen comp'lar listesi (bölüm 5.3), ana sonuç panelinin başlığı (bölüm 8), ve comp modalının başlığı (bölüm 8.4).
 
-- **Sınırlar koda gömülmedi.** Dört bant, `comps.json`'ın `_metadata.avg_placement_quartiles`'ındaki (bölüm 3.4) `q1`/`q2`/`q3` çeyreklik sınırlarına göre kuruluyor: `avg_placement ≤ q1` → Güçlü, `q1 < avg_placement ≤ q2` → Ortalama üstü, `q2 < avg_placement ≤ q3` → Ortalama altı, `avg_placement > q3` → Zayıf. `clustering.py` bu üç sayıyı her koşuda 19 real comp'un `avg_placement`'ından yeniden hesaplıyor — veri değişince (yeni bir scrape, farklı cluster sayısı) bantlar da otomatik kayar, `app.js`'te hiçbir sayısal eşik yok. Etiket metinleri ve renkler (`TIER_BANDS`) `app.js`'te sabit — "zayıf eşleşme"/"düşük güven" ile aynı ilke: sayısal eşik veriden, UI metni koddan.
-- **2026-08-31'de ölçülen dağılım** (15k koşusu, 19 comp): min=3.958, max=4.871, medyan=4.519, Q1/Q2/Q3=4.271/4.519/4.682.
-- **Tooltip** (native `title`), bandın nasıl hesaplandığını VE bu comp'un tam değerini gösterir — ör. "Bant, 19 comp'un ortalama sıralama çeyrekliklerinden türetildi (Q1=4.27, Q2=4.52, Q3=4.68). Bu comp: 4.11."
+> **Dört bantlı Güçlü/Ortalama üstü/Ortalama altı/Zayıf'tan S/A/B/C/D'ye (2026-08-31, kullanıcı kararı — önce iki aday şema ölçülüp raporlandı, sonra karar verildi).** Kullanıcı bir tier sistemi istedi ve karşılaştırma için iki aday şema belirledi; ikisi de gerçek 19 comp'un `avg_placement` dağılımı (mean=4.468, popülasyon stdev=0.254) üzerinde **önce ölçüldü, hiçbiri kodlanmadan**:
+>
+> - **(A) Standart sapma bazlı** (mean±0.5σ/1.5σ, 5 bant): S=1, A=5, B=5, C=7, D=1. S ve D'ye tam olarak gerçek istatistiksel aykırı değerler düşüyordu — Draven — Alev (3.958, bir sonraki en yakın değerden 0.15 uzak) ve Warwick — Karadiken (4.871, bir sonraki en yakın değerden 0.14 uzak); geri kalan sıralı listedeki tipik ardışık fark ~0.02-0.05.
+> - **(B) Yüzdelik bazlı** (sabit %10/20/40/20/10, 5 bant): S=2, A=4, B=7, C=4, D=2. Sabit oranı doldurmak için birbirine çok yakın comp'ları ayırıyordu — ör. Çakıl — Vadi Canavarı (4.108) S'e, Master Yi — Ahenkli (4.123) A'ya düşüyordu, aralarında sadece 0.015 fark olmasına rağmen.
+>
+> **(A) seçildi** — sınırları dağılımdaki gerçek boşluklara karşılık geliyor, (B) gibi sabit bir şekil zorlamıyor. Ayrıntı ve tam tier listeleri `SPEC.md`'nin karar geçmişinde (`clustering.py`'nin `compute_avg_placement_tiers()`'ı) — bu doküman sadece sonucu ve uygulamayı anlatıyor.
+
+- **Sınırlar koda gömülmedi.** Beş bant, `comps.json`'ın `_metadata.avg_placement_tiers`'ındaki (bölüm 3.4) `bounds` alanına göre kuruluyor:
+
+  ```
+  avg_placement <  bounds.s_max  → S
+  avg_placement <  bounds.a_max  → A
+  avg_placement <  bounds.b_max  → B
+  avg_placement <  bounds.c_max  → C
+  aksi halde                     → D
+  ```
+
+  `clustering.py` bu sınırları (`mean ± 0.5σ / 1.5σ`) her koşuda 19 real comp'un `avg_placement`'ından yeniden hesaplıyor — veri değişince (yeni bir scrape, farklı cluster sayısı) bantlar da otomatik kayar, `app.js`'te hiçbir sayısal eşik yok. Etiket metinleri ve renkler (`TIER_BANDS`) `app.js`'te sabit — "zayıf eşleşme"/"düşük güven" ile aynı ilke: sayısal eşik veriden, UI metni koddan.
+- **2026-08-31'de ölçülen dağılım** (15k koşusu, 19 comp): mean=4.468, stdev=0.254, sınırlar s_max=4.087/a_max=4.341/b_max=4.595/c_max=4.849.
+- **Tooltip** (native `title`), bandın nasıl hesaplandığını (dağılımdan türetildiği, mutlak bir güç ölçüsü olmadığı) VE bu comp'un tam değerini gösterir — ör. "S bandı, 19 comp'un ortalama sıralama dağılımından türetildi (ortalama=4.47, standart sapma=0.25) — mutlak bir güç ölçüsü değil, bu koşudaki comp'lar arasında göreceli bir sıralama. Bu comp'un ortalaması: 3.96."
 - `off_meta`'nın rozeti yok — zaten hiçbir yerde comp gibi gösterilmiyor (bölüm 3.4).
 
 ## 9. Dil — bu bölüm pazarlık konusu değil
@@ -639,5 +666,7 @@ Bu bölüm, web arayüzü inşa edilirken alınan önemli kararları ve reddedil
 **Meta-tier rozeti eklendi (bölüm 8.5, 2026-09-01, kullanıcı kararı — bantlar önce ölçülüp raporlandı, sonra onaylanıp uygulandı).** 19 comp'un `avg_placement`'ı çeyrekliklere bölünüp 4 bant (Güçlü/Ortalama üstü/Ortalama altı/Zayıf) kuruldu. Sayısal sınırlar `clustering.py`'de hesaplanıp `comps.json`'ın yeni `_metadata` anahtarına yazılıyor (bölüm 3.4) — `app.js`'e hiçbir eşik gömülmedi, sadece etiket/renk. `_metadata` `off_meta` ile aynı türden bir "normal comp değil" anahtarı olduğu için `comps.json`'ı dolaşan üç dosya (`build_web_data.py`, `items.py`, `app.js`) denetlenip düzeltildi — `items.py`'de `int(comp_id.split("_")[1])` `_metadata` için çökerdi (`int("metadata")`), `build_web_data.py`'nin self-test centroid sözlüğü `info["centroid"]` KeyError verirdi. Bu üçü pipeline'ı yeniden çalıştırmadan ÖNCE, kod okunarak bulundu. **`app.js` tarafı canlı yakalandı — self-test tam da bunun için var olduğunu kanıtladı:** pipeline'ı yeniden çalıştırıp self-test'i koştuğumda `nearestComp()` `_metadata`'yı bir comp sanıp `info.centroid`'i `undefined` okudu, `centroid[i]` erişiminde `TypeError` ile çöktü (`renderSuggestions()`'ın `off_meta !== compId` filtresi de aynı açığı taşıyordu, henüz tetiklenmemişti). Bölüm 7.2'nin "en sinsi hata sınıfına karşı tek savunma" iddiası tam burada işe yaradı — self-test olmasa bu, kullanıcı tarayıcısında konsola sessizce (veya gürültülü şekilde) çöken bir prod hatası olarak çıkardı. Hepsi `comp_id.startswith("c_")` deseniyle düzeltildi.
 
 **`core_unit_avg_stars` eklendi (bölüm 3.4/5.3, 2026-09-01, kullanıcı kararı — önce ölçülüp raporlandı).** `loadSuggestedComp()` her core unit'i sabit 2 yıldızla dolduruyordu; gerçek veride ölçülünce (SPEC.md bölüm 9) 144 (cluster, core_unit) çiftinin sadece %13.2'sinin 2.0'a yakın çıktığı görüldü. `clustering.py`'ye `_unit_avg_star()` eklendi, her comp'un `core_unit_avg_stars`'ı (unit_id → ortalama yıldız, sadece o unit'i barındıran board'lar üzerinden) `comps.json`'a yazılıyor — `core_units`'in kendisi değişmedi (hâlâ düz bir ID listesi), bu tamamen ek bir alan. `loadSuggestedComp()` artık bu değeri `Math.round()`'la (yarımdan yukarı) en yakın tam yıldıza yuvarlayıp kullanıyor. Elle board kuran kullanıcı (bölüm 6.1) etkilenmedi — DEFAULT_STAR (2) orada hâlâ geçerli, çünkü tek tek eklenen bir unit'in hangi comp bağlamında olduğu bilinmiyor.
+
+**Meta-tier rozeti dört bantlı çeyreklikten S/A/B/C/D'ye (bölüm 8.5, 2026-08-31, kullanıcı kararı — iki aday şema önce ölçülüp raporlandı, sonra karar verildi).** Kullanıcı Güçlü/Ortalama üstü/Ortalama altı/Zayıf etiketlerini S/A/B/C/D tier sistemine çevirmek istedi ve karşılaştırma için iki aday şema belirledi. İkisi de kodlanmadan önce gerçek 19 comp'un `avg_placement` dağılımı üzerinde ölçüldü: standart sapma bazlı (mean±0.5σ/1.5σ) S=1/A=5/B=5/C=7/D=1 verdi ve S/D'ye tam olarak gerçek istatistiksel aykırı değerleri (Draven — Alev, Warwick — Karadiken) izole etti; sabit %10/20/40/20/10 yüzdelik bazlı S=2/A=4/B=7/C=4/D=2 verdi ama birbirine 0.015 kadar yakın iki comp'u (Çakıl — Vadi Canavarı vs Master Yi — Ahenkli) sırf kotayı doldurmak için ayırdı. Standart sapma bazlı seçildi (ayrıntı ve tam tier listeleri SPEC.md'nin karar geçmişinde). Uygulama: `clustering.py`'nin `compute_avg_placement_quartiles()`'ı `compute_avg_placement_tiers()`'a dönüştü, `comps.json`'ın `_metadata.avg_placement_quartiles` (`q1/q2/q3`) alanı `_metadata.avg_placement_tiers` (`mean`/`stdev`/`n_comps`/`bounds.s_max..c_max`) oldu — HDBSCAN'i yeniden fit etmeden, saklı `centroids.npz`/`cluster_labels.npy`'ye karşı regenere edildi, diff'le doğrulandı: `_metadata` dışında hiçbir alan değişmedi. `app.js`'in `TIER_BANDS`/`getTierBand()`/`createTierBadge()`'i 5 banda güncellendi, renkler kullanıcı isteğiyle S altın(+parıltı)/A yeşil/B mavi/C gri/D sönük kırmızı. Tooltip artık bandın dağılımdan türediğini ve mutlak bir güç ölçüsü olmadığını açıkça söylüyor. Canlı doğrulandı (headless Chrome): üç konumun (sol sütun, sonuç paneli, modal) hepsinde doğru tier/renk/tooltip görünüyor, self-test 20/20.
 
 *Uygulama sırası önerisi: veri yükleme ve şema doğrulama → palet → board ve DnD → trait hesabı → vektör ve eşleştirme → sonuç paneli → kısıtlar ve cilalama. Her adımı bitirmeden sonrakine geçme; özellikle vektör doğrulaması geçmeden sonuç paneline başlama.*

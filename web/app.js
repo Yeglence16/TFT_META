@@ -134,7 +134,7 @@ function nearestComp(vector, comps, matchThreshold) {
   const distances = [];
   for (const [compId, info] of Object.entries(comps)) {
     // "c_NN" olmayan her şeyi atla — off_meta'nın centroid'i yok, _metadata
-    // (2026-09-01, avg_placement_quartiles) hiç bir comp değil.
+    // (avg_placement_tiers) hiç bir comp değil.
     if (!compId.startsWith("c_")) continue;
     const centroid = info.centroid;
     let dot = 0;
@@ -470,7 +470,7 @@ function renderSuggestions() {
   list.innerHTML = "";
 
   // "c_NN" olmayan her şeyi atla — off_meta'nın core_units'i yok, _metadata
-  // (2026-09-01, avg_placement_quartiles) hiç bir comp değil.
+  // (avg_placement_tiers) hiç bir comp değil.
   const realComps = Object.entries(state.comps).filter(([compId]) => compId.startsWith("c_"));
   // TFT'de düşük placement iyidir (section 10) — artan sırada = en iyiden başla.
   realComps.sort((a, b) => a[1].avg_placement - b[1].avg_placement);
@@ -747,41 +747,53 @@ function compName(comps, compId) {
 }
 
 // ---------------------------------------------------------------------------
-// Meta-tier rozeti (section 8, 2026-09-01, kullanıcı kararı) — sınırlar KODA
-// GÖMÜLMEDİ: comps.json'ın _metadata.avg_placement_quartiles'ından okunuyor
-// (clustering.py her koşuda 19 comp'un avg_placement'ından yeniden
-// hesaplıyor), sadece etiket metni/renk sırası burada — "zayıf eşleşme"/
-// "düşük güven" ile aynı desen (sayısal eşik veriden, UI metni koddan).
+// Meta-tier rozeti (section 8) — sınırlar KODA GÖMÜLMEDİ:
+// comps.json'ın _metadata.avg_placement_tiers'ından okunuyor (clustering.py
+// her koşuda 19 comp'un avg_placement dağılımından yeniden hesaplıyor),
+// sadece etiket metni/renk sırası burada — "zayıf eşleşme"/"düşük güven" ile
+// aynı desen (sayısal eşik veriden, UI metni koddan).
+//
+// S/A/B/C/D şeması (2026-08-31, kullanıcı kararı) — önceki 4 banlı
+// Ortalama-üstü/altı Q1/Q3 çeyreklik şemasının yerine geçti. Karar öncesi iki
+// aday şema gerçek 19 comp'luk dağılımda ölçüldü (SPEC.md'nin karar
+// geçmişi): standart sapma bazlı (mean±0.5σ/1.5σ) gerçek istatistiksel
+// aykırı değerleri (Draven — Alev, Warwick — Karadiken) tek başına S/D'ye
+// izole ediyordu; sabit %10/20/40/20/10 yüzdelik şeması ise birbirine 0.015
+// kadar yakın iki comp'u zorla farklı bant'a düşürüyordu. Standart sapma
+// bazlı seçildi — bkz. clustering.py'nin compute_avg_placement_tiers()'ı.
 // ---------------------------------------------------------------------------
 
 const TIER_BANDS = [
-  { id: "strong", label: "Güçlü" },
-  { id: "above-average", label: "Ortalama üstü" },
-  { id: "below-average", label: "Ortalama altı" },
-  { id: "weak", label: "Zayıf" },
+  { id: "s", label: "S" },
+  { id: "a", label: "A" },
+  { id: "b", label: "B" },
+  { id: "c", label: "C" },
+  { id: "d", label: "D" },
 ];
 
-function getTierBand(avgPlacement, quartiles) {
-  if (!quartiles) return null;
-  if (avgPlacement <= quartiles.q1) return TIER_BANDS[0];
-  if (avgPlacement <= quartiles.q2) return TIER_BANDS[1];
-  if (avgPlacement <= quartiles.q3) return TIER_BANDS[2];
-  return TIER_BANDS[3];
+function getTierBand(avgPlacement, tiers) {
+  if (!tiers) return null;
+  const b = tiers.bounds;
+  if (avgPlacement < b.s_max) return TIER_BANDS[0];
+  if (avgPlacement < b.a_max) return TIER_BANDS[1];
+  if (avgPlacement < b.b_max) return TIER_BANDS[2];
+  if (avgPlacement < b.c_max) return TIER_BANDS[3];
+  return TIER_BANDS[4];
 }
 
 function createTierBadge(avgPlacement) {
   const metadata = state.comps._metadata;
-  const quartiles = metadata && metadata.avg_placement_quartiles;
-  const band = getTierBand(avgPlacement, quartiles);
+  const tiers = metadata && metadata.avg_placement_tiers;
+  const band = getTierBand(avgPlacement, tiers);
   if (!band) return null;
 
   const badge = document.createElement("span");
   badge.className = `tier-badge tier-badge-${band.id}`;
   badge.textContent = band.label;
   badge.title =
-    `Bant, ${quartiles.n_comps} comp'un ortalama sıralama çeyrekliklerinden türetildi ` +
-    `(Q1=${quartiles.q1.toFixed(2)}, Q2=${quartiles.q2.toFixed(2)}, Q3=${quartiles.q3.toFixed(2)}). ` +
-    `Bu comp: ${avgPlacement.toFixed(2)}.`;
+    `${band.label} bandı, ${tiers.n_comps} comp'un ortalama sıralama dağılımından türetildi ` +
+    `(ortalama=${tiers.mean.toFixed(2)}, standart sapma=${tiers.stdev.toFixed(2)}) — mutlak bir güç ölçüsü ` +
+    `değil, bu koşudaki comp'lar arasında göreceli bir sıralama. Bu comp'un ortalaması: ${avgPlacement.toFixed(2)}.`;
   return badge;
 }
 

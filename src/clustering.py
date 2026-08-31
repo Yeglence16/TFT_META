@@ -99,7 +99,8 @@ in — a different denominator than `core_units`' own selection frequency).
 Keys are exactly `core_units`' unit ids, rounded to 3 decimals like
 `avg_placement`. `core_units` itself is unchanged (still a flat list of ids,
 frequency-ordered) — this is a strictly additive field, not a replacement,
-so every existing consumer that
+so every existing consumer that only reads `core_units` keeps working
+untouched.
 
 **Shape changed to `{unit_id: {"avg": mean_star, "n": count}}` (2026-08-31).**
 Was a flat `{unit_id: mean_star}` float. SPEC-WEB.md section 8.3's star-badge
@@ -117,17 +118,19 @@ the already-saved `models/centroids.npz` + `data/processed/cluster_labels.npy`
 (both deterministic per-board outputs of the last HDBSCAN fit) — not a full
 HDBSCAN refit — so the 19 clusters, names, core_units and avg_placement are
 byte-identical to before; only this field's shape changed.
-only reads `core_units` keeps working untouched.
 
-**`_metadata.avg_placement_quartiles` (added 2026-09-01).** Meta-tier bands
-for the web UI (SPEC-WEB.md section 8) — quartile boundaries (Q1/Q2/Q3) over
-the real (non-off_meta) comps' `avg_placement`, recomputed every run from
-whatever data actually exists rather than hardcoded once. `comps.json` gains
-a `_metadata` key alongside the `c_NN`/`off_meta` ones (same pattern as
-`items.json`'s `_metadata` — SPEC-WEB.md section 3.8); every consumer that
-enumerates comps.json's keys needs to skip it the same way it already skips
-`off_meta` (`build_web_data.py`, `items.py`, `app.js` — audited and fixed
-this session, see SPEC-WEB.md's decision history for the full list).
+**`_metadata.avg_placement_tiers` (added 2026-09-01, S/A/B/C/D scheme
+2026-08-31 — see `compute_avg_placement_tiers()` for the measured
+comparison against a percentile alternative before choosing).** Meta-tier
+bands for the web UI (SPEC-WEB.md section 8) — stdev-based S/A/B/C/D
+boundaries over the real (non-off_meta) comps' `avg_placement`, recomputed
+every run from whatever data actually exists rather than hardcoded once.
+`comps.json` gains a `_metadata` key alongside the `c_NN`/`off_meta` ones
+(same pattern as `items.json`'s `_metadata` — SPEC-WEB.md section 3.8);
+every consumer that enumerates comps.json's keys needs to skip it the same
+way it already skips `off_meta` (`build_web_data.py`, `items.py`, `app.js`
+— audited and fixed this session, see SPEC-WEB.md's decision history for
+the full list).
 
 **This ran against a ~3000-match dev sample (2937 matches, 23496 boards
 total, ~20152 used for training) — not final data.** However many clusters
@@ -488,15 +491,51 @@ def build_cluster_report(
     return comps, review_rows
 
 
-def compute_avg_placement_quartiles(comps: dict) -> dict:
-    """Meta-tier band boundaries (SPEC-WEB.md section 8) — quartiles of the
-    real (non-off_meta, non-_metadata) comps' avg_placement, recomputed every
-    run so the bands track whatever data currently exists rather than the
-    single sample they were first measured on (2026-09-01: 19 comps, Q1/Q2/Q3
-    = 4.271/4.519/4.682)."""
-    real_placements = sorted(info["avg_placement"] for comp_id, info in comps.items() if comp_id != OFF_META)
-    q1, q2, q3 = statistics.quantiles(real_placements, n=4, method="inclusive")
-    return {"q1": round(q1, 3), "q2": round(q2, 3), "q3": round(q3, 3), "n_comps": len(real_placements)}
+def compute_avg_placement_tiers(comps: dict) -> dict:
+    """Meta-tier band boundaries (SPEC-WEB.md section 8) — S/A/B/C/D bands
+    over the real (non-off_meta, non-_metadata) comps' avg_placement,
+    recomputed every run so the bands track whatever data currently exists.
+
+    **Changed 2026-08-31 from a 4-band Q1/Q3 quartile split to this 5-band
+    stdev split — measured against an alternative before choosing, not
+    assumed.** User asked for an S/A/B/C/D tier system and specified two
+    candidate schemes to compare on the real 19-comp distribution
+    (mean=4.468, population stdev=0.254): (A) this one — mean ± 0.5/1.5
+    stdev — and (B) a fixed 10/20/40/20/10 percentile split. Measured
+    outcome: (A) gave S=1/A=5/B=5/C=7/D=1, isolating the two comps that are
+    genuine statistical outliers (Draven — Alev at 3.958, next-closest 0.15
+    away; Warwick — Karadiken at 4.871, next-closest 0.14 away) — every other
+    gap in the sorted list is ~0.02-0.05. (B) gave S=2/A=4/B=7/C=4/D=2 but
+    forced a fixed shape regardless of actual gaps: e.g. it split Çakıl —
+    Vadi Canavarı (4.108, into S) from Master Yi — Ahenkli (4.123, into A)
+    despite only a 0.015 gap between them, purely to fill the 10% quota. (A)
+    was chosen because its boundaries reflect actual separation in the data;
+    (B) would have produced tier boundaries that don't correspond to any
+    real cluster in the distribution.
+
+    S: < mean - 1.5*stdev
+    A: [mean - 1.5*stdev, mean - 0.5*stdev)
+    B: [mean - 0.5*stdev, mean + 0.5*stdev)
+    C: [mean + 0.5*stdev, mean + 1.5*stdev)
+    D: >= mean + 1.5*stdev
+
+    Population stdev (ddof=0), not sample stdev — these N comps ARE the full
+    population being classified this run, not a sample drawn from a larger
+    one accessible elsewhere."""
+    real_placements = [info["avg_placement"] for comp_id, info in comps.items() if comp_id != OFF_META]
+    mean = statistics.mean(real_placements)
+    stdev = statistics.pstdev(real_placements)
+    return {
+        "mean": round(mean, 3),
+        "stdev": round(stdev, 3),
+        "n_comps": len(real_placements),
+        "bounds": {
+            "s_max": round(mean - 1.5 * stdev, 3),
+            "a_max": round(mean - 0.5 * stdev, 3),
+            "b_max": round(mean + 0.5 * stdev, 3),
+            "c_max": round(mean + 1.5 * stdev, 3),
+        },
+    }
 
 
 def format_review_table(review_rows: list[dict], unit_names: dict[str, str], trait_names: dict[str, str]) -> str:
@@ -571,8 +610,8 @@ def run(config: dict) -> None:
     full_labels[~training_mask] = early_death_labels
 
     comps, review_rows = build_cluster_report(rows, full_labels, centroids, unit_names, trait_names, n_full_by_cluster)
-    comps["_metadata"] = {"avg_placement_quartiles": compute_avg_placement_quartiles(comps)}
-    logger.info("avg_placement quartiles (meta-tier bands): %s", comps["_metadata"]["avg_placement_quartiles"])
+    comps["_metadata"] = {"avg_placement_tiers": compute_avg_placement_tiers(comps)}
+    logger.info("avg_placement tiers (meta-tier bands, S/A/B/C/D): %s", comps["_metadata"]["avg_placement_tiers"])
 
     encoded_labels = np.array(
         [OFF_META_CODE if label == OFF_META else int(label) for label in full_labels], dtype=np.int32
