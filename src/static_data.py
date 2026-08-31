@@ -1,8 +1,21 @@
 """Static data from CommunityDragon (SPEC.md section 4).
 
-Source: https://raw.communitydragon.org/latest/cdragon/tft/en_us.json
-(~24MB). Cached to data/static/cdragon_tft.json (gitignored). Filtered to
-config.yaml's set_number — the dump covers every set at once.
+Source: https://raw.communitydragon.org/latest/cdragon/tft/{locale}.json
+(~24MB per locale) — `locale` comes from config.yaml's `locale` key (e.g.
+`en_us`, `tr_tr`), never hardcoded. Cached to
+data/static/cdragon_tft_{locale}.json (gitignored), one file per locale so
+switching locales doesn't serve a stale cache from a different language.
+Filtered to config.yaml's set_number — the dump covers every set at once.
+
+**Locale support added 2026-08-31, verified against a live tr_tr dump.**
+Structurally identical to en_us for Set 18: same setData/champion/trait/item
+apiName sets (only the `name` strings differ), same icon asset paths (0/502
+item icon mismatches checked). `extract_traits`/`extract_units`/
+`extract_items` needed zero locale-specific code — they already operate
+purely on whatever locale dict they're handed. The one place that DID need a
+code change is emblem->trait derivation (see `_emblem_trait_id` and
+`EMBLEM_SUFFIX_BY_LOCALE` below): the " Emblem" suffix it strips is English
+text, not a structural cdragon field, so it's locale-specific by nature.
 
 **Champions vs. PvE/global entities.** The dump's per-set `champions` list
 mixes real playable champions with generic creatures that share the same
@@ -148,8 +161,7 @@ from src.paths import DATA_STATIC, PROJECT_ROOT, ensure_dirs
 logger = logging.getLogger(__name__)
 
 CONFIG_PATH = PROJECT_ROOT / "config.yaml"
-CDRAGON_URL = "https://raw.communitydragon.org/latest/cdragon/tft/en_us.json"
-CDRAGON_CACHE_PATH = DATA_STATIC / "cdragon_tft.json"
+CDRAGON_URL_TEMPLATE = "https://raw.communitydragon.org/latest/cdragon/tft/{locale}.json"
 UNITS_PATH = DATA_STATIC / "units.json"
 UNIT_ALIASES_PATH = DATA_STATIC / "unit_aliases.json"
 TRAITS_PATH = DATA_STATIC / "traits.json"
@@ -166,17 +178,19 @@ def _icon_url(path: str) -> str:
     return ICON_ROOT + stem + ".png"
 
 
-def download_cdragon(force: bool = False) -> dict:
+def download_cdragon(locale: str, force: bool = False) -> dict:
     ensure_dirs()
-    if CDRAGON_CACHE_PATH.exists() and not force:
-        logger.info("Using cached %s", CDRAGON_CACHE_PATH)
-        return json.loads(CDRAGON_CACHE_PATH.read_text(encoding="utf-8"))
+    cache_path = DATA_STATIC / f"cdragon_tft_{locale}.json"
+    if cache_path.exists() and not force:
+        logger.info("Using cached %s", cache_path)
+        return json.loads(cache_path.read_text(encoding="utf-8"))
 
-    logger.info("Downloading %s", CDRAGON_URL)
-    response = httpx.get(CDRAGON_URL, timeout=60.0)
+    url = CDRAGON_URL_TEMPLATE.format(locale=locale)
+    logger.info("Downloading %s", url)
+    response = httpx.get(url, timeout=60.0)
     response.raise_for_status()
-    CDRAGON_CACHE_PATH.write_bytes(response.content)
-    logger.info("Cached to %s (%d bytes)", CDRAGON_CACHE_PATH, len(response.content))
+    cache_path.write_bytes(response.content)
+    logger.info("Cached to %s (%d bytes)", cache_path, len(response.content))
     return json.loads(response.content)
 
 
@@ -353,24 +367,43 @@ def _classify_item_type(item: dict) -> str:
     return "other"
 
 
-def _emblem_trait_id(item_display_name: str, trait_name_to_id: dict[str, str]) -> str | None:
+# Emblem items follow "<Trait Display Name><suffix>" (e.g. "Blackthorn
+# Emblem"), but the suffix itself is locale text, not a structural cdragon
+# field — it has to be listed per locale. Verified against a live tr_tr dump
+# (2026-08-31): Turkish emblems follow "<Trait Türkçe Adı> Amblemi" (e.g.
+# "Blackthorn Emblem" -> "Karadiken Amblemi"); stripping " Amblemi" and
+# matching against tr_tr traits.json's names resolves 21/23 — the same count
+# and the same 2 holdouts as en_us (both locales' "Phantom Emblem"/"Hayali
+# Amblem" fail for the same cross-set-content reason, see
+# _emblem_trait_id's docstring). Also checked a naive vs. Turkish-aware
+# casefold (the "İ"/"I" dotting trap) against real emblem names that contain
+# İ (e.g. "İnfazcı Amblemi") — 0 disagreements, since both sides of the
+# comparison go through the same .lower() call.
+EMBLEM_SUFFIX_BY_LOCALE = {
+    "en_us": " Emblem",
+    "tr_tr": " Amblemi",
+}
+
+
+def _emblem_trait_id(item_display_name: str, trait_name_to_id: dict[str, str], emblem_suffix: str) -> str | None:
     """Emblem items have no structured field pointing at the trait they
     grant (`associatedTraits` is empty on every one) — derived instead by
-    stripping " Emblem" from the item's own display name and matching
-    against traits.json's display names. Verified: 21/23 Set 18 emblems
-    resolve this way; "Phantom Emblem" (2 items) matches none of the 35
-    known traits and is left unmapped — root-caused (not just observed):
-    a "Phantom" trait exists in cdragon but belongs to Set 17
-    (TFTEvent5YR_Phantom, an anniversary-event trait), not Set 18. The item
-    is cross-set content, not a gap in Set 18's own (correct, unfiltered)
-    trait list."""
-    candidate = item_display_name.replace(" Emblem", "").strip().lower()
+    stripping the locale's emblem suffix (`EMBLEM_SUFFIX_BY_LOCALE`) from
+    the item's own display name and matching against traits.json's display
+    names. Verified: 21/23 Set 18 emblems resolve this way in en_us AND in
+    tr_tr; "Phantom Emblem"/"Hayali Amblem" (2 items) matches none of the 35
+    known traits and is left unmapped in either locale — root-caused (not
+    just observed): a "Phantom" trait exists in cdragon but belongs to Set
+    17 (TFTEvent5YR_Phantom, an anniversary-event trait), not Set 18. The
+    item is cross-set content, not a gap in Set 18's own (correct,
+    unfiltered) trait list."""
+    candidate = item_display_name.replace(emblem_suffix, "").strip().lower()
     lower_lookup = {name.lower(): trait_id for name, trait_id in trait_name_to_id.items()}
     return lower_lookup.get(candidate)
 
 
 def extract_items(
-    cdragon: dict, set_entry: dict, trait_name_to_id: dict[str, str]
+    cdragon: dict, set_entry: dict, trait_name_to_id: dict[str, str], emblem_suffix: str
 ) -> tuple[dict[str, dict], dict[str, str]]:
     """Returns (items, emblem_to_trait). Finalized per the augments
     precedent: cdragon's raw set-18 item list is 773 entries, but the same
@@ -397,7 +430,7 @@ def extract_items(
         items[api_name] = {"name": item["name"], "type": item_type, "icon": _icon_url(item["icon"])}
 
         if item_type == "emblem":
-            trait_id = _emblem_trait_id(item["name"], trait_name_to_id)
+            trait_id = _emblem_trait_id(item["name"], trait_name_to_id, emblem_suffix)
             if trait_id:
                 emblem_to_trait[api_name] = trait_id
             else:
@@ -477,14 +510,21 @@ def extract_augments(cdragon: dict, set_entry: dict) -> dict[str, dict]:
 def run(config: dict) -> None:
     ensure_dirs()
     set_number = config["set_number"]
-    cdragon = download_cdragon()
+    locale = config["locale"]
+    if locale not in EMBLEM_SUFFIX_BY_LOCALE:
+        raise SystemExit(
+            f"No emblem suffix registered for locale={locale!r} in EMBLEM_SUFFIX_BY_LOCALE — "
+            "verify a real emblem name in that locale's dump and add it before running, "
+            "don't guess (see static_data.py's module docstring)."
+        )
+    cdragon = download_cdragon(locale)
     set_entry = _find_set(cdragon, set_number)
 
     trait_name_to_id = {t["name"]: t["apiName"] for t in set_entry["traits"]}
 
     traits = extract_traits(set_entry)
     units, unit_aliases = extract_units(set_entry, trait_name_to_id)
-    items, emblem_traits = extract_items(cdragon, set_entry, trait_name_to_id)
+    items, emblem_traits = extract_items(cdragon, set_entry, trait_name_to_id, EMBLEM_SUFFIX_BY_LOCALE[locale])
     augments = extract_augments(cdragon, set_entry)
 
     TRAITS_PATH.write_text(json.dumps(traits, indent=2), encoding="utf-8")

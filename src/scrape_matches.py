@@ -47,6 +47,7 @@ import json
 import logging
 import os
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -68,6 +69,20 @@ FILTERED_OUTPUT_PATH = DATA_PROCESSED / "matches_filtered.jsonl.gz"
 
 SHARD_SIZE = 5000
 MATCH_IDS_PER_PUUID = 20
+PROGRESS_LOG_INTERVAL = 200  # log a running dedupe-ratio snapshot every N puuids on long phase-1 runs
+
+
+def _format_duration(seconds: float) -> str:
+    if seconds == float("inf") or seconds != seconds:  # inf or nan (rate was 0)
+        return "bilinmiyor"
+    seconds = int(seconds)
+    hours, remainder = divmod(seconds, 3600)
+    minutes, secs = divmod(remainder, 60)
+    if hours:
+        return f"{hours}sa {minutes}dk"
+    if minutes:
+        return f"{minutes}dk {secs}sn"
+    return f"{secs}sn"
 
 
 def _regional_for_platform(platform: str) -> str:
@@ -108,6 +123,13 @@ def collect_match_ids(
     reaches it — a dev-sample run doesn't need to walk the whole puuid list.
     Puuids not yet processed stay unmarked, so a later full run just resumes
     and keeps going through them.
+
+    Every PROGRESS_LOG_INTERVAL puuids, logs a running dedupe-ratio snapshot
+    (not just the final one at the end) — on a long run this is the only way
+    to see whether the dedupe ratio is climbing as the puuid pool empties out
+    (expected: the more puuids already processed, the more likely a fresh
+    puuid's matches overlap a lobby already seen), rather than assuming a
+    small-sample rate holds for the rest of the pool.
     """
     pending_rows = [row for row in puuid_rows if not state.is_done("puuids_matchid_collected", row["puuid"])]
     logger.info(
@@ -146,6 +168,15 @@ def collect_match_ids(
         state.mark_done("puuids_matchid_collected", row["puuid"])
         processed += 1
 
+        if processed % PROGRESS_LOG_INTERVAL == 0:
+            running_new_ids = _known_match_id_count(state) - count_before
+            running_dedupe_pct = 100 * (1 - running_new_ids / total_seen) if total_seen else 0.0
+            logger.info(
+                "  progress: %d/%d puuids processed, %d total unique match ids known (%d new this run so far), "
+                "running dedupe ratio %.1f%%",
+                processed, len(pending_rows), _known_match_id_count(state), running_new_ids, running_dedupe_pct,
+            )
+
     new_ids = _known_match_id_count(state) - count_before
     dedupe_pct = 100 * (1 - new_ids / total_seen) if total_seen else 0.0
     logger.info(
@@ -176,25 +207,43 @@ def _flush_shard(state: StateStore, buffer: list[tuple[str, dict]]) -> None:
 
 
 def download_matches(client: RiotClient, state: StateStore) -> None:
-    """SPEC.md section 7, phase 2 (raw download only — no filtering here)."""
+    """SPEC.md section 7, phase 2 (raw download only — no filtering here).
+
+    Every PROGRESS_LOG_INTERVAL matches, logs how many have been processed,
+    how many 404s, the observed request rate, and an ETA for the remainder —
+    this phase is 1 request per match with no early-stop condition, so on a
+    ~12k-match run it can take hours with nothing else to show progress.
+    """
     pending = sorted(state.pending_keys("match_ids"))
-    logger.info("Match download: %d pending", len(pending))
+    total_pending = len(pending)
+    logger.info("Match download: %d pending", total_pending)
     if not pending:
         return
 
     buffer: list[tuple[str, dict]] = []
     skipped_404 = 0
-    for match_id in pending:
+    start_time = time.monotonic()
+    for i, match_id in enumerate(pending, start=1):
         regional = _regional_for_match_id(match_id)
         match = client.get(client.regional_url(regional, f"/tft/match/v1/matches/{match_id}"))
         if match is None:
             skipped_404 += 1
             state.mark_done("match_ids", match_id)
-            continue
-        buffer.append((match_id, match))
-        if len(buffer) >= SHARD_SIZE:
-            _flush_shard(state, buffer)
-            buffer = []
+        else:
+            buffer.append((match_id, match))
+            if len(buffer) >= SHARD_SIZE:
+                _flush_shard(state, buffer)
+                buffer = []
+
+        if i % PROGRESS_LOG_INTERVAL == 0 or i == total_pending:
+            elapsed = time.monotonic() - start_time
+            rate = i / elapsed if elapsed > 0 else 0.0
+            remaining = total_pending - i
+            eta_seconds = remaining / rate if rate > 0 else float("inf")
+            logger.info(
+                "  progress: %d/%d matches processed (%d downloaded so far, %d 404s), %.2f req/s, ETA %s",
+                i, total_pending, i - skipped_404, skipped_404, rate, _format_duration(eta_seconds),
+            )
 
     if buffer:
         _flush_shard(state, buffer)

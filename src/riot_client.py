@@ -9,6 +9,18 @@ Implements SPEC.md section 2:
     process immediately. It is NOT retried and NOT treated as a failed queue
     item, because "failed" would mean "this match doesn't exist" and would
     cause silent, permanent data loss for whatever is left in the queue.
+
+**401 handled the same way as 403 (found live, 2026-08-31).** SPEC.md's
+error table only lists 403 for key problems, but a real 15k-match download
+run hit `401 Unauthorized` on `/tft/match/v1/matches/{matchId}` partway
+through — the same key had returned 200 repeatedly on other endpoints
+(league entries, match-id-by-puuid) less than 3 hours earlier, then started
+401ing, almost certainly the ~24h dev-key expiry SPEC.md already documents,
+just surfaced as 401 instead of 403 on this endpoint. Before this fix, 401
+fell through every explicit branch below to the final `raise_for_status()`,
+crashing with a raw `httpx.HTTPStatusError` instead of the clean, resumable
+stop the 403 path provides — same underlying problem (dead key), worse
+handling. Both status codes now raise `RiotApiKeyExpiredError` identically.
 """
 
 from __future__ import annotations
@@ -158,8 +170,10 @@ class RiotClient:
         Returns the parsed JSON body, or None if the resource was a 404
         (caller should skip it and move on).
 
-        Raises RiotApiKeyExpiredError on 403 — this must propagate and stop
-        the caller's queue, per SPEC.md section 2.
+        Raises RiotApiKeyExpiredError on 401 or 403 — this must propagate and
+        stop the caller's queue, per SPEC.md section 2 (401 added 2026-08-31,
+        see module docstring — Riot returns either for a dead key depending
+        on the endpoint).
 
         Raises RiotRateLimitExceededError if a request is still 429ing after
         max_429_attempts (default 5) — the 429 loop is bounded, not infinite.
@@ -195,14 +209,14 @@ class RiotClient:
                 time.sleep(retry_after)
                 continue
 
-            if response.status_code == 403:
+            if response.status_code in (401, 403):
                 logger.error(
-                    "403 Forbidden on %s — Riot API key has expired or is invalid. "
+                    "%d on %s — Riot API key has expired or is invalid. "
                     "Stopping immediately. This item is unattempted, not failed.",
-                    url,
+                    response.status_code, url,
                 )
                 raise RiotApiKeyExpiredError(
-                    f"403 Forbidden on {url}: the Riot API key has expired or is invalid. "
+                    f"{response.status_code} on {url}: the Riot API key has expired or is invalid. "
                     "Refresh RIOT_API_KEY and resume from saved state — do not resume "
                     "by treating pending items as missing matches."
                 )

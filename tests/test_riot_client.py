@@ -53,6 +53,17 @@ def test_403_raises_immediately_with_no_retry(client):
     assert client._http.get.call_count == 1
 
 
+def test_401_raises_immediately_with_no_retry(client):
+    # Regression: found live 2026-08-31 — a dead key returned 401 (not 403)
+    # on /tft/match/v1/matches/{matchId}, which previously fell through to
+    # the final raise_for_status() and crashed with a raw HTTPStatusError
+    # instead of the clean, resumable RiotApiKeyExpiredError path.
+    client._http.get = MagicMock(return_value=make_response(401))
+    with pytest.raises(RiotApiKeyExpiredError):
+        client.get("http://x")
+    assert client._http.get.call_count == 1
+
+
 def test_429_honors_retry_after_then_succeeds(client, monkeypatch):
     sleeps = []
     monkeypatch.setattr("src.riot_client.time.sleep", lambda s: sleeps.append(s))

@@ -10,6 +10,14 @@
 # set_number: confirmed from `python src/inspect_live.py` (2026-08-30) against
 # ~30 live matches on euw1+na1 (grandmaster/master, challenger was empty on
 # both regions at sample time) — every match returned tft_set_number = 18.
+# locale: which CommunityDragon TFT dump to pull display names/icons from
+# (src/static_data.py). Structurally identical to en_us for Set 18 — same
+# apiName sets, same icon asset paths — verified against a live tr_tr dump
+# (2026-08-30/31). Only the emblem->trait suffix match is locale-specific
+# code (EMBLEM_SUFFIX_BY_LOCALE in static_data.py); everything else reads
+# this value with no other code change.
+locale: tr_tr
+
 set_number: 18
 
 # queue_id: confirmed 1100 on every one of those ~30 matches, matching
@@ -30,11 +38,13 @@ regions:
   - euw1
   - na1
 
-# DEV SAMPLE — temporarily 3000 instead of the real target of 25000. Read by
-# scrape_matches.py's collect_match_ids() to stop once roughly this many
-# unique match ids are known, so a dev run doesn't walk the entire ladder.
-# Set back to 25000 before a full-scale run.
-target_match_count: 3000
+# Raised from the 3000 dev sample to 15000 (2026-08-31) — an intermediate
+# step before the real 25000 target. Read by scrape_matches.py's
+# collect_match_ids() to stop once roughly this many unique match ids are
+# known IN TOTAL (pending+done in the state DB, cumulative across runs, not
+# per-run) — at the time this was raised, 3005 were already known, so this
+# means ~11995 more, not 15000 from scratch.
+target_match_count: 15000
 
 # Ladder scrape (SPEC.md section 5). Ranked resets every set, so 5 days into
 # Set 18 challenger/grandmaster/master are empty or near-empty — expected,

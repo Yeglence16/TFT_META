@@ -44,13 +44,22 @@ def test_emblem_trait_id_matches_despite_case_difference():
     # lowercased for matching ("blackthorn") — a naive .get() without
     # normalizing both sides resolves 0/23 real emblems instead of 21/23.
     trait_name_to_id = {"Blackthorn": "DA_18_Blackthorn", "Ravager": "DA_18_Slayer"}
-    assert _emblem_trait_id("Blackthorn Emblem", trait_name_to_id) == "DA_18_Blackthorn"
-    assert _emblem_trait_id("Ravager Emblem", trait_name_to_id) == "DA_18_Slayer"
+    assert _emblem_trait_id("Blackthorn Emblem", trait_name_to_id, " Emblem") == "DA_18_Blackthorn"
+    assert _emblem_trait_id("Ravager Emblem", trait_name_to_id, " Emblem") == "DA_18_Slayer"
 
 
 def test_emblem_trait_id_returns_none_when_no_matching_trait():
     trait_name_to_id = {"Blackthorn": "DA_18_Blackthorn"}
-    assert _emblem_trait_id("Phantom Emblem", trait_name_to_id) is None
+    assert _emblem_trait_id("Phantom Emblem", trait_name_to_id, " Emblem") is None
+
+
+def test_emblem_trait_id_works_with_a_non_english_suffix():
+    # Regression: the suffix used to be hardcoded to " Emblem" — Turkish
+    # emblems follow "<Trait Türkçe Adı> Amblemi" instead (verified against
+    # a live tr_tr CommunityDragon dump, 2026-08-31). The matching logic
+    # itself is locale-agnostic; only the suffix string needs to vary.
+    trait_name_to_id = {"Karadiken": "DA_18_Blackthorn"}
+    assert _emblem_trait_id("Karadiken Amblemi", trait_name_to_id, " Amblemi") == "DA_18_Blackthorn"
 
 
 def test_extract_traits_keeps_sorted_breakpoints():
