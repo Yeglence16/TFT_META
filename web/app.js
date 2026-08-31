@@ -571,6 +571,31 @@ function setUnitStar(unitId, star) {
   onBoardChanged();
 }
 
+/** 2026-08-31 bulgusu: .layout-grid CSS Grid'inde align-items:start tek
+ * başına board ile palet arasındaki boşluğu çözmüyor — Grid'in auto-satır
+ * boyutlandırması align-items'tan bağımsız olarak satırı o satırdaki EN UZUN
+ * öğeye (genelde 8 comp'lu .side-column) göre kuruyor; ölçüldü:
+ * getComputedStyle(.layout-grid).gridTemplateRows .side-column'un doğal
+ * yüksekliğiyle birebir aynı çıktı, .board-column kısa kaldığı için altında
+ * 124-160px boş satır alanı kalıyordu. CSS'in bunu çözecek bir yolu yok (bir
+ * grid satırının yüksekliğini "en kısa öğeye göre kur" diye ayarlayamazsınız)
+ * — bu yüzden .side-column'un max-height'i burada, .board-column'un GERÇEK
+ * render yüksekliğine eşitleniyor; taşarsa style.css'teki overflow-y:auto
+ * devreye giriyor. Board her değiştiğinde bu elle çağrılmıyor —
+ * ResizeObserver .board-column'un kutu boyutunu izliyor, boyut ne SEBEPLE
+ * değişirse değişsin (board render, pencere resize, font yüklenmesi, zoom)
+ * otomatik yeniden hesaplıyor; ilk gözlemde de bir kere kendiliğinden
+ * tetikleniyor, o yüzden ayrıca bir "ilk render'da çağır" satırı gerekmiyor. */
+function setupSideColumnSync() {
+  const boardColumn = document.querySelector(".board-column");
+  const sideColumn = document.querySelector(".side-column");
+  if (!boardColumn || !sideColumn) return;
+  const observer = new ResizeObserver(() => {
+    sideColumn.style.maxHeight = `${boardColumn.getBoundingClientRect().height}px`;
+  });
+  observer.observe(boardColumn);
+}
+
 function onBoardChanged() {
   renderPalette();
   renderBoardSlots();
@@ -760,11 +785,15 @@ function renderCompReport(container, compId, distance, meta, comps, matchups, co
   statsP.textContent =
     `Bu comp ortalama ${comp.avg_placement.toFixed(2)} sırada bitiriyor, ` +
     `oyunların %${(comp.top4_rate * 100).toFixed(0)}'sinde ilk 4'e giriyor (${comp.n_total} örnek).`;
-  wrap.appendChild(statsP);
 
+  // 2026-08-31: sıra kullanıcı isteğiyle değişti — item önerileri (görsel,
+  // en çok ilgi çeken) en üste, sonra comp özeti, head-to-head, trait'ler.
+  // Eskiden statsP en üstteydi (section 8'in orijinal sırası); bu artık
+  // geçerli değil, güncel sıra burada.
+  wrap.appendChild(renderItemSection(compId, comp, items, units));
+  wrap.appendChild(statsP);
   wrap.appendChild(renderHeadToHead(compId, matchups, comps));
   wrap.appendChild(renderTraitSection(compId, compTraits, traits));
-  wrap.appendChild(renderItemSection(compId, comp, items, units));
 
   container.appendChild(wrap);
 }
@@ -1042,6 +1071,7 @@ async function init() {
   renderBoardSlots();
   renderActiveTraits();
   updateResult();
+  setupSideColumnSync();
 
   console.log("[app] Veri yüklendi, self-test geçti, arayüz etkileşimli.");
 }

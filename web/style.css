@@ -26,32 +26,20 @@
   box-sizing: border-box;
 }
 
-html, body {
-  height: 100%;
-}
-
-/* SPEC-WEB.md section 5.0 "sabit viewport kuralı": body dikey bir flex
-   konteyner, üç-bölgeli ızgara içinde esnek (flex:1) kalıyor, palet/kısıtlar/
-   footer sabit boyutlu (flex:0 0 auto) — sonuç paneli ne kadar uzarsa uzasın
-   sayfanın toplam yüksekliği büyümüyor, palet ekrandan düşmüyor. Gerçekten
-   her şey sığmazsa (çok kısa bir ekran) body'nin kendisi son çare olarak kayar. */
+/* SPEC-WEB.md section 5.0, 2026-08-31 güncellemesi: "sabit viewport" modeli
+   (body height:100vh + tek esneyen flex çocuk) terk edildi — kaldığı yerde
+   .layout-grid'in flex:1 1 auto/min-height:0'ı, küçülmeyen kardeşleri
+   (palette-panel/constraints-box/footer) yüzünden neredeyse 0'a sıkışıyordu;
+   board sütunu birkaç piksele düşüyor, kartların altı kesiliyordu (bkz. karar
+   geçmişi). Artık body'nin sabit bir yüksekliği yok, sayfa doğal içerik
+   yüksekliğine göre büyüyor ve gerekirse tarayıcı sayfa düzeyinde dikey
+   scroll ediyor. */
 body {
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow-y: auto;
+  min-height: 100vh;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   color: var(--text);
   background: var(--bg);
-}
-
-.site-header,
-.palette-panel,
-.constraints-box,
-.site-footer,
-.banner {
-  flex: 0 0 auto;
 }
 
 .banner {
@@ -124,24 +112,28 @@ body {
 .layout-grid {
   display: grid;
   grid-template-columns: 260px 1fr;
-  grid-template-rows: minmax(0, 1fr); /* satırı içeriğe göre değil, mevcut alana göre sınırla */
   gap: 1rem;
   padding: 0 1rem 1rem;
-  align-items: stretch;
-  flex: 1 1 auto; /* body'nin kalan yüksekliğini doldur */
-  min-height: 0; /* flex item'ın içerik boyutundan küçülebilmesi için şart */
+  align-items: start; /* iki sütun birbirinin doğal yüksekliğini zorlamasın */
 }
 
+/* 2026-08-31 bulgusu: align-items:start tek başına yetmiyor — CSS Grid'in
+   auto-satır boyutlandırması, align-items'tan BAĞIMSIZ olarak satırı o
+   satırdaki en uzun öğeye göre kuruyor (ölçüldü: gridTemplateRows hesaplanan
+   değeri .side-column'un doğal yüksekliğiyle birebir aynı çıktı, board 3
+   durumda da 124-160px kısa kaldı). align-items sadece kısa öğeyi o zaten
+   uzun satır içinde konumluyor, satırı kısaltmıyor. Tek güvenilir çözüm:
+   .side-column'un max-height'ini JS'te .board-column'un GERÇEK render
+   yüksekliğine eşitlemek (app.js'teki syncSideColumnHeight) — board hangi
+   durumda olursa olsun (boş/5/10 unit) satırı O belirliyor, side-column
+   taşarsa kendi içinde scroll ediyor, layout-grid'i uzatmıyor. */
 .side-column {
   padding-bottom: 0.75rem;
-  min-height: 0; /* grid item'ın kendi satırından küçülüp iç scroll'a geçebilmesi için şart */
   overflow-y: auto;
 }
 
 .board-column {
   padding: 0.9rem;
-  min-height: 0;
-  overflow-y: auto;
 }
 
 /* --- Sonuç paneli — kayan overlay (section 5.5) --- */
