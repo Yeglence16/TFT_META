@@ -96,10 +96,27 @@ it appears in — never close to 2). So each comp now also carries
 ["tier"]` across exactly the boards in that cluster THAT HAVE the unit (not
 all `n_total` boards; a board missing the unit has no star level to average
 in — a different denominator than `core_units`' own selection frequency).
-Keys are exactly `core_units`' unit ids, values are floats in [1.0, 3.0],
-rounded to 3 decimals like `avg_placement`. `core_units` itself is
-unchanged (still a flat list of ids, frequency-ordered) — this is a
-strictly additive field, not a replacement, so every existing consumer that
+Keys are exactly `core_units`' unit ids, rounded to 3 decimals like
+`avg_placement`. `core_units` itself is unchanged (still a flat list of ids,
+frequency-ordered) — this is a strictly additive field, not a replacement,
+so every existing consumer that
+
+**Shape changed to `{unit_id: {"avg": mean_star, "n": count}}` (2026-08-31).**
+Was a flat `{unit_id: mean_star}` float. SPEC-WEB.md section 8.3's star-badge
+decision needs a real sample size for its tooltip ("bu comp'ta ortalama 2.91
+yıldız, n=..."), not just the average — a bare average with no `n` is exactly
+the "oran n olmadan gösterilmeyecek" rule this project holds everywhere else.
+`n` is `select_core_units`'s own per-unit board count (the same denominator
+`_unit_avg_star` already divides by) — it was already being computed here
+and thrown away (`top_units`' second tuple element, previously read as `_`),
+so no new measurement or pipeline pass was needed to add it. `avg` stays in
+[1.0, 3.0] as before; `n` is a positive int, always <= that comp's `n_total`
+(usually well below it — `core_units` only requires >=50% presence, not
+100%). Regenerating this only needed `build_cluster_report` re-run against
+the already-saved `models/centroids.npz` + `data/processed/cluster_labels.npy`
+(both deterministic per-board outputs of the last HDBSCAN fit) — not a full
+HDBSCAN refit — so the 19 clusters, names, core_units and avg_placement are
+byte-identical to before; only this field's shape changed.
 only reads `core_units` keeps working untouched.
 
 **`_metadata.avg_placement_quartiles` (added 2026-09-01).** Meta-tier bands
@@ -426,7 +443,7 @@ def build_cluster_report(
             "avg_placement": round(avg_placement, 3),
             "top4_rate": round(top4_rate, 3),
             "core_units": [u for u, _ in top_units],
-            "core_unit_avg_stars": {u: round(unit_avg_star[u], 3) for u, _ in top_units},
+            "core_unit_avg_stars": {u: {"avg": round(unit_avg_star[u], 3), "n": n} for u, n in top_units},
             "common_traits": [[t, c] for t, c in top_traits],
         }
         review_rows.append(

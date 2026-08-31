@@ -669,6 +669,10 @@ body {
   width: 64px;
 }
 
+.item-unit-icon-wrap {
+  position: relative; /* section 8.3 yıldız rozetinin (.unit-star-badge) köşede oturması için */
+}
+
 .item-unit-icon,
 .item-unit-icon-fallback {
   width: 40px;
@@ -676,6 +680,52 @@ body {
   border-radius: 6px;
   border: 2px solid var(--gold);
   object-fit: cover;
+}
+
+/* --- Yıldız rozeti (section 8.3, 2026-08-31, kullanıcı kararı) — SADECE
+   sonuç panelinin/modalın item önerileri bölümündeki core unit ikonlarında.
+   Palet/board kartlarındaki .star-selector'a KASITLI olarak dokunulmuyor —
+   biri kullanıcının seçimi, biri comp'un ölçülen ortalaması, ayrı diller.
+   Görsel dil .tft-card-cost'la aynı aile (küçük, köşeli, renk kodlu rozet),
+   konum ikonun sağ-alt köşesi. Renk seviyeye göre farklılaşıyor: 3★ altın +
+   hafif parıltıyla dikkat çekici, 1★ soluk/gri, 2★ nötr mor — eşik yok, her
+   üç seviye de gösteriliyor. --- */
+
+.unit-star-badge {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  min-width: 18px;
+  height: 16px;
+  padding: 0 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: help;
+  z-index: 1;
+}
+
+.unit-star-badge.star-level-1 {
+  background: rgba(20, 21, 28, 0.9);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.unit-star-badge.star-level-2 {
+  background: #241c3a;
+  color: var(--purple-bright);
+  border: 1px solid var(--purple);
+}
+
+.unit-star-badge.star-level-3 {
+  background: #4a3f14;
+  color: var(--gold-bright);
+  border: 1px solid var(--gold);
+  box-shadow: 0 0 5px rgba(240, 201, 117, 0.7);
 }
 
 .item-unit-icon-fallback {

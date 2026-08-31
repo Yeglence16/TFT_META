@@ -128,7 +128,7 @@ def _valid_comp(**overrides):
         "avg_placement": 4.2,
         "top4_rate": 0.5,
         "core_units": ["u1", "u2", "u3", "u4", "u5"],
-        "core_unit_avg_stars": {"u1": 2.0, "u2": 2.0, "u3": 2.0, "u4": 2.0, "u5": 2.0},
+        "core_unit_avg_stars": {u: {"avg": 2.0, "n": 100} for u in ["u1", "u2", "u3", "u4", "u5"]},
         "common_traits": [["t1", 80]],
     }
     comp.update(overrides)
@@ -175,7 +175,13 @@ def test_validate_comps_rejects_centroid_dimension_mismatch():
 def test_validate_comps_rejects_core_units_below_min():
     with pytest.raises(SchemaError):
         validate_comps(
-            {"c_00": _valid_comp(core_units=["u1", "u2"], core_unit_avg_stars={"u1": 2.0, "u2": 2.0}), "_metadata": _valid_metadata()},
+            {
+                "c_00": _valid_comp(
+                    core_units=["u1", "u2"],
+                    core_unit_avg_stars={"u1": {"avg": 2.0, "n": 100}, "u2": {"avg": 2.0, "n": 100}},
+                ),
+                "_metadata": _valid_metadata(),
+            },
             vector_dim=2,
         )
 
@@ -186,7 +192,7 @@ def test_validate_comps_rejects_core_units_above_max():
             {
                 "c_00": _valid_comp(
                     core_units=[f"u{i}" for i in range(13)],
-                    core_unit_avg_stars={f"u{i}": 2.0 for i in range(13)},
+                    core_unit_avg_stars={f"u{i}": {"avg": 2.0, "n": 100} for i in range(13)},
                 ),
                 "_metadata": _valid_metadata(),
             },
@@ -200,7 +206,12 @@ def test_validate_comps_rejects_core_unit_avg_stars_key_mismatch():
     # comp" star-filling feature.
     with pytest.raises(SchemaError):
         validate_comps(
-            {"c_00": _valid_comp(core_unit_avg_stars={"u1": 2.0, "u2": 2.0, "u3": 2.0, "u4": 2.0}), "_metadata": _valid_metadata()},
+            {
+                "c_00": _valid_comp(
+                    core_unit_avg_stars={u: {"avg": 2.0, "n": 100} for u in ["u1", "u2", "u3", "u4"]}
+                ),
+                "_metadata": _valid_metadata(),
+            },
             vector_dim=2,
         )
 
@@ -209,7 +220,34 @@ def test_validate_comps_rejects_core_unit_avg_stars_out_of_range():
     with pytest.raises(SchemaError):
         validate_comps(
             {
-                "c_00": _valid_comp(core_unit_avg_stars={"u1": 3.5, "u2": 2.0, "u3": 2.0, "u4": 2.0, "u5": 2.0}),
+                "c_00": _valid_comp(
+                    core_unit_avg_stars={
+                        "u1": {"avg": 3.5, "n": 100},
+                        "u2": {"avg": 2.0, "n": 100},
+                        "u3": {"avg": 2.0, "n": 100},
+                        "u4": {"avg": 2.0, "n": 100},
+                        "u5": {"avg": 2.0, "n": 100},
+                    }
+                ),
+                "_metadata": _valid_metadata(),
+            },
+            vector_dim=2,
+        )
+
+
+def test_validate_comps_rejects_core_unit_avg_stars_missing_n():
+    with pytest.raises(SchemaError):
+        validate_comps(
+            {
+                "c_00": _valid_comp(
+                    core_unit_avg_stars={
+                        "u1": {"avg": 2.0},
+                        "u2": {"avg": 2.0, "n": 100},
+                        "u3": {"avg": 2.0, "n": 100},
+                        "u4": {"avg": 2.0, "n": 100},
+                        "u5": {"avg": 2.0, "n": 100},
+                    }
+                ),
                 "_metadata": _valid_metadata(),
             },
             vector_dim=2,

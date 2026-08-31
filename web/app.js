@@ -510,9 +510,31 @@ function starFromAverage(avgStar) {
   return Math.min(3, Math.max(1, Math.round(avgStar)));
 }
 
+/** section 8.3 (2026-08-31, kullanıcı kararı): SADECE sonuç panelinin/modalın
+ * item önerileri bölümündeki core unit ikonlarında bir yıldız rozeti — palet
+ * ve board kartlarına dokunulmuyor, oradaki yıldız kullanıcının kendi seçimi
+ * (gerçek bir ortalama değil), ikisi karıştırılmasın. Gösterim: yuvarlanmış
+ * tek basamak (starFromAverage — board doldurmada kullanılanla AYNI
+ * yuvarlama), maliyet rozetiyle aynı görsel dilde (küçük, köşeli, renk
+ * kodlu), ikonun köşesinde. Tooltip ham ortalama + n taşır — çıplak yuvarlak
+ * sayı değil. Tüm seviyeler gösterilir, eşik yok: 1★ da bilgi (bu unit'i
+ * yıldızlamaya çalışma sinyali), 3★ kadar "önemsiz" değil. */
+function createUnitStarBadge(avgStarEntry) {
+  if (!avgStarEntry) return null;
+  const level = starFromAverage(avgStarEntry.avg);
+  const badge = document.createElement("span");
+  badge.className = `unit-star-badge star-level-${level}`;
+  badge.textContent = `${level}★`;
+  badge.title = `Bu comp'ta ortalama ${avgStarEntry.avg.toFixed(2)} yıldız (n=${avgStarEntry.n}).`;
+  return badge;
+}
+
 /** section 5.3: bir öneriye tıklanınca board'u o comp'un core_units'iyle
  * doldur — board doluysa bile onay istemeden, doğrudan (2026-08-30: ilk
- * taslaktaki confirm() kullanımda rahatsız edici bulundu, kaldırıldı). */
+ * taslaktaki confirm() kullanımda rahatsız edici bulundu, kaldırıldı).
+ * core_unit_avg_stars'ın şekli 2026-08-31'de değişti: artık düz float değil
+ * `{avg, n}` (section 8.3'ün yıldız rozeti tooltip'i için gerçek bir
+ * örneklem büyüklüğü lazım oldu) — burada sadece `.avg` okunuyor. */
 function loadSuggestedComp(compId) {
   const comp = state.comps[compId];
   const coreUnits = comp.core_units.slice(0, BOARD_SIZE);
@@ -522,8 +544,8 @@ function loadSuggestedComp(compId) {
   board = {};
   boardOrder = [];
   for (const unitId of coreUnits) {
-    const avgStar = avgStars[unitId];
-    board[unitId] = { star: avgStar != null ? starFromAverage(avgStar) : DEFAULT_STAR };
+    const entry = avgStars[unitId];
+    board[unitId] = { star: entry ? starFromAverage(entry.avg) : DEFAULT_STAR };
     boardOrder.push(unitId);
   }
 
@@ -1072,6 +1094,9 @@ function renderItemSection(compId, comp, items, units) {
     } else {
       unitIconWrap.appendChild(makeFallbackBox(unitName, "item-unit-icon-fallback"));
     }
+    // section 8.3 (2026-08-31): SADECE burada — palet/board kartlarına dokunmuyor.
+    const starBadge = createUnitStarBadge((comp.core_unit_avg_stars || {})[unitId]);
+    if (starBadge) unitIconWrap.appendChild(starBadge);
     group.appendChild(unitIconWrap);
 
     const itemRow = document.createElement("div");

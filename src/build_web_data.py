@@ -226,9 +226,18 @@ def validate_comps(data: dict, *, vector_dim: int) -> None:
         avg_stars = info.get("core_unit_avg_stars")
         if not isinstance(avg_stars, dict) or set(avg_stars.keys()) != set(core_units):
             raise SchemaError(f"comps.json: {comp_id}.core_unit_avg_stars missing or its keys don't match core_units exactly")
-        for unit_id, star in avg_stars.items():
-            if not isinstance(star, (int, float)) or isinstance(star, bool) or not (1.0 <= star <= 3.0):
-                raise SchemaError(f"comps.json: {comp_id}.core_unit_avg_stars[{unit_id!r}] missing or not in [1.0, 3.0]")
+        for unit_id, entry in avg_stars.items():
+            # Shape is {"avg": float, "n": int} (2026-08-31) — the star-badge
+            # tooltip (SPEC-WEB.md section 8.3) needs a real sample size
+            # alongside the average, not just the average alone.
+            if not isinstance(entry, dict):
+                raise SchemaError(f"comps.json: {comp_id}.core_unit_avg_stars[{unit_id!r}] is not an object")
+            avg = entry.get("avg")
+            if not isinstance(avg, (int, float)) or isinstance(avg, bool) or not (1.0 <= avg <= 3.0):
+                raise SchemaError(f"comps.json: {comp_id}.core_unit_avg_stars[{unit_id!r}].avg missing or not in [1.0, 3.0]")
+            n = entry.get("n")
+            if not isinstance(n, int) or isinstance(n, bool) or n <= 0:
+                raise SchemaError(f"comps.json: {comp_id}.core_unit_avg_stars[{unit_id!r}].n missing or not a positive int")
         common_traits = info.get("common_traits")
         if not isinstance(common_traits, list) or not common_traits:
             raise SchemaError(f"comps.json: {comp_id}.common_traits missing or empty")
