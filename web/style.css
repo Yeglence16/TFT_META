@@ -874,6 +874,21 @@ body {
   z-index: 100; /* result-panel'in (z-index:50) üstünde */
 }
 
+/* Bulgu (2026-08-31, modal boş açılıyor raporundan sonra bulundu — b0ff70e'de
+   de zaten var, bu değişiklikle ortaya çıkmadı): `display: flex` yukarıda
+   `hidden` özniteliğinin varsayılan `[hidden]{display:none}` UA kuralını
+   EZİYORDU — aynı özgüllükte (0,1,0) iki kural çakışınca author stylesheet
+   UA'yı kazanıyor, `hidden`/`.hidden` set edilse bile overlay hep
+   display:flex kalıp görünür duruyordu (canlı doğrulandı: fresh page
+   load'da computedDisplay="flex" ölçüldü, hem şu anki hem b0ff70e'deki
+   markup'ta). #comp-modal-content de hiç doldurulmadığı için (openCompModal
+   hiç çağrılmadan) boş bir panel + X butonu görünüyordu — kullanıcının
+   bildirdiği tam görüntü. Bu satır özgüllüğü (0,2,0) yukarıdaki kuralın
+   üstüne çıkarıp hidden'ı gerçekten etkili kılıyor. */
+.comp-modal-overlay[hidden] {
+  display: none;
+}
+
 .comp-modal {
   position: relative;
   width: 480px;
