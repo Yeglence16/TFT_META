@@ -14,7 +14,7 @@ Bunun doğrudan bir mimari sonucu var: **site çalışma anında hiçbir dış s
 
 Bu yüzden teknoloji seçimi de sade: düz HTML + CSS + JavaScript. React yok, build adımı yok, npm yok, bundler yok. Beş kişilik bir araç için framework kurmak net bir israf.
 
-> **Tek gotcha:** Sayfayı `file://` ile açamazsın — tarayıcı JSON fetch'ini CORS nedeniyle engeller. Basit bir yerel sunucu gerekir (`python -m http.server 8000` yeter). Bunu README'nin ilk satırına yaz, yoksa arkadaşların dosyayı çift tıklayıp "çalışmıyor" diyecek.
+> **Tek gotcha:** Sayfayı `file://` ile açamazsın — tarayıcı JSON fetch'ini CORS nedeniyle engeller. Basit bir yerel sunucu gerekir (`python -m http.server 8000` yeter). Bunu README'nin ilk satırına yaz, yoksa arkadaşların dosyayı çift tıklayıp "çalışmıyor" diyecek. **Alternatif — bölüm 13:** beş kişilik bir grup için bile "sunucu kur" gerçek bir sürtünme olabiliyor; `src/build_standalone.py` bunu tamamen atlayan, çift tıklayıp açılan tek dosyalık bir sürüm üretiyor.
 
 ### 1.1 Yasal not (kısa)
 
@@ -625,6 +625,42 @@ Sayfanın altındaki kısıtlar kutusunda şunlar yazacak:
 - Sayfada "counter" veya "win rate" kelimesi geçmiyor.
 - Kırık görsel durumunda yedek kutu görünüyor.
 
+## 13. Tek dosya dağıtımı (standalone build)
+
+Bölüm 1'in "tek gotcha"sı — `file://` ile açılamaması — küçük bir grup için bile gerçek bir sürtünme: "arkadaşına dosyayı gönder, o da `python -m http.server` çalıştırsın" makul bir istek değil. `src/build_standalone.py`, `web/`'in tamamını (veri + CSS + JS + logo) `dist/tft-comp-analyzer.html` adında **tek bir dosyaya** paketleyen ayrı bir dağıtım yolu — çift tıklayıp açılıyor, sunucu gerekmiyor. SPEC.md'nin kapsamı dışında (o dosya pipeline'ı anlatıyor); bu bölüm sadece web arayüzünün ek bir paketleme biçimini belgeliyor, `index.html`/`style.css`/`app.js`'in kendisi değişmiyor.
+
+### 13.1 Nasıl çalışıyor
+
+- **Veri:** `web/data/*.json`'ın her biri `<script type="application/json" id="embedded-data-<key>">` bloğu olarak gömülüyor. `<key>` isimleri `app.js`'in `DATA_FILES` sabitindeki anahtarlarla birebir aynı (`meta`, `units`, `compTraits`, ...) — build script bu eşlemeyi ikinci kez tanımlamıyor, `app.js`'in gerçek `DATA_FILES` nesnesini regex'le okuyup türetiyor; `unit_order`'ın "sıra tek bir yerde tanımlı olsun" ilkesiyle (bölüm 3.1) aynı gerekçe — iki taraf birbirinden bağımsız kayamaz.
+- **CSS/JS:** `style.css` bir `<style>` bloğuna, `app.js` bir `<script>` bloğuna gömülüyor; `<link>`/`<script src=...>` etiketleri kaldırılıyor.
+- **Logo:** `web/logo.png` base64 `data:` URI'ye çevrilip `<img>`'in `src`'ine gömülüyor — relative path `file://` altında 404 verirdi (canlı doğrulandı: düzeltmeden önce gerçek bir `net::ERR_FILE_NOT_FOUND` konsol hatasıydı).
+- **`app.js` tek kod tabanıyla iki modu da destekliyor, ayrı bir build-time fork yok.** `loadData()` her `DATA_FILES` girdisi için önce `document.getElementById("embedded-data-<key>")`'e bakıyor; varsa kullanıyor, yoksa (normal `web/index.html`'de hiç yok) eskisi gibi `fetch()`'e düşüyor. Standalone build'in var olduğu bilgisi `app.js`'e hiç sızmıyor — normal sunucu modu tek satır değişmeden aynı davranıyor.
+
+### 13.2 İkon kısıtı — hâlâ internet gerekiyor
+
+Unit/trait/item ikonları CommunityDragon CDN'inden çekiliyor (bölüm 4) — HTML'e gömülmüyorlar (binlerce görseli gömmek dosyayı onlarca MB'a çıkarırdı, "arkadaşına e-postayla gönder" amacına aykırı). Yani standalone build **tamamen offline değil**: veri ve arayüz kodu internet olmadan çalışır, ikonları görmek için internet gerekir. Bu, `renderConstraints()`'in standalone modda (yalnızca `loadData()`'nın `dataWasEmbedded` bayrağı true olunca) kısıtlar kutusuna eklediği ekstra bir notla kullanıcıya açıkça söyleniyor.
+
+### 13.3 `</script` enjeksiyon riski
+
+Bir unit/item/trait ismi `</script` alt dizisini içerseydi, ham JSON'u `<script>` etiketine gömmek sayfayı o noktada keserdi — HTML tokenizer `type` özniteliğine bakmadan bu diziyi arıyor. `escape_script_close()` bunu `</script` → `<\/script`'e çeviriyor: JSON'da `\/`, `/`'in geçerli bir (opsiyonel) escape'i olduğu için bu dönüşüm JSON'u bozmuyor (geri okununca aynı orijinal string'e dönüyor), ama HTML tokenizer'ın eşleşmesini kırıyor. Bu dönüşüm sadece JSON verisine uygulanıyor — `web/app.js`/`web/style.css`'in kendisinde aynı alt dizi bulunursa (şu an yok, `assert_no_script_close()` doğruluyor) build hata verip durur; çalıştırılabilir koda kör bir escape uygulamak (JSON'daki `\/`'nin aksine) kodun anlamını değiştirebilirdi, o yüzden orada sessizce "düzeltmek" yerine build'i durdurmayı seçtik.
+
+### 13.4 Kullanım ve doğrulama
+
+```
+python src/build_standalone.py
+```
+
+`web/data/*.json`'ın güncel olduğunu varsayar (önce `python src/build_web_data.py` çalıştırılmış olmalı). Çıktı: `dist/tft-comp-analyzer.html` (gitignored — bir derleme çıktısı, kaynak değil). Boyut (2026-08-31, 19 comp'luk gerçek veriyle): **~0.51 MB**.
+
+**Deterministik/idempotent.** Her adım disk üzerindeki mevcut içeriğin saf bir fonksiyonu — zaman damgası, rastgele sıralama yok. Aynı girdiyle iki kez çalıştırmak birebir aynı dosyayı üretiyor; canlı doğrulandı (iki ardışık çalıştırmanın çıktısı `diff`'lendi, fark yok) ve `tests/test_build_standalone.py`'de ayrı bir regresyon testi var.
+
+**`file://` ile canlı doğrulandı** (headless Chrome, gerçek `dist/tft-comp-analyzer.html`):
+- Konsol hatası yok (ilk denemede `logo.png` için gerçek bir `net::ERR_FILE_NOT_FOUND` bulundu ve bölüm 13.1'deki düzeltmeyle giderildi).
+- Self-test **20/20** geçiyor.
+- Önerilen bir comp'a tıklanınca board doluyor, aktif trait paneli doğru güncelleniyor, sonuç paneli açılıp doğru comp'u ve meta-tier rozetini (bölüm 8.5) gösteriyor.
+
+`tests/test_build_standalone.py` (21 test) build script'in her fonksiyonunu sentetik, küçük bir `web/`-benzeri dizin üzerinde test ediyor — gerçek pipeline verisine bağımlı değil, hızlı.
+
 ---
 
 *Uygulama sırası önerisi: veri yükleme ve şema doğrulama → palet → board ve DnD → trait hesabı → vektör ve eşleştirme → sonuç paneli → kısıtlar ve cilalama. Her adımı bitirmeden sonrakine geçme; özellikle vektör doğrulaması geçmeden sonuç paneline başlama.*
@@ -668,5 +704,7 @@ Bu bölüm, web arayüzü inşa edilirken alınan önemli kararları ve reddedil
 **`core_unit_avg_stars` eklendi (bölüm 3.4/5.3, 2026-09-01, kullanıcı kararı — önce ölçülüp raporlandı).** `loadSuggestedComp()` her core unit'i sabit 2 yıldızla dolduruyordu; gerçek veride ölçülünce (SPEC.md bölüm 9) 144 (cluster, core_unit) çiftinin sadece %13.2'sinin 2.0'a yakın çıktığı görüldü. `clustering.py`'ye `_unit_avg_star()` eklendi, her comp'un `core_unit_avg_stars`'ı (unit_id → ortalama yıldız, sadece o unit'i barındıran board'lar üzerinden) `comps.json`'a yazılıyor — `core_units`'in kendisi değişmedi (hâlâ düz bir ID listesi), bu tamamen ek bir alan. `loadSuggestedComp()` artık bu değeri `Math.round()`'la (yarımdan yukarı) en yakın tam yıldıza yuvarlayıp kullanıyor. Elle board kuran kullanıcı (bölüm 6.1) etkilenmedi — DEFAULT_STAR (2) orada hâlâ geçerli, çünkü tek tek eklenen bir unit'in hangi comp bağlamında olduğu bilinmiyor.
 
 **Meta-tier rozeti dört bantlı çeyreklikten S/A/B/C/D'ye (bölüm 8.5, 2026-08-31, kullanıcı kararı — iki aday şema önce ölçülüp raporlandı, sonra karar verildi).** Kullanıcı Güçlü/Ortalama üstü/Ortalama altı/Zayıf etiketlerini S/A/B/C/D tier sistemine çevirmek istedi ve karşılaştırma için iki aday şema belirledi. İkisi de kodlanmadan önce gerçek 19 comp'un `avg_placement` dağılımı üzerinde ölçüldü: standart sapma bazlı (mean±0.5σ/1.5σ) S=1/A=5/B=5/C=7/D=1 verdi ve S/D'ye tam olarak gerçek istatistiksel aykırı değerleri (Draven — Alev, Warwick — Karadiken) izole etti; sabit %10/20/40/20/10 yüzdelik bazlı S=2/A=4/B=7/C=4/D=2 verdi ama birbirine 0.015 kadar yakın iki comp'u (Çakıl — Vadi Canavarı vs Master Yi — Ahenkli) sırf kotayı doldurmak için ayırdı. Standart sapma bazlı seçildi (ayrıntı ve tam tier listeleri SPEC.md'nin karar geçmişinde). Uygulama: `clustering.py`'nin `compute_avg_placement_quartiles()`'ı `compute_avg_placement_tiers()`'a dönüştü, `comps.json`'ın `_metadata.avg_placement_quartiles` (`q1/q2/q3`) alanı `_metadata.avg_placement_tiers` (`mean`/`stdev`/`n_comps`/`bounds.s_max..c_max`) oldu — HDBSCAN'i yeniden fit etmeden, saklı `centroids.npz`/`cluster_labels.npy`'ye karşı regenere edildi, diff'le doğrulandı: `_metadata` dışında hiçbir alan değişmedi. `app.js`'in `TIER_BANDS`/`getTierBand()`/`createTierBadge()`'i 5 banda güncellendi, renkler kullanıcı isteğiyle S altın(+parıltı)/A yeşil/B mavi/C gri/D sönük kırmızı. Tooltip artık bandın dağılımdan türediğini ve mutlak bir güç ölçüsü olmadığını açıkça söylüyor. Canlı doğrulandı (headless Chrome): üç konumun (sol sütun, sonuç paneli, modal) hepsinde doğru tier/renk/tooltip görünüyor, self-test 20/20.
+
+**Tek dosya (standalone) build eklendi (bölüm 13, 2026-08-31, kullanıcı kararı).** `src/build_standalone.py`, `web/`'i veri+CSS+JS+logo gömülü tek bir `dist/tft-comp-analyzer.html`'e paketliyor — `file://` ile çift tıklayıp açılıyor, sunucu gerekmiyor. `app.js`'in `loadData()`'sı embedded-veri-yoksa-fetch-et mantığıyla genişletildi, `DATA_FILES`'ın kendisi build script'te ikinci kez tanımlanmıyor (app.js'ten regex'le türetiliyor, iki taraf kayamaz). İlk canlı `file://` denemesi gerçek bir bulgu çıkardı: header logosu (`logo.png`) relative path olduğu için `net::ERR_FILE_NOT_FOUND` veriyordu — düzeltme, onu da base64 `data:` URI'ye gömmek oldu (`embed_logo()`). `</script` enjeksiyon riski (bir display name'in bu alt diziyi içerip HTML'i kesmesi) JSON verisi için otomatik escape ediliyor (`\/`  — JSON-geçerli, HTML tokenizer'ı kırıyor); aynı risk `app.js`/`style.css`'in kendisinde bulunursa (executable kod, kör escape güvenli değil) build hata verip duruyor. İkonlar CommunityDragon'dan geldiği için gömülmüyor — standalone modda kısıtlar kutusuna bunu açıklayan bir not ekleniyor (`dataWasEmbedded` bayrağı). Canlı doğrulandı: gerçek `dist/tft-comp-analyzer.html` headless Chrome'da `file://` ile açıldı, konsol hatası yok, self-test 20/20, comp seçimi/board kurma çalışıyor; iki ardışık build `diff`'lendi, birebir aynı (idempotent). 21 testlik `tests/test_build_standalone.py` sentetik bir `web/`-benzeri dizinle hızlı çalışıyor, gerçek pipeline verisine bağımlı değil.
 
 *Uygulama sırası önerisi: veri yükleme ve şema doğrulama → palet → board ve DnD → trait hesabı → vektör ve eşleştirme → sonuç paneli → kısıtlar ve cilalama. Her adımı bitirmeden sonrakine geçme; özellikle vektör doğrulaması geçmeden sonuç paneline başlama.*

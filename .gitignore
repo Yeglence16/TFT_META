@@ -3,5 +3,6 @@ data/raw/
 data/processed/
 data/static/
 models/
+dist/
 __pycache__/
 *.pyc

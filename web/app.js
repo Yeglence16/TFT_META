@@ -38,24 +38,43 @@ let board = {}; // { unitId: { star: 1|2|3 } }
 let boardOrder = []; // slot sırasını korumak için unitId listesi, en fazla BOARD_SIZE
 let activeCostTab = "1"; // section 5.4 — varsayılan açık sekme: 1 maliyet
 
+// src/build_standalone.py'nin ürettiği tek-dosya sürümünde mi çalışıyoruz —
+// loadData() en az bir DATA_FILES girdisini gömülü olarak bulunca true olur.
+// Ayrı bir bayrak/parametre taşımak yerine "gerçekten embedded veri kullanıldı
+// mı" sorusunun kendisi bunun tanımı (section 9'un kısıtlar kutusundaki
+// ikon/internet notu bu bayrağa bakıyor, renderConstraints()).
+let dataWasEmbedded = false;
+
 // ---------------------------------------------------------------------------
 // Veri yükleme
 // ---------------------------------------------------------------------------
 
+/** build_standalone.py, her DATA_FILES girdisini `<script type="application/
+ * json" id="embedded-data-<key>">` olarak HTML'e gömüyor — burada varsa
+ * onu kullan, yoksa (normal sunucu modu) hiçbir şey değişmez. */
+function readEmbeddedData(key) {
+  const el = document.getElementById(`embedded-data-${key}`);
+  return el ? JSON.parse(el.textContent) : null;
+}
+
 async function loadData() {
   const entries = Object.entries(DATA_FILES);
-  const responses = await Promise.all(
-    entries.map(([, path]) =>
-      fetch(path).then((res) => {
-        if (!res.ok) {
-          throw new Error(`${path} yüklenemedi (HTTP ${res.status})`);
-        }
-        return res.json();
-      })
-    )
+  const results = await Promise.all(
+    entries.map(async ([key, path]) => {
+      const embedded = readEmbeddedData(key);
+      if (embedded !== null) {
+        dataWasEmbedded = true;
+        return embedded;
+      }
+      const res = await fetch(path);
+      if (!res.ok) {
+        throw new Error(`${path} yüklenemedi (HTTP ${res.status})`);
+      }
+      return res.json();
+    })
   );
   entries.forEach(([key], i) => {
-    state[key] = responses[i];
+    state[key] = results[i];
   });
 }
 
@@ -1203,6 +1222,19 @@ function renderConstraints() {
     `Veri şu yamadan toplanmıştır: ${patchText}. Denge yamalarıyla sonuçlar eskir.`,
     "Dizilim, ekonomi ve item verisi analize dahil değildir.",
   ];
+
+  // src/build_standalone.py'nin tek-dosya sürümü: veri ve arayüz kodu bu
+  // HTML'in içinde, internet gerektirmeden çalışır — ama unit/trait/item
+  // ikonları CommunityDragon CDN'inden çekiliyor (bölüm 4), o kısım hâlâ
+  // internet ister. Sadece standalone modda gösteriliyor; normal sunucu
+  // modunda zaten yerel bir sunucu kurulduğu için bu şaşırtıcı değil.
+  if (dataWasEmbedded) {
+    bullets.push(
+      "Bu, tek dosyalık (standalone) bir sürüm — veri ve arayüz kodu bu HTML'in içinde, " +
+        "internet olmadan da açılır. Ama unit/trait/item ikonları CommunityDragon'dan " +
+        "yükleniyor, onları görmek için internet bağlantısı gerekir."
+    );
+  }
 
   list.innerHTML = "";
   for (const text of bullets) {

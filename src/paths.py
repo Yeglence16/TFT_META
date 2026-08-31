@@ -15,7 +15,9 @@ DATA_RAW = PROJECT_ROOT / "data" / "raw"
 DATA_PROCESSED = PROJECT_ROOT / "data" / "processed"
 DATA_STATIC = PROJECT_ROOT / "data" / "static"
 MODELS_DIR = PROJECT_ROOT / "models"
+WEB_DIR = PROJECT_ROOT / "web"
 WEB_DATA_DIR = PROJECT_ROOT / "web" / "data"
+DIST_DIR = PROJECT_ROOT / "dist"
 
 
 def ensure_dirs() -> None:
