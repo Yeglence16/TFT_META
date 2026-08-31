@@ -13,25 +13,10 @@
 
 <header class="site-header">
   <div class="logo">
-    <!-- Altın spatula ikonu — set verisi değil, sabit bir marka öğesi (bkz.
-         SPEC-WEB.md section 5.0), o yüzden inline SVG olarak koda gömülü. -->
-    <svg class="logo-icon" viewBox="0 0 48 48" aria-hidden="true">
-      <rect x="21" y="4" width="6" height="24" rx="2" fill="url(#handleGrad)" />
-      <path d="M24 26c-9 0-16 6-16 13 0 3 3 5 6 3.5 3-1.5 6-2.5 10-2.5s7 1 10 2.5c3 1.5 6-0.5 6-3.5 0-7-7-13-16-13z" fill="url(#paddleGrad)" />
-      <circle cx="17" cy="36" r="1.6" fill="#5b4315" opacity="0.5" />
-      <circle cx="24" cy="39" r="1.6" fill="#5b4315" opacity="0.5" />
-      <circle cx="31" cy="36" r="1.6" fill="#5b4315" opacity="0.5" />
-      <defs>
-        <linearGradient id="handleGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#f0c975" />
-          <stop offset="1" stop-color="#b8873a" />
-        </linearGradient>
-        <linearGradient id="paddleGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#f5d68f" />
-          <stop offset="1" stop-color="#c8952f" />
-        </linearGradient>
-      </defs>
-    </svg>
+    <!-- Logo görseli — set verisi değil, sabit bir marka öğesi (bkz.
+         SPEC-WEB.md section 5.0). alt="" kasıtlı: bitişikteki h1 zaten
+         aynı ismi taşıyor, ekran okuyucu ikisini art arda okumasın. -->
+    <img class="logo-icon" src="logo.png" alt="">
     <h1>TFT Comp Analyzer</h1>
   </div>
 </header>

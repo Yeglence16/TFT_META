@@ -280,7 +280,7 @@ Masaüstü öncelikli kalıyor (bölüm 11: mobil optimizasyonu yok).
 
 ```
 +--------------------------------------------------------------------+
-| [altın spatula ikonu] TFT Comp Analyzer                            |  <- header
+| [logo.png] TFT Comp Analyzer                                       |  <- header
 +----------------+---------------------------------------------------+
 |  ÖNERİLEN      |                                                    |
 |  COMP'LAR      |                    BOARD                           |
@@ -314,11 +314,13 @@ Dört bölge + bir overlay:
 
 | Bölge | İçerik |
 | --- | --- |
-| Header | Altın renkli spatula ikonu + "TFT Comp Analyzer" başlığı, sağında sonuç panelini açan "‹"/"›" sekmesi. |
+| Header | `web/logo.png` (2026-08-31: elle sağlanmış bir PNG, üretken bir SVG değil — bkz. aşağıdaki not) + "TFT Comp Analyzer" başlığı, sağında sonuç panelini açan "‹"/"›" sekmesi. |
 | Sol sütun | Önerilen comp'lar paneli — bölüm 5.3. |
 | Orta (kalan tüm genişlik) | Board (bölüm 5.1) + altında aktif trait paneli (bölüm 7.1). Artık sağda sabit bir sütun olmadığı için tüm kalan genişliği kullanır. |
 | Sağ kenar (overlay, varsayılan kapalı) | Sonuç paneli — bölüm 5.5, içerik bölüm 8; dil kuralı bölüm 8.2. |
 | Alt (tam genişlik) | Unit paleti — dikey değil yatay bir panel. Bölüm 5.2/5.4. |
+
+> **Header logosu — inline SVG'den statik PNG'ye (2026-08-31, kullanıcı kararı).** Bu bölümün önceki hali altın bir spatula ikonunü koddaki inline `<svg>` olarak tarif ediyordu (bölüm 4'ün "set verisi koda gömülmez" kuralına aykırı değildi, çünkü spatula bir marka öğesiydi, set verisi değil). Kullanıcı kendi sağladığı bir görseli (`web/logo.png`, 600×600 PNG, gerçek alfa şeffaflığı) logo olarak istedi — SVG tamamen kaldırıldı, `index.html`'de `.logo-icon` artık `<img src="logo.png" alt="">` (bitişikteki `<h1>` zaten aynı ismi taşıdığı için `alt=""` kasıtlı — ekran okuyucu ismi iki kez okumasın). `.logo-icon` 32px'ten 40px'e büyütüldü (kaynak görsel daha detaylı, küçük boyutta detay kayboluyordu) + `object-fit: contain` eklendi (kare kaynağa karşı savunma, ezilmeyi engeller). Bölüm 4'ün CDN/`onerror`/`loading="lazy"` kuralları buraya uygulanmıyor — o kurallar CommunityDragon'dan çekilen unit/trait/item ikonları için (uzak, kırılabilir); logo repo içinde yerel bir statik dosya, aynı risk yok.
 
 > **Sabit viewport kuralı — tamamen terk edildi (2026-08-31, gerçek bir sıkışma hatasına yol açtığı bulundu).** Önceki hal (2026-08-30, aşağıdaki eski metin) `body`'yi `height: 100vh` ile sabitleyip önerilen-comp'lar/board ızgarasını (`flex: 1 1 auto; min-height: 0`) tek esneyen bölge yapıyordu; palet, kısıtlar kutusu ve footer ise `flex: 0 0 auto` ile hiç küçülmüyordu. Bu dört sabit bölgenin toplam doğal yüksekliği 100vh'a yaklaştığında/aştığında, ızgaranın payına kalan yükseklik `min-height:0` sayesinde neredeyse 0'a kadar küçülüyordu — board sütunu palet ile kısıtlar kutusu arasında birkaç piksele sıkışıyor, `overflow-y:auto` teknik olarak devredeydi ama görünür alan tek bir unit kartının (128px) bile altına düşüyor, kartların altı kesiliyordu. `body`'nin "son çare" scroll'u hiç devreye girmiyordu çünkü flex-shrink açığı zaten kapatıyordu — body'nin toplam içerik yüksekliği hiçbir zaman 100vh'ı geçmediği için tarayıcı scroll'a gerek görmüyordu, içerik sadece görünmüyordu. Canlı ekran görüntüsüyle doğrulandı (headless Chrome, 1400×2400 pencere): eski haliyle board sütunu ve palet sıkışık, düzeltmeden sonra board'un 10 slotu ve paletteki tüm unit kartları (portre + trait + isim + maliyet) tam yükseklikte, kesilmeden görünüyor.
 >
