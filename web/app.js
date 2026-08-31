@@ -129,11 +129,13 @@ function buildBoardVector(board, meta, activeTraits) {
 }
 
 /** section 7.3 — cosine mesafe (vektörler L2-unit-norm, düz nokta çarpımı),
- * off_meta hariç her centroid'e karşı, en yakını seç. */
+ * off_meta/_metadata hariç her centroid'e karşı, en yakını seç. */
 function nearestComp(vector, comps, matchThreshold) {
   const distances = [];
   for (const [compId, info] of Object.entries(comps)) {
-    if (compId === "off_meta") continue; // gerçek bir comp değil, centroid'i yok
+    // "c_NN" olmayan her şeyi atla — off_meta'nın centroid'i yok, _metadata
+    // (2026-09-01, avg_placement_quartiles) hiç bir comp değil.
+    if (!compId.startsWith("c_")) continue;
     const centroid = info.centroid;
     let dot = 0;
     for (let i = 0; i < vector.length; i++) dot += vector[i] * centroid[i];
@@ -467,7 +469,9 @@ function renderSuggestions() {
   const list = document.getElementById("suggestions-list");
   list.innerHTML = "";
 
-  const realComps = Object.entries(state.comps).filter(([compId]) => compId !== "off_meta");
+  // "c_NN" olmayan her şeyi atla — off_meta'nın core_units'i yok, _metadata
+  // (2026-09-01, avg_placement_quartiles) hiç bir comp değil.
+  const realComps = Object.entries(state.comps).filter(([compId]) => compId.startsWith("c_"));
   // TFT'de düşük placement iyidir (section 10) — artan sırada = en iyiden başla.
   realComps.sort((a, b) => a[1].avg_placement - b[1].avg_placement);
   const top = realComps.slice(0, SUGGESTION_COUNT);
@@ -481,6 +485,8 @@ function renderSuggestions() {
     const name = document.createElement("span");
     name.className = "suggestion-name";
     name.textContent = comp.name;
+    const tierBadge = createTierBadge(comp.avg_placement);
+    if (tierBadge) name.appendChild(tierBadge);
 
     const stats = document.createElement("span");
     stats.className = "suggestion-stats";
@@ -492,6 +498,18 @@ function renderSuggestions() {
   }
 }
 
+/** section 9's core_unit_avg_stars (2026-09-01, ölçüldü): DEFAULT_STAR=2
+ * varsayımı büyük ölçüde yanlış çıktı — 144 (cluster, core_unit) çiftinin
+ * sadece %13.2'si 2.0'a ±0.1 yakındı, carry'ler bilinçli 3-yıldızlanıyor
+ * (2.9'a kadar), düşük öncelikli unit'ler 1'den kurtulamıyor (ör. Taric,
+ * göründüğü 5 cluster'ın hepsinde 1.2-1.55 arası). Yuvarlama: standart
+ * "yarımdan yukarı" (Math.round — 2.56→3, 2.49→2). Ortalama tanım gereği
+ * [1,3] aralığında olduğu için clamp gerçek veride hiç devreye girmez,
+ * sadece savunma amaçlı (eski/eksik bir comps.json'a karşı). */
+function starFromAverage(avgStar) {
+  return Math.min(3, Math.max(1, Math.round(avgStar)));
+}
+
 /** section 5.3: bir öneriye tıklanınca board'u o comp'un core_units'iyle
  * doldur — board doluysa bile onay istemeden, doğrudan (2026-08-30: ilk
  * taslaktaki confirm() kullanımda rahatsız edici bulundu, kaldırıldı). */
@@ -499,11 +517,13 @@ function loadSuggestedComp(compId) {
   const comp = state.comps[compId];
   const coreUnits = comp.core_units.slice(0, BOARD_SIZE);
   const omitted = comp.core_units.length - coreUnits.length;
+  const avgStars = comp.core_unit_avg_stars || {};
 
   board = {};
   boardOrder = [];
   for (const unitId of coreUnits) {
-    board[unitId] = { star: DEFAULT_STAR };
+    const avgStar = avgStars[unitId];
+    board[unitId] = { star: avgStar != null ? starFromAverage(avgStar) : DEFAULT_STAR };
     boardOrder.push(unitId);
   }
 
@@ -704,6 +724,45 @@ function compName(comps, compId) {
   return (comps[compId] && comps[compId].name) || compId;
 }
 
+// ---------------------------------------------------------------------------
+// Meta-tier rozeti (section 8, 2026-09-01, kullanıcı kararı) — sınırlar KODA
+// GÖMÜLMEDİ: comps.json'ın _metadata.avg_placement_quartiles'ından okunuyor
+// (clustering.py her koşuda 19 comp'un avg_placement'ından yeniden
+// hesaplıyor), sadece etiket metni/renk sırası burada — "zayıf eşleşme"/
+// "düşük güven" ile aynı desen (sayısal eşik veriden, UI metni koddan).
+// ---------------------------------------------------------------------------
+
+const TIER_BANDS = [
+  { id: "strong", label: "Güçlü" },
+  { id: "above-average", label: "Ortalama üstü" },
+  { id: "below-average", label: "Ortalama altı" },
+  { id: "weak", label: "Zayıf" },
+];
+
+function getTierBand(avgPlacement, quartiles) {
+  if (!quartiles) return null;
+  if (avgPlacement <= quartiles.q1) return TIER_BANDS[0];
+  if (avgPlacement <= quartiles.q2) return TIER_BANDS[1];
+  if (avgPlacement <= quartiles.q3) return TIER_BANDS[2];
+  return TIER_BANDS[3];
+}
+
+function createTierBadge(avgPlacement) {
+  const metadata = state.comps._metadata;
+  const quartiles = metadata && metadata.avg_placement_quartiles;
+  const band = getTierBand(avgPlacement, quartiles);
+  if (!band) return null;
+
+  const badge = document.createElement("span");
+  badge.className = `tier-badge tier-badge-${band.id}`;
+  badge.textContent = band.label;
+  badge.title =
+    `Bant, ${quartiles.n_comps} comp'un ortalama sıralama çeyrekliklerinden türetildi ` +
+    `(Q1=${quartiles.q1.toFixed(2)}, Q2=${quartiles.q2.toFixed(2)}, Q3=${quartiles.q3.toFixed(2)}). ` +
+    `Bu comp: ${avgPlacement.toFixed(2)}.`;
+  return badge;
+}
+
 /** Bir delta/lift değerini yöne çeviren cümle parçası — TFT'de düşük
  * placement iyi olduğu için negatif değer her zaman "iyileştiriyor" demeli
  * (section 10'un "düşük placement'ı kötü renklendirme" hatasına düşme). */
@@ -738,6 +797,11 @@ function updateResult() {
   renderCompReport(container, matchedId, distance, meta, comps, matchups, compTraits, items, units, traits);
 }
 
+/** section 7.3 (2026-08-31 güncellemesi): "en yakın 3 comp" artık tıklanabilir
+ * — sol sütundaki öneri listesiyle AYNI davranış (loadSuggestedComp): board o
+ * comp'un core_units'iyle dolar, sonuç paneli o comp'un raporunu gösterir.
+ * Modal AÇMAZ — bu madde 1, board'u değiştiren bir eylem; madde 3'ün
+ * head-to-head modalıyla (board'a dokunmadan peek) karıştırılmamalı. */
 function renderUnmatched(container, ranked, distance, threshold, comps) {
   // section 7.3 / src/cli.py: zorla bir comp'a eşleştirip rapor gösterme.
   const p1 = document.createElement("p");
@@ -747,17 +811,43 @@ function renderUnmatched(container, ranked, distance, threshold, comps) {
   container.appendChild(p1);
 
   const p2 = document.createElement("p");
-  p2.textContent = "En yakın 3 comp:";
+  p2.textContent = "En yakın 3 comp (tıklayınca board'a yüklenir):";
   container.appendChild(p2);
 
   const list = document.createElement("ul");
   list.className = "nearest-list";
   for (const { compId, distance: d } of ranked.slice(0, 3)) {
     const li = document.createElement("li");
-    li.textContent = `${compName(comps, compId)} — mesafe ${d.toFixed(2)}.`;
+    const link = document.createElement("button");
+    link.type = "button";
+    link.className = "comp-link";
+    link.textContent = compName(comps, compId);
+    link.addEventListener("click", () => loadSuggestedComp(compId));
+    li.append(link, document.createTextNode(` — mesafe ${d.toFixed(2)}.`));
     list.appendChild(li);
   }
   container.appendChild(list);
+}
+
+/** Bir comp'un item/istatistik/head-to-head/trait gövdesi — hem ana sonuç
+ * panelinde (board eşleşmesi bağlamında) hem de madde 3'ün modalında (board'a
+ * dokunmadan "bu comp nasıl" bakışında) AYNI şekilde kullanılıyor, tek yerden
+ * üretiliyor ki ikisi birbirinden sürüklenmesin. Sıra (2026-08-31): item
+ * önerileri → özet → head-to-head → trait'ler. */
+function buildCompReportBody(compId, comps, matchups, compTraits, items, units, traits) {
+  const comp = comps[compId];
+  const frag = document.createDocumentFragment();
+
+  const statsP = document.createElement("p");
+  statsP.textContent =
+    `Bu comp ortalama ${comp.avg_placement.toFixed(2)} sırada bitiriyor, ` +
+    `oyunların %${(comp.top4_rate * 100).toFixed(0)}'sinde ilk 4'e giriyor (${comp.n_total} örnek).`;
+
+  frag.appendChild(renderItemSection(compId, comp, items, units));
+  frag.appendChild(statsP);
+  frag.appendChild(renderHeadToHead(compId, matchups, comps));
+  frag.appendChild(renderTraitSection(compId, compTraits, traits));
+  return frag;
 }
 
 function renderCompReport(container, compId, distance, meta, comps, matchups, compTraits, items, units, traits) {
@@ -767,6 +857,8 @@ function renderCompReport(container, compId, distance, meta, comps, matchups, co
 
   const h3 = document.createElement("h3");
   h3.textContent = comp.name;
+  const tierBadge = createTierBadge(comp.avg_placement);
+  if (tierBadge) h3.appendChild(tierBadge);
   if (distance >= WEAK_MATCH_RATIO * meta.match_threshold) {
     const badge = document.createElement("span");
     badge.className = "badge-weak-match";
@@ -780,20 +872,7 @@ function renderCompReport(container, compId, distance, meta, comps, matchups, co
   metaP.textContent = `Board'unuz bu comp'a mesafe ${distance.toFixed(2)} ile en yakın (eşik ${meta.match_threshold.toFixed(2)}).`;
   wrap.appendChild(metaP);
 
-  // section 8.2: ham sayı yığını değil, cümle.
-  const statsP = document.createElement("p");
-  statsP.textContent =
-    `Bu comp ortalama ${comp.avg_placement.toFixed(2)} sırada bitiriyor, ` +
-    `oyunların %${(comp.top4_rate * 100).toFixed(0)}'sinde ilk 4'e giriyor (${comp.n_total} örnek).`;
-
-  // 2026-08-31: sıra kullanıcı isteğiyle değişti — item önerileri (görsel,
-  // en çok ilgi çeken) en üste, sonra comp özeti, head-to-head, trait'ler.
-  // Eskiden statsP en üstteydi (section 8'in orijinal sırası); bu artık
-  // geçerli değil, güncel sıra burada.
-  wrap.appendChild(renderItemSection(compId, comp, items, units));
-  wrap.appendChild(statsP);
-  wrap.appendChild(renderHeadToHead(compId, matchups, comps));
-  wrap.appendChild(renderTraitSection(compId, compTraits, traits));
+  wrap.appendChild(buildCompReportBody(compId, comps, matchups, compTraits, items, units, traits));
 
   container.appendChild(wrap);
 }
@@ -816,6 +895,17 @@ function renderHeadToHead(compId, matchups, comps) {
   const validEntries = Object.entries(entries).filter(([, cell]) => "rate" in cell);
   const insufficientEntries = Object.entries(entries).filter(([, cell]) => cell.insufficient_data === true);
 
+  // section 8 (2026-08-31): comp isimleri artık tıklanabilir buton — tıklanınca
+  // board'a dokunmadan o comp'un tam raporunu modalda açar (madde 3).
+  function compLink(oppId) {
+    const link = document.createElement("button");
+    link.type = "button";
+    link.className = "comp-link";
+    link.textContent = compName(comps, oppId);
+    link.addEventListener("click", () => openCompModal(oppId));
+    return link;
+  }
+
   function sentence(oppId, cell) {
     const p = document.createElement("p");
     p.className = "h2h-sentence";
@@ -824,11 +914,11 @@ function renderHeadToHead(compId, matchups, comps) {
     const rate = (cell.rate * 100).toFixed(0);
     const lo = (cell.ci[0] * 100).toFixed(0);
     const hi = (cell.ci[1] * 100).toFixed(0);
-    let text =
-      `${compName(comps, oppId)}'a karşı aynı lobide %${rate} oranında daha yüksek sırada bitiriyor ` +
+    let rest =
+      `'a karşı aynı lobide %${rate} oranında daha yüksek sırada bitiriyor ` +
       `(${cell.n} maçta, güven aralığı %${lo}-%${hi}).`;
-    if (ciWidth > WIDE_CI_WIDTH) text += " Az veriyle hesaplandığı için bu aralık geniş, temkinli okuyun.";
-    p.textContent = text;
+    if (ciWidth > WIDE_CI_WIDTH) rest += " Az veriyle hesaplandığı için bu aralık geniş, temkinli okuyun.";
+    p.append(compLink(oppId), document.createTextNode(rest));
     return p;
   }
 
@@ -874,8 +964,12 @@ function renderHeadToHead(compId, matchups, comps) {
   if (insufficientEntries.length > 0) {
     const note = document.createElement("p");
     note.className = "insufficient-note";
-    const names = insufficientEntries.map(([oppId, cell]) => `${compName(comps, oppId)} (${cell.n} maç)`);
-    note.textContent = `Şu comp'larla yeterli veri olmadığı için karşılaştırma yapılamıyor: ${names.join(", ")}.`;
+    note.appendChild(document.createTextNode("Şu comp'larla yeterli veri olmadığı için karşılaştırma yapılamıyor: "));
+    insufficientEntries.forEach(([oppId, cell], i) => {
+      if (i > 0) note.appendChild(document.createTextNode(", "));
+      note.append(compLink(oppId), document.createTextNode(` (${cell.n} maç)`));
+    });
+    note.appendChild(document.createTextNode("."));
     section.appendChild(note);
   }
 
@@ -1016,6 +1110,48 @@ function renderItemSection(compId, comp, items, units) {
 }
 
 // ---------------------------------------------------------------------------
+// Comp modal (section 8, 2026-08-31) — head-to-head'deki bir comp ismine
+// tıklanınca board'a hiç dokunmadan o comp'un tam raporunu gösterir. Modal
+// içindeki head-to-head isimleri de openCompModal'a bağlı olduğu için
+// tıklanınca yeni bir modal AÇMIYOR, aynı modalın #comp-modal-content'ini
+// yeniden dolduruyor — zincirleme gezinme bu şekilde "üst üste modal" değil
+// "içerik değişimi" oluyor.
+// ---------------------------------------------------------------------------
+
+function openCompModal(compId) {
+  const { comps, matchups, compTraits, items, units, traits } = state;
+  const comp = comps[compId];
+  if (!comp) return; // off_meta'nın centroid'i/raporu yok, buraya hiç düşmemeli
+
+  const content = document.getElementById("comp-modal-content");
+  content.innerHTML = "";
+
+  const h3 = document.createElement("h3");
+  h3.id = "comp-modal-heading";
+  h3.textContent = comp.name;
+  const tierBadge = createTierBadge(comp.avg_placement);
+  if (tierBadge) h3.appendChild(tierBadge);
+  content.appendChild(h3);
+  content.appendChild(buildCompReportBody(compId, comps, matchups, compTraits, items, units, traits));
+
+  document.getElementById("comp-modal-overlay").hidden = false;
+  document.getElementById("comp-modal-close").focus();
+}
+
+function closeCompModal() {
+  document.getElementById("comp-modal-overlay").hidden = true;
+}
+
+function setupCompModal() {
+  document.getElementById("comp-modal-close").addEventListener("click", closeCompModal);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !document.getElementById("comp-modal-overlay").hidden) {
+      closeCompModal();
+    }
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Kısıtlar kutusu (section 8/9)
 // ---------------------------------------------------------------------------
 
@@ -1064,6 +1200,7 @@ async function init() {
   setupCostTabs();
   setupPaletteToggle();
   setupResultPanelToggle();
+  setupCompModal();
   setupDragAndDrop();
   renderConstraints();
   renderSuggestions();

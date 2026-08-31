@@ -128,14 +128,32 @@ def _valid_comp(**overrides):
         "avg_placement": 4.2,
         "top4_rate": 0.5,
         "core_units": ["u1", "u2", "u3", "u4", "u5"],
+        "core_unit_avg_stars": {"u1": 2.0, "u2": 2.0, "u3": 2.0, "u4": 2.0, "u5": 2.0},
         "common_traits": [["t1", 80]],
     }
     comp.update(overrides)
     return comp
 
 
+def _valid_metadata():
+    # SPEC-WEB.md section 8 (2026-09-01) — meta-tier band boundaries, always
+    # present in real pipeline output (clustering.py writes it every run).
+    return {"avg_placement_quartiles": {"q1": 4.27, "q2": 4.52, "q3": 4.68, "n_comps": 19}}
+
+
 def test_validate_comps_accepts_valid_data():
-    validate_comps({"c_00": _valid_comp()}, vector_dim=2)
+    validate_comps({"c_00": _valid_comp(), "_metadata": _valid_metadata()}, vector_dim=2)
+
+
+def test_validate_comps_rejects_missing_metadata():
+    with pytest.raises(SchemaError):
+        validate_comps({"c_00": _valid_comp()}, vector_dim=2)
+
+
+def test_validate_comps_rejects_non_ascending_quartiles():
+    bad_metadata = {"avg_placement_quartiles": {"q1": 4.7, "q2": 4.5, "q3": 4.6, "n_comps": 19}}
+    with pytest.raises(SchemaError):
+        validate_comps({"c_00": _valid_comp(), "_metadata": bad_metadata}, vector_dim=2)
 
 
 def test_validate_comps_accepts_off_meta_without_centroid_or_name():
@@ -144,23 +162,58 @@ def test_validate_comps_accepts_off_meta_without_centroid_or_name():
     data = {
         "c_00": _valid_comp(),
         "off_meta": {"n_full": 10, "n_total": 20, "avg_placement": 5.5, "top4_rate": 0.3},
+        "_metadata": _valid_metadata(),
     }
     validate_comps(data, vector_dim=2)
 
 
 def test_validate_comps_rejects_centroid_dimension_mismatch():
     with pytest.raises(SchemaError):
-        validate_comps({"c_00": _valid_comp(centroid=[0.5, 0.5, 0.5])}, vector_dim=2)
+        validate_comps({"c_00": _valid_comp(centroid=[0.5, 0.5, 0.5]), "_metadata": _valid_metadata()}, vector_dim=2)
 
 
 def test_validate_comps_rejects_core_units_below_min():
     with pytest.raises(SchemaError):
-        validate_comps({"c_00": _valid_comp(core_units=["u1", "u2"])}, vector_dim=2)
+        validate_comps(
+            {"c_00": _valid_comp(core_units=["u1", "u2"], core_unit_avg_stars={"u1": 2.0, "u2": 2.0}), "_metadata": _valid_metadata()},
+            vector_dim=2,
+        )
 
 
 def test_validate_comps_rejects_core_units_above_max():
     with pytest.raises(SchemaError):
-        validate_comps({"c_00": _valid_comp(core_units=[f"u{i}" for i in range(13)])}, vector_dim=2)
+        validate_comps(
+            {
+                "c_00": _valid_comp(
+                    core_units=[f"u{i}" for i in range(13)],
+                    core_unit_avg_stars={f"u{i}": 2.0 for i in range(13)},
+                ),
+                "_metadata": _valid_metadata(),
+            },
+            vector_dim=2,
+        )
+
+
+def test_validate_comps_rejects_core_unit_avg_stars_key_mismatch():
+    # Regression: core_unit_avg_stars's keys must exactly match core_units —
+    # a missing or extra unit id here would silently mislead the "load this
+    # comp" star-filling feature.
+    with pytest.raises(SchemaError):
+        validate_comps(
+            {"c_00": _valid_comp(core_unit_avg_stars={"u1": 2.0, "u2": 2.0, "u3": 2.0, "u4": 2.0}), "_metadata": _valid_metadata()},
+            vector_dim=2,
+        )
+
+
+def test_validate_comps_rejects_core_unit_avg_stars_out_of_range():
+    with pytest.raises(SchemaError):
+        validate_comps(
+            {
+                "c_00": _valid_comp(core_unit_avg_stars={"u1": 3.5, "u2": 2.0, "u3": 2.0, "u4": 2.0, "u5": 2.0}),
+                "_metadata": _valid_metadata(),
+            },
+            vector_dim=2,
+        )
 
 
 def test_validate_matchups_accepts_full_rate_cell():

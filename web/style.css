@@ -744,3 +744,110 @@ body {
   color: var(--text-muted);
   font-size: 0.75rem;
 }
+
+/* --- Comp linki — head-to-head'de ve "uymuyor" listesinde tıklanabilir
+   comp isimleri (section 8, section 7.3, 2026-08-31) --- */
+
+.comp-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--gold-bright);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.comp-link:hover,
+.comp-link:focus-visible {
+  text-decoration-color: var(--gold-bright);
+}
+
+/* --- Meta-tier rozeti (section 8, 2026-09-01) — renk sırası kullanıcı
+   isteğiyle güçlüden zayıfa yeşil→sarı→turuncu→gri. Sayısal sınırlar
+   comps.json'dan geliyor (app.js), burada sadece görsel. --- */
+
+.tier-badge {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-radius: 4px;
+  cursor: help;
+  vertical-align: middle;
+}
+
+.tier-badge-strong {
+  background: #1e4d2e;
+  color: #6fd98a;
+  border: 1px solid #2f9e57;
+}
+
+.tier-badge-above-average {
+  background: #4a3f14;
+  color: var(--gold-bright);
+  border: 1px solid var(--gold);
+}
+
+.tier-badge-below-average {
+  background: #4a2f10;
+  color: #e0a565;
+  border: 1px solid #a2601f;
+}
+
+.tier-badge-weak {
+  background: #33363f;
+  color: #a8adbd;
+  border: 1px solid #565b6b;
+}
+
+/* --- Comp modal (section 8, 2026-08-31) — head-to-head/nearest-comp
+   isimlerine tıklayınca board'a dokunmadan bir comp'un tam raporunu
+   gösterir. Zincirleme gezinme: modal içindeki head-to-head isimleri de
+   AYNI modalın içeriğini değiştirir, üst üste yeni modal açmaz. --- */
+
+.comp-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 6, 10, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  z-index: 100; /* result-panel'in (z-index:50) üstünde */
+}
+
+.comp-modal {
+  position: relative;
+  width: 480px;
+  max-width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+
+.comp-modal-close {
+  position: sticky;
+  top: 0;
+  float: right;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg-panel-alt);
+  color: var(--text);
+  font-size: 1rem;
+  cursor: pointer;
+  z-index: 1;
+}

@@ -116,6 +116,15 @@
       "DA_Brambleback18",
       "DA_Murkwolf18"
     ],
+    "core_unit_avg_stars": {
+      "DA_Krug18": 2.463,
+      "DA_18_Sentry": 2.68,
+      "DA_Scuttlecrab18": 2.506,
+      "DA_Sentinel18": 1.605,
+      "DA_Cinderling18": 2.762,
+      "DA_Brambleback18": 1.695,
+      "DA_Murkwolf18": 2.128
+    },
     "common_traits": [
       [
         "DA_Riftbeast18",
@@ -249,6 +258,16 @@
       "DA_Karma18",
       "DA_Taric18"
     ],
+    "core_unit_avg_stars": {
+      "DA_18_Sett": 1.837,
+      "DA_18_Ahri": 1.868,
+      "DA_Sentinel18": 1.715,
+      "DA_18_Morgana": 1.855,
+      "DA_Krug18": 1.778,
+      "DA_18_Sentry": 1.607,
+      "DA_Karma18": 1.744,
+      "DA_Taric18": 1.275
+    },
     "common_traits": [
       [
         "DA_18_Invoker",
@@ -381,6 +400,15 @@
       "DA_18_Ornn",
       "DA_18_Leona"
     ],
+    "core_unit_avg_stars": {
+      "DA_Fiddlesticks18": 2.512,
+      "DA_18_Rammus": 2.521,
+      "DA_18_Cassiopeia": 2.71,
+      "DA_18_Shen": 1.992,
+      "DA_18_Lillia": 1.582,
+      "DA_18_Ornn": 1.93,
+      "DA_18_Leona": 1.889
+    },
     "common_traits": [
       [
         "DA_18_Defender",
@@ -514,6 +542,16 @@
       "DA_18_Zyra",
       "DA_Taric18"
     ],
+    "core_unit_avg_stars": {
+      "DA_18_Diana": 1.888,
+      "DA_18_Aphelios": 1.829,
+      "DA_CrimsonRaptor18": 1.865,
+      "DA_Sentinel18": 1.649,
+      "DA_Brambleback18": 1.771,
+      "DA_18_Hecarim": 1.903,
+      "DA_18_Zyra": 1.705,
+      "DA_Taric18": 1.196
+    },
     "common_traits": [
       [
         "DA_18_Vanguard",
@@ -647,6 +685,16 @@
       "DA_18_Yorick",
       "DA_18_Kennen"
     ],
+    "core_unit_avg_stars": {
+      "DA_18_Azir": 1.83,
+      "DA_18_Soraka": 1.853,
+      "DA_18_Malphite": 1.873,
+      "DA_18_Zyra": 1.803,
+      "DA_Fiddlesticks18": 1.781,
+      "DA_Amumu18": 1.776,
+      "DA_18_Yorick": 1.678,
+      "DA_18_Kennen": 1.264
+    },
     "common_traits": [
       [
         "DA_FloraFatalis18",
@@ -778,6 +826,14 @@
       "DA_18_Ornn",
       "DA_18_Rakan"
     ],
+    "core_unit_avg_stars": {
+      "DA_18_Kayle": 2.832,
+      "DA_18_Leona": 2.818,
+      "DA_18_Sejuani": 2.584,
+      "DA_18_Xayah": 2.785,
+      "DA_18_Ornn": 2.788,
+      "DA_18_Rakan": 2.585
+    },
     "common_traits": [
       [
         "DA_18_Rapidfire",
@@ -910,6 +966,15 @@
       "DA_Krug18",
       "DA_18_Sett"
     ],
+    "core_unit_avg_stars": {
+      "DA_18_MasterYi_AD": 2.757,
+      "DA_KogMaw18_AD": 2.555,
+      "DA_Vi18": 2.506,
+      "DA_18_Yorick": 1.856,
+      "DA_Nidalee18_AP": 1.591,
+      "DA_Krug18": 2.195,
+      "DA_18_Sett": 1.488
+    },
     "common_traits": [
       [
         "DA_18_Adaptor",
@@ -1043,6 +1108,16 @@
       "DA_18_Ashe",
       "DA_18_GnarSmall"
     ],
+    "core_unit_avg_stars": {
+      "DA_18_Sett": 1.818,
+      "DA_18_Ahri": 1.839,
+      "DA_18_Yorick": 1.842,
+      "DA_Karma18": 1.807,
+      "DA_Vi18": 1.827,
+      "DA_18_Sivir": 1.775,
+      "DA_18_Ashe": 1.398,
+      "DA_18_GnarSmall": 1.354
+    },
     "common_traits": [
       [
         "DA_18_Blossom",
@@ -1177,6 +1252,17 @@
       "DA_18_Diana",
       "DA_18_LeBlanc"
     ],
+    "core_unit_avg_stars": {
+      "DA_18_Alistar": 1.92,
+      "DA_18_Ornn": 1.959,
+      "DA_18_Xayah": 1.934,
+      "DA_18_Hecarim": 1.869,
+      "DA_18_Aphelios": 1.829,
+      "DA_18_GnarSmall": 1.362,
+      "DA_18_Lillia": 1.794,
+      "DA_18_Diana": 1.788,
+      "DA_18_LeBlanc": 1.829
+    },
     "common_traits": [
       [
         "DA_18_Elderwood",
@@ -1311,6 +1397,17 @@
       "DA_18_Ivern",
       "DA_18_Alistar"
     ],
+    "core_unit_avg_stars": {
+      "DA_Amumu18": 1.754,
+      "DA_18_Maokai": 1.606,
+      "DA_18_Kennen": 1.601,
+      "DA_Taric18": 1.549,
+      "DA_Draven18": 1.668,
+      "DA_18_Ezreal": 1.786,
+      "DA_18_GnarSmall": 1.567,
+      "DA_18_Ivern": 1.552,
+      "DA_18_Alistar": 1.672
+    },
     "common_traits": [
       [
         "DA_Juggernaut18",
@@ -1442,6 +1539,14 @@
       "DA_18_Rammus",
       "DA_18_Rakan"
     ],
+    "core_unit_avg_stars": {
+      "DA_18_Tristana": 2.476,
+      "DA_Vi18": 2.21,
+      "DA_18_Lillia": 1.631,
+      "DA_18_Sivir": 1.699,
+      "DA_18_Rammus": 2.345,
+      "DA_18_Rakan": 1.886
+    },
     "common_traits": [
       [
         "DA_18_Fae",
@@ -1573,6 +1678,14 @@
       "DA_Fiddlesticks18",
       "DA_18_Teemo"
     ],
+    "core_unit_avg_stars": {
+      "DA_18_Veigar": 2.867,
+      "DA_18_Kobuko": 2.704,
+      "DA_18_Rammus": 1.939,
+      "DA_18_RekSai": 2.771,
+      "DA_Fiddlesticks18": 1.93,
+      "DA_18_Teemo": 2.209
+    },
     "common_traits": [
       [
         "DA_18_Sprykin",
@@ -1707,6 +1820,17 @@
       "DA_Taric18",
       "DA_18_Alune"
     ],
+    "core_unit_avg_stars": {
+      "DA_18_Morgana": 1.807,
+      "DA_Sentinel18": 1.66,
+      "DA_18_Diana": 1.845,
+      "DA_18_Hecarim": 1.845,
+      "DA_18_Sentry": 1.632,
+      "DA_Brambleback18": 1.773,
+      "DA_KogMaw18_AD": 1.792,
+      "DA_Taric18": 1.288,
+      "DA_18_Alune": 1.342
+    },
     "common_traits": [
       [
         "DA_18_Invoker",
@@ -1839,6 +1963,15 @@
       "DA_18_Ezreal",
       "DA_18_Aphelios"
     ],
+    "core_unit_avg_stars": {
+      "DA_18_KhaZix": 2.857,
+      "DA_18_Diana": 2.233,
+      "DA_18_Hecarim": 2.508,
+      "DA_18_Rengar": 2.816,
+      "DA_18_LeBlanc": 1.933,
+      "DA_18_Ezreal": 1.522,
+      "DA_18_Aphelios": 1.48
+    },
     "common_traits": [
       [
         "DA_18_Rival",
@@ -1973,6 +2106,17 @@
       "DA_18_Alune",
       "DA_Taric18"
     ],
+    "core_unit_avg_stars": {
+      "DA_18_Morgana": 1.77,
+      "DA_Sentinel18": 1.611,
+      "DA_18_Diana": 1.831,
+      "DA_18_Cassiopeia": 1.907,
+      "DA_18_Elise": 1.923,
+      "DA_18_Ahri": 1.773,
+      "DA_Fiddlesticks18": 1.812,
+      "DA_18_Alune": 1.347,
+      "DA_Taric18": 1.313
+    },
     "common_traits": [
       [
         "DA_18_Vanguard",
@@ -2106,6 +2250,16 @@
       "DA_18_Sentry",
       "DA_Taric18"
     ],
+    "core_unit_avg_stars": {
+      "DA_Sentinel18": 1.668,
+      "DA_KogMaw18_AD": 1.843,
+      "DA_18_Morgana": 1.775,
+      "DA_Nidalee18_AP": 1.909,
+      "DA_Vi18": 1.859,
+      "DA_Scuttlecrab18": 1.779,
+      "DA_18_Sentry": 1.763,
+      "DA_Taric18": 1.242
+    },
     "common_traits": [
       [
         "DA_18_Invoker",
@@ -2238,6 +2392,15 @@
       "DA_18_Sejuani",
       "DA_18_Tristana"
     ],
+    "core_unit_avg_stars": {
+      "DA_Vi18": 2.073,
+      "DA_18_Caitlyn": 2.914,
+      "DA_18_Rakan": 1.972,
+      "DA_18_Sivir": 1.562,
+      "DA_Scuttlecrab18": 2.545,
+      "DA_18_Sejuani": 2.578,
+      "DA_18_Tristana": 1.966
+    },
     "common_traits": [
       [
         "DA_Juggernaut18",
@@ -2370,6 +2533,15 @@
       "DA_Murkwolf18",
       "DA_Brambleback18"
     ],
+    "core_unit_avg_stars": {
+      "DA_18_Warwick": 2.889,
+      "DA_18_RekSai": 2.137,
+      "DA_18_Malphite": 1.573,
+      "DA_Krug18": 2.005,
+      "DA_18_Azir": 1.975,
+      "DA_Murkwolf18": 2.55,
+      "DA_Brambleback18": 1.497
+    },
     "common_traits": [
       [
         "DA_18_Blackthorn",
@@ -2503,6 +2675,16 @@
       "DA_Cinderling18",
       "DA_18_RekSai"
     ],
+    "core_unit_avg_stars": {
+      "DA_18_Sivir": 1.9,
+      "DA_Nidalee18_AP": 1.93,
+      "DA_KogMaw18_AD": 1.769,
+      "DA_Krug18": 1.78,
+      "DA_Sentinel18": 1.584,
+      "DA_18_Malphite": 1.903,
+      "DA_Cinderling18": 1.599,
+      "DA_18_RekSai": 1.611
+    },
     "common_traits": [
       [
         "DA_Primal18",
@@ -2523,5 +2705,13 @@
     "n_total": 17389,
     "avg_placement": 5.033,
     "top4_rate": 0.399
+  },
+  "_metadata": {
+    "avg_placement_quartiles": {
+      "q1": 4.271,
+      "q2": 4.519,
+      "q3": 4.682,
+      "n_comps": 19
+    }
   }
 }

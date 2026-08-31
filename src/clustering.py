@@ -85,6 +85,33 @@ raw "DA_18_Ornn — DA_18_Elderwood" id). comps.json's core_units/common_traits
 stay as raw apiName ids, per SPEC-WEB.md section 3.4's contract — the web
 side joins those against units.json/traits.json itself.
 
+**`core_unit_avg_stars` (added 2026-09-01).** The web UI's "load this comp"
+action used to fill the board with every core unit at a hardcoded 2 stars —
+measured against real data and found substantially wrong for most units:
+only 13.2% of (cluster, core_unit) pairs land within ±0.1 of 2.0. Carries get
+3-starred on purpose (up to 2.91 average), low-priority/utility units rarely
+leave 1 star (`DA_Taric18` averaged 1.2-1.55 in every one of the 5 clusters
+it appears in — never close to 2). So each comp now also carries
+`core_unit_avg_stars: {unit_id: mean_star}` — the mean of `raw_units[unit_id]
+["tier"]` across exactly the boards in that cluster THAT HAVE the unit (not
+all `n_total` boards; a board missing the unit has no star level to average
+in — a different denominator than `core_units`' own selection frequency).
+Keys are exactly `core_units`' unit ids, values are floats in [1.0, 3.0],
+rounded to 3 decimals like `avg_placement`. `core_units` itself is
+unchanged (still a flat list of ids, frequency-ordered) — this is a
+strictly additive field, not a replacement, so every existing consumer that
+only reads `core_units` keeps working untouched.
+
+**`_metadata.avg_placement_quartiles` (added 2026-09-01).** Meta-tier bands
+for the web UI (SPEC-WEB.md section 8) — quartile boundaries (Q1/Q2/Q3) over
+the real (non-off_meta) comps' `avg_placement`, recomputed every run from
+whatever data actually exists rather than hardcoded once. `comps.json` gains
+a `_metadata` key alongside the `c_NN`/`off_meta` ones (same pattern as
+`items.json`'s `_metadata` — SPEC-WEB.md section 3.8); every consumer that
+enumerates comps.json's keys needs to skip it the same way it already skips
+`off_meta` (`build_web_data.py`, `items.py`, `app.js` — audited and fixed
+this session, see SPEC-WEB.md's decision history for the full list).
+
 **This ran against a ~3000-match dev sample (2937 matches, 23496 boards
 total, ~20152 used for training) — not final data.** However many clusters
 this finds, however noisy they look, is reported as-is. Don't retune
@@ -97,11 +124,13 @@ Outputs:
   models/centroids.npz            {cluster_id: L2-normalized centroid vector}
   data/processed/comps.json       SPEC-WEB.md section 3.4 shape (name,
                                    centroid, avg_placement, top4_rate,
-                                   core_units, common_traits), with `n`
-                                   replaced by `n_full`/`n_total` (see
-                                   survivorship-bias note above) — plus an
-                                   "off_meta" entry (no centroid/name, it
-                                   isn't a coherent comp)
+                                   core_units, core_unit_avg_stars,
+                                   common_traits), with `n` replaced by
+                                   `n_full`/`n_total` (see survivorship-bias
+                                   note above) — plus an "off_meta" entry (no
+                                   centroid/name, it isn't a coherent comp)
+                                   and a "_metadata" entry (avg_placement
+                                   quartiles for meta-tier bands, see below)
   data/processed/cluster_labels.npy   per-board final label for the FULL
                                    population (int32, off-meta = -2),
                                    aligned with features_meta.jsonl — this is
@@ -118,6 +147,7 @@ from __future__ import annotations
 import json
 import logging
 import pickle
+import statistics
 import sys
 from pathlib import Path
 
@@ -267,6 +297,22 @@ def _mean_trait_tiers(rows: list[dict], indices: list[int]) -> dict[str, float]:
     return {trait_name: total / n for trait_name, total in totals.items()}
 
 
+def _unit_avg_star(rows: list[dict], indices: list[int]) -> dict[str, float]:
+    """Mean star level per unit — averaged only over the boards that
+    actually HAVE the unit (a board missing it contributes nothing), so the
+    denominator here is that unit's own presence count, not n_total and not
+    _unit_frequency's count for a different unit. Measured against real data
+    (2026-09-01): far from a safe-to-assume constant — carries regularly
+    average close to 3, low-priority units regularly stay close to 1."""
+    totals: dict[str, float] = {}
+    counts: dict[str, int] = {}
+    for i in indices:
+        for unit_id, info in rows[i]["raw_units"].items():
+            totals[unit_id] = totals.get(unit_id, 0.0) + info["tier"]
+            counts[unit_id] = counts.get(unit_id, 0) + 1
+    return {unit_id: totals[unit_id] / counts[unit_id] for unit_id in totals}
+
+
 def _unit_frequency(rows: list[dict], indices: list[int]) -> dict[str, int]:
     counts: dict[str, int] = {}
     for i in indices:
@@ -369,6 +415,7 @@ def build_cluster_report(
         trait_freq = _trait_frequency(rows, indices)
         top_units = select_core_units(unit_freq, n_total)
         top_traits = sorted(trait_freq.items(), key=lambda kv: -kv[1])[:3]
+        unit_avg_star = _unit_avg_star(rows, indices)
 
         comp_id = f"c_{cluster_id:02d}"
         comps[comp_id] = {
@@ -379,6 +426,7 @@ def build_cluster_report(
             "avg_placement": round(avg_placement, 3),
             "top4_rate": round(top4_rate, 3),
             "core_units": [u for u, _ in top_units],
+            "core_unit_avg_stars": {u: round(unit_avg_star[u], 3) for u, _ in top_units},
             "common_traits": [[t, c] for t, c in top_traits],
         }
         review_rows.append(
@@ -421,6 +469,17 @@ def build_cluster_report(
         )
 
     return comps, review_rows
+
+
+def compute_avg_placement_quartiles(comps: dict) -> dict:
+    """Meta-tier band boundaries (SPEC-WEB.md section 8) — quartiles of the
+    real (non-off_meta, non-_metadata) comps' avg_placement, recomputed every
+    run so the bands track whatever data currently exists rather than the
+    single sample they were first measured on (2026-09-01: 19 comps, Q1/Q2/Q3
+    = 4.271/4.519/4.682)."""
+    real_placements = sorted(info["avg_placement"] for comp_id, info in comps.items() if comp_id != OFF_META)
+    q1, q2, q3 = statistics.quantiles(real_placements, n=4, method="inclusive")
+    return {"q1": round(q1, 3), "q2": round(q2, 3), "q3": round(q3, 3), "n_comps": len(real_placements)}
 
 
 def format_review_table(review_rows: list[dict], unit_names: dict[str, str], trait_names: dict[str, str]) -> str:
@@ -495,6 +554,8 @@ def run(config: dict) -> None:
     full_labels[~training_mask] = early_death_labels
 
     comps, review_rows = build_cluster_report(rows, full_labels, centroids, unit_names, trait_names, n_full_by_cluster)
+    comps["_metadata"] = {"avg_placement_quartiles": compute_avg_placement_quartiles(comps)}
+    logger.info("avg_placement quartiles (meta-tier bands): %s", comps["_metadata"]["avg_placement_quartiles"])
 
     encoded_labels = np.array(
         [OFF_META_CODE if label == OFF_META else int(label) for label in full_labels], dtype=np.int32

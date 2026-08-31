@@ -121,7 +121,11 @@ Clustering çıktısı. Centroid vektörleri burada.
     "avg_placement": 4.12,
     "top4_rate": 0.548,
     "core_units": ["TFT18_Ahri", "TFT18_Lux", "..."],
+    "core_unit_avg_stars": {"TFT18_Ahri": 1.84, "TFT18_Lux": 2.71, "...": "..."},
     "common_traits": [["TFT18_Sorcerer", 6], ["TFT18_Wisp", 4]]
+  },
+  "_metadata": {
+    "avg_placement_quartiles": {"q1": 4.271, "q2": 4.519, "q3": 4.682, "n_comps": 19}
   },
   "...": {}
 }
@@ -139,7 +143,31 @@ board sayısı; `n_total` = early_death dahil atanan tüm board sayısı.
 popülasyonunun büyüklüğünü gösterir (`n_total - n_full` = o comp'a atanan
 erken-ölüm board sayısı).
 
-> **`off_meta` — normal bir comp anahtarı değil (2026-08-30, web build validator'ında bulundu, önceden belgelenmemişti).** `comps.json`'da her zaman bir `off_meta` anahtarı da vardır (HDBSCAN gürültüsünden ve early_death'ten hiçbir centroid'e yeterince yakın çıkmayan board'ların toplandığı kova — bkz. SPEC.md bölüm 9). Bu anahtarın değeri yukarıdaki şemadan **farklı ve daha dar**: sadece `n_full`, `n_total`, `avg_placement`, `top4_rate` var — `name`, `centroid`, `core_units`, `common_traits` **yok**, çünkü off_meta gerçek bir comp değil. items.json'daki `_metadata` gibi alt çizgiyle başlamıyor (ismi `c_NN` kalıbına da uymuyor), o yüzden arayüz kodu bunu "bilinmeyen/bozuk comp" sanıp atlamamalı ama tam comp şeması da beklememeli. Palet/eşleştirme mantığı `comps.json`'ı dolaşırken `off_meta` anahtarını (varsa) comp listesinden ayrı tutmalı — bir centroid'i olmadığı için asla bir board'un "eşleştiği comp"u olamaz, sadece bölüm 7.3'ün "hiçbir comp'a uymuyor" yolunda referans istatistik olarak kullanılabilir.
+> **`core_unit_avg_stars` (2026-09-01, ölçüldü, eklendi).** Her `core_units`
+> ID'sini o unit'in gerçek ortalama yıldız seviyesine (float, [1.0, 3.0])
+> eşler — anahtarlar `core_units` ile **birebir** aynı olmalı, `build_web_data.py`
+> bunu doğruluyor. Ortalama, sadece unit'in GERÇEKTEN bulunduğu board'lar
+> üzerinden hesaplanıyor (o comp'un tüm `n_total` board'u üzerinden değil —
+> bir board'da olmayan bir unit'in yıldızı yoktur, ortalamaya girmez). Ölçüm
+> gerekçesi (SPEC.md bölüm 9): sabit "2 yıldız" varsayımı 144 (cluster,
+> core_unit) çiftinin sadece %13.2'sinde 2.0'a ±0.1 yakın çıktı — carry'ler
+> bilinçli 3-yıldızlanıyor (2.9'a kadar), düşük öncelikli unit'ler (ör.
+> `DA_Taric18`, göründüğü her cluster'da) 1'den kurtulamıyor. Bölüm 5.3'ün
+> `loadSuggestedComp()`'u board'u artık bu gerçek değerle dolduruyor.
+>
+> **`_metadata` — normal bir comp anahtarı değil (2026-09-01, items.json'daki
+> `_metadata` ile aynı desen).** `comps.json`'da her zaman bir `_metadata`
+> anahtarı da bulunur: `avg_placement_quartiles` — 19 real comp'un
+> `avg_placement`'ından `clustering.py`'nin her koşuda yeniden hesapladığı
+> çeyreklikler (`q1`/`q2`/`q3`) + kaç comp'tan hesaplandığı (`n_comps`).
+> Bölüm 8'in meta-tier rozeti için — sınırlar arayüz koduna hiç gömülmüyor,
+> `app.js` bunları buradan okuyup her comp'un `avg_placement`'ını bu üç
+> sınıra karşı sınıflandırıyor. `off_meta` gibi `c_NN` kalıbına uymuyor,
+> `comps.json`'ı dolaşan her kod yolu (`build_web_data.py`, `items.py`,
+> `app.js`) bunu comp listesinden ayrı tutmalı — 2026-09-01'de bu üç dosyanın
+> hepsinde denetlenip düzeltildi.
+
+> **`off_meta` — normal bir comp anahtarı değil (2026-08-30, web build validator'ında bulundu, önceden belgelenmemişti).** `comps.json`'da her zaman bir `off_meta` anahtarı da vardır (HDBSCAN gürültüsünden ve early_death'ten hiçbir centroid'e yeterince yakın çıkmayan board'ların toplandığı kova — bkz. SPEC.md bölüm 9). Bu anahtarın değeri yukarıdaki şemadan **farklı ve daha dar**: sadece `n_full`, `n_total`, `avg_placement`, `top4_rate` var — `name`, `centroid`, `core_units`, `core_unit_avg_stars`, `common_traits` **yok**, çünkü off_meta gerçek bir comp değil. items.json'daki `_metadata` gibi alt çizgiyle başlamıyor (ismi `c_NN` kalıbına da uymuyor), o yüzden arayüz kodu bunu "bilinmeyen/bozuk comp" sanıp atlamamalı ama tam comp şeması da beklememeli. Palet/eşleştirme mantığı `comps.json`'ı dolaşırken `off_meta` anahtarını (varsa) comp listesinden ayrı tutmalı — bir centroid'i olmadığı için asla bir board'un "eşleştiği comp"u olamaz, sadece bölüm 7.3'ün "hiçbir comp'a uymuyor" yolunda referans istatistik olarak kullanılabilir.
 
 ### 3.5 matchups.json
 
@@ -330,7 +358,8 @@ Sol sütun. `comps.json`'dan (`off_meta` hariç — centroid'i/core_units'i yok,
 Her satırda: comp adı, ortalama placement, top4 oranı, `n` (`n_total`). Panelin kendisi genişletilebilir/daraltılabilir (`<details>` yeterli, JS gerekmez).
 
 **Bir satıra tıklanınca:**
-1. **Board doluysa bile doğrudan, onay istemeden yüklenir.** İlk taslak burada bir `confirm()` onayı öngörüyordu ("mevcut board silinecek, devam edilsin mi?"); kullanıma alınınca rahatsız edici bulundu ve kaldırıldı (2026-08-30) — comp'lar arası hızlı geçiş, sık sık "evet"e tıklamayı gerektirmeyecek şekilde akıcı olmalı. Board tamamen temizlenir, sonra o comp'un `core_units` listesindeki her unit yıldız 2 ile eklenir. `core_units` 10'dan uzunsa (bölüm 3.4: 5-12 arası olabilir), listenin **ilk 10'u** alınır — `clustering.py`'nin `select_core_units`'i bu listeyi zaten sıklığa göre sıralı üretiyor, yani ilk 10 o comp'un en karakteristik unit'leri olur. Kesilen unit varsa kullanıcıya kısaca söyle ("N unit sığmadı, en az sık görülenler bırakıldı" gibi).
+1. **Board doluysa bile doğrudan, onay istemeden yüklenir.** İlk taslak burada bir `confirm()` onayı öngörüyordu ("mevcut board silinecek, devam edilsin mi?"); kullanıma alınınca rahatsız edici bulundu ve kaldırıldı (2026-08-30) — comp'lar arası hızlı geçiş, sık sık "evet"e tıklamayı gerektirmeyecek şekilde akıcı olmalı. Board tamamen temizlenir, sonra o comp'un `core_units` listesindeki her unit eklenir. `core_units` 10'dan uzunsa (bölüm 3.4: 5-12 arası olabilir), listenin **ilk 10'u** alınır — `clustering.py`'nin `select_core_units`'i bu listeyi zaten sıklığa göre sıralı üretiyor, yani ilk 10 o comp'un en karakteristik unit'leri olur. Kesilen unit varsa kullanıcıya kısaca söyle ("N unit sığmadı, en az sık görülenler bırakıldı" gibi).
+   > **Yıldız seviyesi artık sabit 2 değil (2026-09-01, kullanıcı kararı — ölçüldü, bkz. bölüm 3.4'ün `core_unit_avg_stars` notu).** Her core unit, o comp'taki GERÇEK ortalama yıldız seviyesine (`core_unit_avg_stars[unitId]`) yuvarlanarak ekleniyor — sabit varsayımın (144 çiftin sadece %13.2'si 2.0'a yakın) yerini aldı. Yuvarlama: standart "yarımdan yukarı" (`Math.round` — 2.56→3, 2.49→2); sonuç `[1, 3]`'e clamp'leniyor (ortalama tanım gereği zaten bu aralıkta, clamp sadece savunma amaçlı). Board'u elle kuran kullanıcının tek tek eklediği unit'ler (bölüm 6.1) bundan etkilenmiyor — DEFAULT_STAR (2) orada aynen geçerli, çünkü elle kurulan bir board'un hangi "comp" bağlamında olduğu bilinmiyor, ortalama alınacak bir referans yok.
 2. Bu, board'u tek tek `addUnitToBoard` ile doldurmaktan **farklı** bir yol — "board dolu" uyarısı (bölüm 6.2) burada devreye girmez, çünkü toplu bir değiştirme işlemi.
 3. Sonuç paneli normal akışla (bölüm 7.3) yeniden hesaplanır — comp'u zorla göstermek yerine `nearestComp` ne bulursa o gösterilir. Çoğu zaman aynı comp'a geri döner (`core_units` zaten o comp'un en sık board'larından türetildi) ama bu **garanti değil** (`core_units` bir frekans özeti, centroid'in kendisi değil) — arayüz bunu farklı bir comp ya da "uymuyor" olarak gösterirse bu bir hata değil, dürüst bir sonuçtur.
 
@@ -434,16 +463,18 @@ Normalize vektör ile `comps.json`'daki her centroid arasında cosine mesafesi h
 - Üstündeyse: "Bu board bilinen bir comp'a uymuyor" mesajı ve en yakın 3 comp'u mesafeleriyle listele. Zorla bir comp'a eşleştirip rapor gösterme.
 - Board'da 4'ten az unit varsa hiç eşleştirme yapma, "daha fazla unit ekle" de. Yarım board'lar her comp'a uzak çıkar ve anlamsız sonuç üretir.
 
+> **En yakın 3 comp artık tıklanabilir (2026-08-31, kullanıcı kararı).** Liste artık düz metin değil — her satır bir `.comp-link` butonu. Tıklanınca bölüm 5.3'teki `loadSuggestedComp()` ÇAĞRILIYOR (aynı fonksiyon, aynı davranış): board o comp'un `core_units`'iyle dolar, sonuç paneli o comp'un tam raporunu gösterir. **Modal AÇMAZ** — bu, board'u değiştiren bir eylem, bölüm 8.4'ün head-to-head modalıyla (board'a dokunmadan peek) karıştırılmamalı. Canlı doğrulandı (headless tarayıcı): uymayan bir board kurulup en yakın comp'a tıklandı, board o comp'un core_units'iyle doldu, sonuç paneli o comp'un raporuna geçti.
+
 ## 8. Sonuç paneli
 
 **Sıra 2026-08-31'de değişti — item önerileri en üste taşındı (kullanıcı kararı: görsel olması ve ilgi çekmesi nedeniyle).** Yukarıdan aşağıya güncel sıra:
 
 | Bölüm | İçerik ve kural |
 | --- | --- |
-| Comp kimliği | Comp adı, eşleşme mesafesi, örnek sayısı (n). Mesafe eşiğe yakınsa "zayıf eşleşme" rozeti. Panelin başlığı, sıralamanın parçası değil — her zaman en üstte. |
+| Comp kimliği | Comp adı, eşleşme mesafesi, örnek sayısı (n). Mesafe eşiğe yakınsa "zayıf eşleşme" rozeti. Adın yanında meta-tier rozeti (Güçlü/Ortalama üstü/Ortalama altı/Zayıf — bölüm 8.5). Panelin başlığı, sıralamanın parçası değil — her zaman en üstte. |
 | Item önerileri | Her core unit için ikon + önerilen item ikonları. Görsel, cümle değil — bölüm 8.3. |
 | Temel istatistik | Ortalama placement ve top-4 oranı. n mutlaka görünsün. |
-| Head-to-head | En iyi 5 ve en kötü 5 eşleşme. Her satırda oran, n ve güven aralığı. |
+| Head-to-head | En iyi 5 ve en kötü 5 eşleşme. Her satırda oran, n ve güven aralığı. Karşı taraf comp isimleri kalın, tıklanabilir buton (`.comp-link`) — tıklanınca bölüm 8.4'ün modalı açılır. |
 | Trait analizi | Zorlandığı 5 ve rahat ettiği 5 trait, delta ve n ile. |
 | Kısıtlar | Sayfanın altında sabit duran, kapanabilir bir kutu. İçeriği bölüm 9'da. |
 
@@ -482,6 +513,30 @@ Item önerileri bölüm 8.2'nin "cümle, ham sayı değil" kuralına **girmiyor*
 - Bir core unit için hiç item yoksa (`items.json`'da boş liste — bölüm 3.8: "veri yok" demek, "kötü item" demek değil) unit ikonu yine görünür, altında item ikonu yerine kısa bir "veri yok" notu olur.
 - Item ikonları `units.json`/`traits.json` ile aynı CommunityDragon stratejisiyle (bölüm 4: `onerror` yedek kutusu, `loading="lazy"`) — kaynak artık `items.json`'ın kendi `icon` alanı (bölüm 3.8'in güncellenmiş şeması), ayrı bir statik katalog çekmeye gerek yok.
 - `_metadata.known_limitation` uyarısı (bölüm 3.8) bu bölümde de gösterilmeye devam ediyor — bölüm başlığının yanında bir uyarı ikonu/tooltip yeterli, her item için tekrarlamaya gerek yok.
+
+### 8.4 Head-to-head modal — board'a dokunmadan comp peek (2026-08-31, kullanıcı kararı)
+
+Head-to-head bölümündeki (8, 8.1) karşı taraf comp isimleri ve bölüm 7.3'ün "en yakın 3 comp" listesi **farklı** iki tıklama davranışı taşır — karıştırılmamalı:
+
+- **Bölüm 7.3'ün "en yakın 3 comp" listesi** ve **bölüm 5.3'ün önerilen comp'lar paneli**: tıklanınca board'u DEĞİŞTİRİR (`loadSuggestedComp()`, core_units board'a yüklenir).
+- **Head-to-head'deki karşı taraf isimleri (bu bölüm)**: tıklanınca board'a HİÇ DOKUNMAZ — sadece o comp'un raporunu ortada bir modalda gösterir, "bu comp nasıl bir şey" diye bakıp board'u kaybetmeden geri dönme imkânı.
+
+Davranış:
+
+- Comp ismi `.comp-link` butonu — kalın, altı çizili hover/focus'ta (bölüm 8'in tablosu).
+- Tıklanınca `#comp-modal-overlay` görünür olur: arka plan karartılır (dim overlay), ortada bir panel (`#comp-modal`) açılır. Panel içeriği o comp'un tam raporu — özet cümlesi, item önerileri, head-to-head, trait analizi (bölüm 8.2/8.3'ün aynı kuralları) — **eşleşme mesafesi satırı YOK**, çünkü bu board'un eşleştiği bir comp değil, board'a dokunmadan incelenen bir comp.
+- Sağ üstte bir çarpı (`#comp-modal-close`) ve `Escape` tuşu paneli kapatır.
+- **Zincirleme gezinme, üst üste modal değil.** Modal içindeki head-to-head'in kendi comp isimleri de aynı `.comp-link` mekanizmasına bağlı — tıklanınca YENİ bir modal açılmaz, `#comp-modal-content`'in içeriği o comp'un raporuyla değiştirilir (`openCompModal()` idempotent: hangi comp'tan çağrılırsa çağrılsın aynı tek overlay/panel'i yeniden doldurur). Canlı doğrulandı (headless tarayıcı): modal açıldıktan sonra içindeki bir comp linkine tıklanınca `document.querySelectorAll('.comp-modal-overlay').length` hem tıklamadan önce hem sonra **1** kaldı, başlık tıklanan comp'a göre değişti.
+- `renderCompReport()`'un gövdesi (item→özet→head-to-head→trait, bölüm 8'in sırası) `buildCompReportBody()` adıyla ortak bir fonksiyona çıkarıldı — ana sonuç paneli ve modal AYNI fonksiyonu çağırıyor, ikisi birbirinden sürüklenmesin diye.
+
+### 8.5 Meta-tier rozeti (2026-09-01, kullanıcı kararı — sınırlar veriden, ölçüldü)
+
+Comp adının yanında dört bantlı bir rozet: **Güçlü / Ortalama üstü / Ortalama altı / Zayıf**, sırasıyla yeşil→sarı(altın)→turuncu→gri. Görüldüğü üç yer: sol sütunun önerilen comp'lar listesi (bölüm 5.3), ana sonuç panelinin başlığı (bölüm 8), ve comp modalının başlığı (bölüm 8.4).
+
+- **Sınırlar koda gömülmedi.** Dört bant, `comps.json`'ın `_metadata.avg_placement_quartiles`'ındaki (bölüm 3.4) `q1`/`q2`/`q3` çeyreklik sınırlarına göre kuruluyor: `avg_placement ≤ q1` → Güçlü, `q1 < avg_placement ≤ q2` → Ortalama üstü, `q2 < avg_placement ≤ q3` → Ortalama altı, `avg_placement > q3` → Zayıf. `clustering.py` bu üç sayıyı her koşuda 19 real comp'un `avg_placement`'ından yeniden hesaplıyor — veri değişince (yeni bir scrape, farklı cluster sayısı) bantlar da otomatik kayar, `app.js`'te hiçbir sayısal eşik yok. Etiket metinleri ve renkler (`TIER_BANDS`) `app.js`'te sabit — "zayıf eşleşme"/"düşük güven" ile aynı ilke: sayısal eşik veriden, UI metni koddan.
+- **2026-08-31'de ölçülen dağılım** (15k koşusu, 19 comp): min=3.958, max=4.871, medyan=4.519, Q1/Q2/Q3=4.271/4.519/4.682.
+- **Tooltip** (native `title`), bandın nasıl hesaplandığını VE bu comp'un tam değerini gösterir — ör. "Bant, 19 comp'un ortalama sıralama çeyrekliklerinden türetildi (Q1=4.27, Q2=4.52, Q3=4.68). Bu comp: 4.11."
+- `off_meta`'nın rozeti yok — zaten hiçbir yerde comp gibi gösterilmiyor (bölüm 3.4).
 
 ## 9. Dil — bu bölüm pazarlık konusu değil
 
@@ -562,5 +617,13 @@ Bu bölüm, web arayüzü inşa edilirken alınan önemli kararları ve reddedil
 **Sonuç panelinde item önerileri en alttan en üste (bölüm 8, 2026-08-31, kullanıcı kararı).** Item önerileri görsel olduğu ve kullanıcının ilgisini ilk çektiği için sıranın başına alındı: item önerileri → temel istatistik → head-to-head → trait analizi. Comp kimliği (ad + mesafe) panelin başlığı olduğu için sıralamanın dışında, her zaman en üstte kaldı. Sadece `app.js`'in `renderCompReport`'undaki DOM ekleme sırası değişti — hiçbir bölümün içeriği, hesaplama mantığı veya dil kuralı (8.1-8.3) değişmedi; self-test bu fonksiyona hiç bağlı olmadığı için (sadece vektör/eşleştirme mantığını test ediyor) etkilenmedi, 23/23 doğrulandı.
 
 **Diğer küçük kararlar (ayrıntı ilgili bölümlerde):** önerilen comp sayısı 8 (bölüm 5.3, "5-10" aralığından seçilmiş sabit), `core_units` 10'u aşarsa ilk 10'u alma (bölüm 5.3), arama kutusu ve trait filtresinin yeniden tasarımdan sonra da korunması (bölüm 5.4), unit portresi için CSS `background-image` değil gerçek `<img>` kullanılması (bölüm 5.2 — `onerror` yedek davranışı için zorunlu), "zayıf eşleşme" ve "düşük güven" eşiklerinin (%90, 15 puan) veriden değil uygulamadan seçilmiş sabitler olması (bölüm 8, 8.1).
+
+**"En yakın 3 comp" tıklanabilir hale getirildi (bölüm 7.3, 2026-08-31, kullanıcı kararı).** Önceden düz metindi. Artık sol sütunun önerilen comp'lar panelindeki AYNI `loadSuggestedComp()` fonksiyonuna bağlı — tıklanınca board o comp'un `core_units`'iyle dolar. Modal açmaz, bilinçli bir ayrım: bu board'u DEĞİŞTİREN bir eylem, bölüm 8.4'ün board'a dokunmayan head-to-head modalıyla karıştırılmamalı.
+
+**Head-to-head modal eklendi (bölüm 8.4, 2026-08-31, kullanıcı kararı).** Head-to-head'deki karşı taraf comp isimleri kalın, tıklanabilir `.comp-link` butonu oldu; tıklanınca board'a dokunmadan o comp'un tam raporunu ortada bir modalda gösteriyor (X butonu ve `Escape` ile kapanır). `renderCompReport()`'un gövdesi (`buildCompReportBody()`) ana panel ve modal arasında paylaşılan tek bir fonksiyona çıkarıldı. Zincirleme gezinme kasıtlı bir tasarım kararıydı: modal içindeki head-to-head isimleri de aynı mekanizmaya bağlı ama yeni bir modal AÇMIYOR, `openCompModal()` idempotent olduğu için mevcut modalın içeriğini değiştiriyor — canlı doğrulandı (headless tarayıcı, zincirleme tıklamadan önce/sonra `.comp-modal-overlay` sayısı hep 1).
+
+**Meta-tier rozeti eklendi (bölüm 8.5, 2026-09-01, kullanıcı kararı — bantlar önce ölçülüp raporlandı, sonra onaylanıp uygulandı).** 19 comp'un `avg_placement`'ı çeyrekliklere bölünüp 4 bant (Güçlü/Ortalama üstü/Ortalama altı/Zayıf) kuruldu. Sayısal sınırlar `clustering.py`'de hesaplanıp `comps.json`'ın yeni `_metadata` anahtarına yazılıyor (bölüm 3.4) — `app.js`'e hiçbir eşik gömülmedi, sadece etiket/renk. `_metadata` `off_meta` ile aynı türden bir "normal comp değil" anahtarı olduğu için `comps.json`'ı dolaşan üç dosya (`build_web_data.py`, `items.py`, `app.js`) denetlenip düzeltildi — `items.py`'de `int(comp_id.split("_")[1])` `_metadata` için çökerdi (`int("metadata")`), `build_web_data.py`'nin self-test centroid sözlüğü `info["centroid"]` KeyError verirdi. Hepsi `comp_id.startswith("c_")` deseniyle düzeltildi.
+
+**`core_unit_avg_stars` eklendi (bölüm 3.4/5.3, 2026-09-01, kullanıcı kararı — önce ölçülüp raporlandı).** `loadSuggestedComp()` her core unit'i sabit 2 yıldızla dolduruyordu; gerçek veride ölçülünce (SPEC.md bölüm 9) 144 (cluster, core_unit) çiftinin sadece %13.2'sinin 2.0'a yakın çıktığı görüldü. `clustering.py`'ye `_unit_avg_star()` eklendi, her comp'un `core_unit_avg_stars`'ı (unit_id → ortalama yıldız, sadece o unit'i barındıran board'lar üzerinden) `comps.json`'a yazılıyor — `core_units`'in kendisi değişmedi (hâlâ düz bir ID listesi), bu tamamen ek bir alan. `loadSuggestedComp()` artık bu değeri `Math.round()`'la (yarımdan yukarı) en yakın tam yıldıza yuvarlayıp kullanıyor. Elle board kuran kullanıcı (bölüm 6.1) etkilenmedi — DEFAULT_STAR (2) orada hâlâ geçerli, çünkü tek tek eklenen bir unit'in hangi comp bağlamında olduğu bilinmiyor.
 
 *Uygulama sırası önerisi: veri yükleme ve şema doğrulama → palet → board ve DnD → trait hesabı → vektör ve eşleştirme → sonuç paneli → kısıtlar ve cilalama. Her adımı bitirmeden sonrakine geçme; özellikle vektör doğrulaması geçmeden sonuç paneline başlama.*

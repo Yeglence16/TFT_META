@@ -158,13 +158,35 @@ def validate_traits(data: dict) -> None:
             raise SchemaError(f"traits.json: {trait_id}.icon missing or not an http(s) URL")
 
 
+def validate_avg_placement_quartiles(metadata: dict) -> None:
+    """comps.json's `_metadata.avg_placement_quartiles` (SPEC-WEB.md section
+    8, added 2026-09-01) — meta-tier band boundaries, recomputed every run
+    by clustering.py, never hardcoded downstream."""
+    quartiles = metadata.get("avg_placement_quartiles")
+    if not isinstance(quartiles, dict):
+        raise SchemaError("comps.json: _metadata.avg_placement_quartiles missing or not an object")
+    for key in ("q1", "q2", "q3"):
+        if not isinstance(quartiles.get(key), (int, float)) or isinstance(quartiles.get(key), bool):
+            raise SchemaError(f"comps.json: _metadata.avg_placement_quartiles.{key} missing or not a number")
+    if not (quartiles["q1"] <= quartiles["q2"] <= quartiles["q3"]):
+        raise SchemaError(f"comps.json: _metadata.avg_placement_quartiles not ascending (q1<=q2<=q3): {quartiles}")
+    if not isinstance(quartiles.get("n_comps"), int) or quartiles["n_comps"] <= 0:
+        raise SchemaError("comps.json: _metadata.avg_placement_quartiles.n_comps missing or not a positive int")
+
+
 def validate_comps(data: dict, *, vector_dim: int) -> None:
     """`vector_dim` = len(unit_order) + len(trait_order) from meta.json,
     cross-checked against every centroid's length."""
     if not isinstance(data, dict) or not data:
         raise SchemaError("comps.json: root is not a non-empty object")
 
+    if "_metadata" not in data:
+        raise SchemaError("comps.json: missing _metadata key (SPEC-WEB.md section 8, avg_placement_quartiles)")
+    validate_avg_placement_quartiles(data["_metadata"])
+
     for comp_id, info in data.items():
+        if comp_id == "_metadata":
+            continue
         if not isinstance(info, dict):
             raise SchemaError(f"comps.json: {comp_id} is not an object")
 
@@ -201,6 +223,12 @@ def validate_comps(data: dict, *, vector_dim: int) -> None:
         # choice here, it's documenting the actual pipeline invariant.
         if not (5 <= len(core_units) <= 12):
             raise SchemaError(f"comps.json: {comp_id}.core_units has {len(core_units)} entries, expected 5-12")
+        avg_stars = info.get("core_unit_avg_stars")
+        if not isinstance(avg_stars, dict) or set(avg_stars.keys()) != set(core_units):
+            raise SchemaError(f"comps.json: {comp_id}.core_unit_avg_stars missing or its keys don't match core_units exactly")
+        for unit_id, star in avg_stars.items():
+            if not isinstance(star, (int, float)) or isinstance(star, bool) or not (1.0 <= star <= 3.0):
+                raise SchemaError(f"comps.json: {comp_id}.core_unit_avg_stars[{unit_id!r}] missing or not in [1.0, 3.0]")
         common_traits = info.get("common_traits")
         if not isinstance(common_traits, list) or not common_traits:
             raise SchemaError(f"comps.json: {comp_id}.common_traits missing or empty")
@@ -360,7 +388,7 @@ def copy_processed_and_static(web_data_dir: Path) -> dict:
     validate_comps(comps, vector_dim=vector_dim)
     _write_json(web_data_dir / "comps.json", comps)
 
-    known_comp_ids = set(comps.keys())
+    known_comp_ids = {k for k in comps.keys() if k != "_metadata"}
     known_trait_ids = set(traits.keys())
 
     matchups = _load_json(DATA_PROCESSED / "matchups.json")
@@ -529,7 +557,9 @@ def generate_selftest(context: dict) -> dict:
         )
 
     centroids = {
-        comp_id: np.array(info["centroid"], dtype=np.float64) for comp_id, info in comps.items() if comp_id != OFF_META
+        comp_id: np.array(info["centroid"], dtype=np.float64)
+        for comp_id, info in comps.items()
+        if comp_id.startswith("c_")  # skips "off_meta" (no centroid) and "_metadata" (2026-09-01, no centroid either)
     }
 
     cases = build_selftest_cases(

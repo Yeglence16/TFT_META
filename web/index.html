@@ -71,6 +71,17 @@
   </div>
 </aside>
 
+<!-- section 8 (2026-08-31): head-to-head'deki comp isimlerine tıklayınca
+     açılan modal — o comp'un tam raporunu board'a dokunmadan gösterir.
+     Zincirleme gezinme: modal içindeki head-to-head isimleri de aynı modalın
+     içeriğini değiştirir, yeni modal açmaz. -->
+<div id="comp-modal-overlay" class="comp-modal-overlay" hidden>
+  <div id="comp-modal" class="comp-modal" role="dialog" aria-modal="true" aria-labelledby="comp-modal-heading">
+    <button type="button" id="comp-modal-close" class="comp-modal-close" aria-label="Kapat">×</button>
+    <div id="comp-modal-content"></div>
+  </div>
+</div>
+
 <div id="palette-panel" class="palette-panel">
   <div class="palette-panel-header">
     <span class="palette-panel-title">Unit Paleti</span>
