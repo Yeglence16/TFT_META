@@ -475,7 +475,11 @@ Ayrıca her katılımcı için sakla: `placement`, `augments`, `match_id`, `puui
 - `min_cluster_size`: örnek sayısının %0.2-0.5'i civarı. Config'ten ayarlanabilir.
   Config'teki oran (%0.3) 3k-maçlık dev sample'da min_cluster_size=60'a, 15k
   koşusunda (99623 eğitim board'u) min_cluster_size=**299**'a karşılık geliyor
-  — sabit değil, örnek sayısıyla birlikte büyüyor, tasarım gereği bu.
+  — sabit değil, örnek sayısıyla birlikte büyüyor, tasarım gereği bu. **19
+  cluster'ın az olup olmadığı 2026-08-31'de ölçülerek sorgulandı** — cluster
+  sayısı bir tercih değil, veriden çıkıyor; 4 fraction'lık tam bir tarama
+  0.003'ün doğru nokta olduğunu doğruladı, değiştirilmedi. Ayrıntı Ek: Karar
+  geçmişi, "min_cluster_size'ı düşürme — reddedildi".
 - Gürültü noktaları (`label == -1`): en yakın centroid'e ata, ama bir mesafe eşiği
   koy. Eşiği aşanlar `off-meta` olarak kalsın, zorla bir cluster'a sokma.
 
@@ -1009,3 +1013,50 @@ farklı ama başka hiçbir yapısal temeli olmayan — gerçek olmayan comp ayr�
 sahte ayrımların 5 kat veriyle kendiliğinden düzelmesi. Yapılan: hiçbir kod
 değişikliği — bu bir HDBSCAN parametre hatası değil, küçük örneklemin doğal
 bir sonucu; büyük veri onu zaten çözdü.
+
+**`min_cluster_size`'ı düşürme — reddedildi (2026-08-31, ölçülerek
+sorgulandı).** 19 cluster'ın az olabileceği düşünülüp `min_cluster_size_fraction`
+gerçek 15k koşusu (99623 eğitim board'u) üzerinde 4 değerle tarandı — **kod
+değiştirilmeden**, `data/processed/` ve `models/`'a hiçbir yazma yapılmadan,
+sadece ölçüm amaçlı:
+
+| fraction | min_cluster_size | cluster sayısı | ham noise | nihai off_meta |
+|---|---|---|---|---|
+| 0.003 (mevcut) | 299 | 19 | %30.06 | %14.98 |
+| 0.002 | 199 | 26 | %47.73 | %14.51 |
+| 0.0015 | 149 | 31 | %53.16 | %14.03 |
+| 0.001 | 100 | 51 | %60.20 | %12.33 |
+
+- **0.003 satırı, mevcut baseline'ı birebir reprodükte etti** (19/19 comp,
+  core_units jaccard **1.000** hepsinde) — tarama metodolojisi bu şekilde
+  doğrulandı, varsayılmadı.
+- **Yeni cluster'lar off_meta'dan gelmiyor.** 0.002 ve 0.0015'te, yeni çıkan
+  cluster'ların **hiçbiri** (0/26, 0/31) mevcut 19'un tamamına jaccard<0.3
+  değil — hepsi bir baseline comp'a jaccard≥0.444 ile eşleşiyor, yani
+  off-meta gürültü havuzundan çıkmış yeni, bağımsız bir comp yok, hepsi
+  mevcut 19'un alt bölünmesi.
+- **0.001'de çıkan 2 düşük-jaccard cluster ikna edici değil.** `Sett —
+  İnfazcı` (n=546) ve `Yunara — İnfazcı` (n=426, ikisi toplam board'ların
+  sadece %0.84'ü), en yakın baseline'a bile jaccard=0.167. Ama core_units'leri
+  birbirine çok yakın (ikisi de Sett+Ezreal+Yunara barındırıyor) — muhtemelen
+  tek, zayıf bir İnfazcı-arketifinin ikiye ayrılmış hali, iki bağımsız yeni
+  comp değil. Sadece en agresif ayarda (mcs=100) çıkıyorlar, 0.002/0.0015'te
+  hiç görünmüyorlar.
+- **Asıl desen fragmantasyon, keşif değil.** mcs küçüldükçe off_meta oranı az
+  düşüyor (%14.98→%12.33) ama cluster sayısı 19'dan 51'e fırlıyor — fark
+  birkaç büyük "aile" comp'un parçalanmasından geliyor: mcs=100'de
+  Cassiopeia — Savunucu 7 parçaya, Kayle — Bombardımancı 9 parçaya, Aphelios
+  — Öncü 6 parçaya, Ahri — Manabaz 6 parçaya bölünüyor — bu 4 aile tek
+  başına 51 cluster'ın 28'ini oluşturuyor. Bu, yukarıdaki "Az örneklemde
+  sahte cluster ayrımı" maddesindeki (Taric/Aphelios örneği) desenin aynısı
+  — orada 5 kat veriyle kendiliğinden düzelen bir sahte ayrımdı, burada aynı
+  riski parametre değişikliğiyle geri getirmiş olurduk.
+- **En küçük iki comp dört ayarda da bölünmedi.** `Nidalee — Avcı` (n≈657-661)
+  ve `Warwick — Karadiken` (n≈760-761) — n_total'ları fraction'lar arasında
+  neredeyse sabit kaldı, mcs=100'de bile parçalanmadılar. Bu, threshold'u zar
+  zor geçen kırılgan cluster'lar değil, gerçekten sıkı/tutarlı yapılar
+  olduklarını gösteriyor.
+
+Yapılan: hiçbir şey — `min_cluster_size_fraction` (%0.3) korundu. Kanıt,
+düşürmenin off_meta'dan yeni comp çıkarmadığını, sadece mevcut büyük
+aileleri ikincil unit farkıyla ince varyantlara böldüğünü gösteriyor.
