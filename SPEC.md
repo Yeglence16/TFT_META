@@ -88,13 +88,35 @@ Hata davranışı — bu kısım kritik:
 | Durum | Davranış |
 |---|---|
 | `429` | `Retry-After` header'ına uy, bekle, tekrar dene |
-| `403` | **Anında dur.** Retry etme. Kuyruktaki öğeyi "başarısız" işaretleme. Anlaşılır bir hata bas: key expire olmuş. |
+| `401` / `403` | **Anında dur.** Retry etme. Kuyruktaki öğeyi "başarısız" işaretleme. Anlaşılır bir hata bas: key expire olmuş. |
 | `404` | Atla, logla, devam et |
 | `5xx` | Exponential backoff, en fazla 3 deneme |
 
-`403` davranışı özellikle önemli: dev key 24 saatte bir expire oluyor. İstemci
+`401`/`403` davranışı özellikle önemli: dev key 24 saatte bir expire oluyor. İstemci
 bunu "bu maç alınamadı" diye yorumlarsa binlerce maç sessizce çöpe gider ve bunu
 ancak sonuçlar tuhaf çıkınca fark ederiz. Sessiz veri kaybı olmayacak.
+
+**Düzeltildi — `401` başta ele alınmıyordu, canlı 15k-maç indirme koşusunda
+bulundu (2026-08-31).** SPEC'in ilk hali sadece `403`'ü key-expiry olarak
+tanımlıyordu. Gerçek bir maç indirme koşusunda (`GET
+/tft/match/v1/matches/{matchId}`), aynı key az önce (aynı oturumda, ~2.5 saat
+önce) league/match-id endpoint'lerinde sorunsuz 200 dönerken, bu endpoint'te
+`401 Unauthorized` döndürdü — `403` değil. `riot_client.py`'nin `get()`'i o an
+sadece `429`/`403`/`404`/`5xx`'i tanıyordu; `401` hiçbir branch'e girmeden en
+sona düşüp ham `raise_for_status()` ile kontrolsüz bir `httpx.HTTPStatusError`
+fırlatıp süreci çirkin bir traceback'le çökertti — SPEC'in burada istediği
+"anlaşılır hata bas, temiz dur, resumable kal" davranışı yerine. Kök neden
+muhtemelen aynı ~24 saatlik dev-key expiry'si, sadece bu endpoint'te Riot'un
+tarafında `403` yerine `401` olarak yüzeye çıkmış — yani key expiry artık
+endpoint'e göre iki farklı HTTP koduyla gelebiliyor, biri değil. Düzeltme
+yapısal: `riot_client.py`'de `response.status_code in (401, 403)` artık
+ikisini de aynı `RiotApiKeyExpiredError`'a yönlendiriyor, hangi kodun
+geldiği hata mesajında raporlanıyor. Test eklendi
+(`tests/test_riot_client.py::test_401_raises_immediately_with_no_retry`).
+Koşunun kendisinde veri kaybı olmadı — `401` ilk indirme isteğinde geldiği
+için hiçbir shard yazılmamıştı, state DB (`match_ids`) koşu öncesiyle birebir
+aynı kaldı; yeni key ile aynı komut (`python src/scrape_matches.py`) kaldığı
+yerden sorunsuz devam etti.
 
 Routing iki seviyeli, karıştırma:
 - **Platform host** (`euw1`, `na1`, `kr`, `tr1`): league ve summoner endpoint'leri
@@ -357,15 +379,17 @@ ifadesi yanlıştı, kod atmıyor).** `last_round` eşiğinin altında kalan
 katılımcıların board'ları yarım kalmış olsa da **atılmıyor** — `early_death:
 bool` olarak işaretlenip pipeline'da tutuluyor. Eşik `config.yaml`'ın
 `features.min_last_round` alanından okunuyor, şu an **27**. Gerçek sayılar
-(2937 maçlık örneklem): toplam **23496** board'un **3344'ü (%14.2)** eşik
-altı (`early_death=true`), eğitim seti (eşik üstü) **20152** board.
+(**14513 maçlık koşu, 2026-08-31**): toplam **116104** board'un **16481'i
+(%14.19)** eşik altı (`early_death=true`), eğitim seti (eşik üstü) **99623**
+board. (İlk ölçüm 2937 maçlık dev sample'daydı: 23496 board, 3344 early_death
+[%14.2], 20152 eğitim — oran 5 kat veriyle neredeyse birebir korundu.)
 
 Bu bayrak dört aşamada farklı kullanılıyor:
 - **(a) Vektör üretimi (bu dosya):** early_death board'lar da dahil her
   katılımcı için vektör üretiliyor — hiçbiri `features_vectors.npy`'den
   çıkarılmıyor.
 - **(b) HDBSCAN fit'i (bölüm 9):** sadece `early_death=false` olan alt küme
-  (20152 board) ile eğitiliyor — yarım kalmış board'lar centroid konumunu
+  (99623 board) ile eğitiliyor — yarım kalmış board'lar centroid konumunu
   bozmasın diye.
 - **(c) Fit sonrası atama (bölüm 9):** early_death board'lar, HDBSCAN
   gürültü noktalarıyla aynı en-yakın-centroid + mesafe-eşiği mantığıyla bir
@@ -386,7 +410,9 @@ Board vektörü:
 - **Trait bileşeni:** her trait için aktif tier (`style` veya `tier_current`)
 - Item'lar v1'de dışarıda kalabilir; bırakılırsa README'de belirt
 
-Vektörü L2 normalize et. Clustering cosine mesafesiyle çalışacak.
+Vektörü L2 normalize et. Clustering euclidean mesafesiyle çalışıyor (bölüm 9'a
+bakın — L2-normalize vektörlerde cosine'in monoton eşdeğeri, 2026-08-31'de
+ölçekte cosine'in O(n²) bellek duvarına çarpması yüzünden değiştirildi).
 
 **Bilinen kısıt — board/bench ayrımı yok (2026-08-30, web build validator'ı
 sırasında bulundu, düzeltilmedi — kasıtlı karar).** `participant.units`
@@ -396,9 +422,11 @@ board/bench bayrağı da yok. SPEC.md'nin "Riot API pozisyon vermiyor" notu
 (bölüm 0, 5) sanılandan daha köklü: hangi hex'te olduğunu değil, board'da mı
 bench'te mi olduğunu bile bilmiyoruz.
 
-Bunun somut etkisi ölçüldü: 23496 board'un **1686'sında (%7.2)** `units`
-listesinin uzunluğu `level`'i (nominal board kapasitesi) aşıyor —
-matematiksel olarak bunun bir kısmı bench içermek zorunda. Ama bu basit bir
+Bunun somut etkisi ölçüldü: 23496 board'luk ilk örneklemde **1686'sında
+(%7.2)** `units` listesinin uzunluğu `level`'i (nominal board kapasitesi)
+aşıyordu; 116104 board'luk 15k koşusunda yeniden ölçüldü (2026-08-31):
+**9497'sinde (%8.2)** — oran aynı büyüklük mertebesinde, ~1 puan yukarı.
+Matematiksel olarak bunun bir kısmı bench içermek zorunda. Ama bu basit bir
 "fazlalığı at" düzeltmesiyle çözülemiyor:
 
 - **Fazlalık her zaman bench değil.** +1 fazlalıklı board'ların **%69'unda**,
@@ -419,11 +447,15 @@ matematiksel olarak bunun bir kısmı bench içermek zorunda. Ama bu basit bir
 - Etkinin büyüklüğü (heuristik simülasyonundan): board başına unit vektörü
   değişimi küçük (ortalama cosine mesafesi 0.029, medyan 0.019), etkilenen
   board'lar 22 cluster'a da orantılı yayılmış (tek bir comp'ta yoğunlaşma
-  yok, %2.2-%11.4 arası).
+  yok, %2.2-%11.4 arası). *(Bu alt madde 2937 maçlık ilk örneklemin — 22
+  cluster'ın — ölçümü; heuristik simülasyonu 15k koşusunda [19 cluster]
+  yeniden çalıştırılmadı, sonuç uygulanmadığı için de gerek görülmedi —
+  aşağıdaki kısıt kararı değişmiyor.)*
 
-Sonuç: **board vektörünün unit bileşeni, bir kısım board'da (en az %7.2)
-gerçekte board'da olmayan unit'leri de içeriyor olabilir, ve bunu ayıklamanın
-güvenilir bir yolu yok.** Kısıt olarak kabul edildi, düzeltilmedi (bkz. Ek:
+Sonuç: **board vektörünün unit bileşeni, bir kısım board'da (%7.2 — 15k
+koşusunda %8.2 ölçüldü, bkz. yukarı) gerçekte board'da olmayan unit'leri de
+içeriyor olabilir, ve bunu ayıklamanın güvenilir bir yolu yok.** Kısıt olarak
+kabul edildi, düzeltilmedi (bkz. Ek:
 Karar geçmişi).
 
 Ayrıca her katılımcı için sakla: `placement`, `augments`, `match_id`, `puuid`,
@@ -441,8 +473,66 @@ Ayrıca her katılımcı için sakla: `placement`, `augments`, `match_id`, `puui
   küresel, K-Means bunları yanlış böler. HDBSCAN küme sayısını kendi bulur, bu
   ayrıca set değişince yeniden ayar gerektirmemesini sağlar.
 - `min_cluster_size`: örnek sayısının %0.2-0.5'i civarı. Config'ten ayarlanabilir.
+  Config'teki oran (%0.3) 3k-maçlık dev sample'da min_cluster_size=60'a, 15k
+  koşusunda (99623 eğitim board'u) min_cluster_size=**299**'a karşılık geliyor
+  — sabit değil, örnek sayısıyla birlikte büyüyor, tasarım gereği bu.
 - Gürültü noktaları (`label == -1`): en yakın centroid'e ata, ama bir mesafe eşiği
   koy. Eşiği aşanlar `off-meta` olarak kalsın, zorla bir cluster'a sokma.
+
+**Mesafe metriği: euclidean, cosine değil (değiştirildi, 2026-08-31 — ölçekte
+gerçek bir bellek çökmesi bulundu).** İlk uygulama `HDBSCAN(metric="cosine")`
+kullanıyordu, 3k-maçlık dev sample'da (~20k eğitim board'u) sorunsuz çalışıyordu.
+15k koşusunda (99623 eğitim board'u) canlı çöktü:
+
+```
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 73.9 GiB
+for an array with shape (99623, 99623) and data type float64
+```
+
+**Kök neden:** sklearn'ün HDBSCAN'i `metric="cosine"` için sadece brute-force
+bir yol sunuyor (`_hdbscan_brute` → yoğun N×N `pairwise_distances` matrisi,
+O(n²) bellek). 3k ölçeğinde (20152 board) bu matris ~3.25 GB'tı, sorun
+çıkarmıyordu; 15k ölçeğinde (99623 board, ~4.94×) 73.9 GB'a çıktı — makine
+31.7 GB RAM'e sahip, hiç yaklaşmıyor. Bu O(n²) büyüme kalıcı: 25k'lik nihai
+hedefte (~167k eğitim board'u) matris ~223 GB'a çıkardı — daha büyük bir
+makineyle "çözülecek" bir sorun değil, algoritma seçimiyle çözülmesi gereken
+bir sorun.
+
+**Neden euclidean matematiksel olarak eşdeğer:** vektörler zaten L2-normalize
+(bölüm 8). Birim vektörlerde `‖a−b‖² = 2(1−cos(a,b))` — euclidean mesafe,
+cosine mesafenin **monoton** bir dönüşümü. HDBSCAN tamamen göreli mesafe
+sıralamasından kuruluyor (mutual reachability graph + minimum spanning tree),
+monoton bir dönüşüm bu sıralamayı değiştiremez. Bu sadece teorik bir argüman
+değil — sklearn `algorithm="auto"` (varsayılan) `metric="euclidean"`'ı
+`KDTree.valid_metrics`'te olduğu için KD-tree tabanlı yola (`_hdbscan_prims`)
+yönlendiriyor, brute-force'a değil — bu, sklearn 1.8'in kaynak kodu
+(`_hdbscan/hdbscan.py`) okunarak doğrulandı, varsayılmadı.
+
+**Nasıl doğrulandı (canlı ölçüm, uygulamadan önce):**
+- Orijinal 2937 maçlık örneklem (untouched ham shard'lardan yeniden kurulup
+  doğrulandı: 2937/23496/20152/min_cluster_size=60 — dördü de eski
+  belgelenen sayılarla birebir) üzerinde cosine vs euclidean karşılaştırıldı:
+  **22=22 cluster, off_meta oranı 0.1291=0.1291, Adjusted Rand Index 0.9995**
+  (1.0 = tam eşleşme) — neredeyse mükemmel örtüşme.
+- Cosine sonucu ayrıca diskteki GERÇEK eski `comps.json`'a karşı çapraz
+  doğrulandı: 22=22 cluster — metodolojinin sağlam olduğunu gösteriyor.
+- Tam ölçekte (99623×100) euclidean bellek kullanımı **~554-562 MB**'de sabit
+  kaldı (cosine'in 73.9 GB'ına kıyasla), **1033 saniyede (~17 dk)** tamamlandı,
+  **19 cluster** buldu.
+- **Dürüst sınır:** eşdeğerlik yalnızca ESKİ ölçekte (20152 nokta) doğrudan
+  doğrulanabildi — cosine tam ölçekte zaten çökme yaşadığı için tam ölçekte
+  doğrudan bir ARI karşılaştırması yapılamıyor (bu zaten sorunun kendisi).
+  Tam ölçekteki 22→19 cluster düşüşü büyük ölçüde veri hacminden kaynaklanıyor
+  (bkz. aşağıdaki min_cluster_size kararı), metrik değişikliğinden değil.
+
+**Downstream eşikler etkilenmedi.** `config.yaml`'ın `noise_distance_threshold`'u
+ve `meta.json`'ın `match_threshold`'u — ikisi de `clustering.py`'nin kendi
+`_nearest_centroid_labels()`/`reassign_noise()`'unda ve `cli.py`/`app.js`'in
+comp eşleştirmesinde kullanılıyor; bunların hepsi L2-normalize vektörler
+üzerinde **kendi** cosine dot-product hesabını yapıyor, HDBSCAN'in iç
+metriğini hiç okumuyor. `cluster_selection_epsilon` de hiç set edilmiyor
+(sklearn'ün etkisiz 0.0 varsayılanında kalıyor, metrikten bağımsız zaten
+etkisiz). Sonuç: hiçbir downstream sabit dönüştürülmedi.
 
 **Otomatik isimlendirme.** Elle isim verme — her çalıştırmada bozulur. Her cluster
 için:
@@ -480,6 +570,11 @@ Sonuç: 22 cluster'ın 11'inde core unit sayısı küçüldü, 3'ünde büyüdü
 top-8'in, %50'yi geçen 9. bir unit'i yanlışlıkla dışarıda bıraktığı 3 cluster
 dahil), 8'i değişmedi.
 
+*(Bu karşılaştırma 2937 maçlık ilk örneklemin 22 cluster'ına aitti — karar
+[frekans eşiği, `CORE_UNIT_MIN`/`MAX`] koddan değişmedi, 15k koşusunda [19
+cluster] yeniden ölçülmedi; gözlenen 6-9 unit/cluster aralığı 15k'de de
+sağlandı [bkz. gerçek `cluster_review.txt`], taban/tavan yine bağlamadı.)*
+
 Model ve centroid'ler `models/` altına kaydedilsin.
 
 ---
@@ -507,9 +602,11 @@ Aynı cluster'ın kendisiyle eşleşmesi (A vs A) anlamlı, tut — mirror durum
 `augments.py` kasıtlı olarak 4 satırlık bir stub ("Not yet implemented").
 Sebep: katılımcı nesnesinde `augments` anahtarı **hiç yok** — `null` değer
 değil, anahtarın kendisi mevcut değil. Doğrulandı: `data/raw/`'daki ham veri
-baştan sona tarandı (örneklem değil, tamamı) — 3005 maç, 23984 katılımcı —
-ve **0/23984** katılımcıda `augments` anahtarı bulundu. Bu Set 18'e özgü de
-değil: aynı taramada bulunan Set 16 (`queue_id=1210`, 11 maç) ve Set 17
+baştan sona tarandı (örneklem değil, tamamı) — ilk doğrulamada 3005 maç,
+23984 katılımcı, **0/23984**; 15k koşusu sonrası tüm ham veri (5 shard)
+yeniden tarandı (2026-08-31) — **15003 maç, 119787 katılımcı, yine 0/119787**
+katılımcıda `augments` anahtarı bulundu. Bu Set 18'e özgü de değil: aynı
+taramada bulunan Set 16 (`queue_id=1210`, 11 maç) ve Set 17
 (`queue_id=1100`/`1160`, 17 maç) kayıtlarında da anahtar yok; hepsinin
 `metadata.data_version` alanı `"6"`. Yani "set 5 günlük, veri henüz gelmedi"
 açıklaması geçersiz — sorun set'e özgü değil. Aşağıdaki metodoloji bu yüzden
@@ -631,11 +728,12 @@ listesine sessizce sızmasın).
 
 Çıktı dosyası: `data/processed/items.json` (SPEC-WEB.md bölüm 3.8).
 
-`other` kovasının büyük kısmı (430'unun 360'ı, %83.7) gerçek maç verisinde
-hiç görünmeyen ölü kayıt — bilinçli olarak filtrelenmiyor çünkü bu kova zaten
-hiçbir aşamada okunmuyor (`items.py` sadece `completed`'i işliyor, o da
-39/39 temiz); sayılar sadece gözlem olarak `items.json`'ın
-`_metadata.item_pool_usage` alanında tutuluyor.
+`other` kovasının büyük kısmı (430'unun 359'u, %83.5 — 15k koşusunda yeniden
+ölçüldü, ilk ölçüm 360/%83.7'ydi) gerçek maç verisinde hiç görünmeyen ölü
+kayıt — bilinçli olarak filtrelenmiyor çünkü bu kova zaten hiçbir aşamada
+okunmuyor (`items.py` sadece `completed`'i işliyor, o da 39/39 temiz);
+sayılar sadece gözlem olarak `items.json`'ın `_metadata.item_pool_usage`
+alanında tutuluyor.
 
 **Bilinen kısıt — confounding (2026-08-30, düzeltilmedi, sadece belgelendi).**
 Bu lift ölçümü ayrıştıramadığı bir karışıklık taşıyor: bir item'ı
@@ -655,8 +753,12 @@ gösterebilsin diye.
 çalıştığında konsola ve `items.json`'ın `_metadata.coverage` alanına
 şunları yazar: toplam (cluster, core_unit) çifti sayısı, en az 1 item
 üretebilen çift sayısı, tam 3 item üretebilen çift sayısı, ve eşik yüzünden
-düşen hücre oranı. 2937 maçlık örneklemde: 166 çiftin 125'i en az 1 item
-üretti, 93'ü tam 3'ü, ham hücrelerin %92.7'si `n<50` yüzünden elendi.
+düşen hücre oranı. 2937 maçlık ilk örneklemde: 166 çiftin 125'i en az 1 item
+üretti, 93'ü tam 3'ü, ham hücrelerin %92.7'si `n<50` yüzünden elendi. 14513
+maçlık koşuda (2026-08-31, 19 cluster'la — cluster sayısı azaldığı için çift
+sayısı da düştü): **144 çiftin 138'i en az 1 item üretti (%95.8), 129'u tam
+3'ü (%89.6), ham hücrelerin %86.0'sı `n<50` yüzünden elendi** — kapsam
+belirgin şekilde iyileşti, beklendiği gibi (5 kat veri, aynı `n<50` eşiği).
 
 **Emblem — kontrol edildi, features.py'de düzeltme yapılmadı (bulgu,
 2026-08-30).** Önce varsayım şuydu: `itemNames` içindeki emblem item'ları
@@ -722,8 +824,8 @@ bir düzeltme tetiklemedi.
 
 Bu bölüm sadece **uygulanmamış** kararları kaydeder. Uygulanmış olanlar ilgili
 bölümlerde yazılı (emblem düzeltmesi §15, confounding §15, core_units §9,
-early_death eğitim/raporlama ayrımı §8, game_version §7). Amaç: gelecekteki
-bir session aynı çıkmaz yollara girmesin.
+early_death eğitim/raporlama ayrımı §8, game_version §7, euclidean metriği
+§9). Amaç: gelecekteki bir session aynı çıkmaz yollara girmesin.
 
 **early_death board'larını tamamen atma — reddedildi.** SPEC'in ilk taslağı
 (bölüm 8) "çok erken elenen oyuncuları at" diyordu — vektör üretiminden ve
@@ -776,11 +878,15 @@ okunmayan `other`'da. Asıl gerekçe: `static_data.py` şu an maç verisinden
 hiçbir şey kazandırmaz. Sayılar sadece gözlem olarak
 `_metadata.item_pool_usage`'da.
 
-**`n < 50` eşiği — korundu.** Ham hücrelerin %92.7'sinin elenmesi endişe
-yarattı ama asıl kontrol şuydu: item üretemeyen (cluster, unit) çiftleri nerede
-yoğunlaşıyor? Cevap: `n_total < 300` olan cluster'larda 5/8, `n_total > 1000`
-olanlarda 0-2. Net bir örneklem-büyüklüğü etkisi; o cluster'lar zaten güvenilmez,
-item yokluğu doğru davranış. Eşik sorunu değil, eşik değiştirilmedi.
+**`n < 50` eşiği — korundu.** Ham hücrelerin %92.7'sinin (2937 maçlık ilk
+örneklem) elenmesi endişe yarattı ama asıl kontrol şuydu: item üretemeyen
+(cluster, unit) çiftleri nerede yoğunlaşıyor? Cevap: `n_total < 300` olan
+cluster'larda 5/8, `n_total > 1000` olanlarda 0-2. Net bir örneklem-büyüklüğü
+etkisi; o cluster'lar zaten güvenilmez, item yokluğu doğru davranış. Eşik
+sorunu değil, eşik değiştirilmedi — 14513 maçlık koşuda elenme oranı %86.0'a
+düştü (bölüm 15'e bakın), aynı yönde: daha çok veri, daha az elenme, eşiğin
+kendisi hâlâ değiştirilmedi. `n_total < 300`/`> 1000` kırılımı 15k'de yeniden
+ölçülmedi.
 
 **İsim bazında yinelenen ID'ler — tespit edildi, düzeltilmedi.** 502 item'da 163
 duplicate-isim grubu var (aynı isim, farklı ID). 161'i tamamen `other` içinde ve
@@ -795,7 +901,8 @@ O noktada isimden türetilmiş kanonik anahtar gerekir.
 
 **Bench unit'lerini board vektöründen çıkarma — reddedildi (2026-08-30).**
 Bölüm 8'in belgelediği kısıt (`participant.units`'te board/bench ayrımı yok,
-board'ların %7.2'sinde unit sayısı `level`'i aşıyor) için bir düzeltme
+board'ların %7.2'sinde [15k koşusunda %8.2, bölüm 8'e bakın] unit sayısı
+`level`'i aşıyor) için bir düzeltme
 denendi: fazlalık kadar unit'i "0 item → en düşük yıldız → en düşük maliyet"
 sırasıyla en bench'e-benzeyen'den seçip vektörden/trait sayımından çıkarmak.
 Reddedildi çünkü **kanıtla çelişiyor**, varsayımla değil:
@@ -826,3 +933,36 @@ unit oranı %30.4, kapasite-altındakilerde %24.5-28.4) net bir sıçrama
 göstermedi, yani en azından tam-kapasite board'larda yaygın bir gizli-bench
 kirliliğine dair güçlü bir kanıt yok — ama bu profilin kendisi de yukarıdaki
 heuristik testinde güvenilmez çıktığı için zayıf bir kanıt.
+
+**Cosine metriği — ölçekte terk edildi (2026-08-31).** `clustering.py`
+başlangıçta `HDBSCAN(metric="cosine")` kullanıyordu (bölüm 9'un ilk hali).
+3k-maçlık dev sample'da (~20k eğitim board'u) sorunsuzdu, ama 15k koşusunda
+(99623 eğitim board'u) canlı çöktü: sklearn'ün cosine için tek sunduğu yol
+brute-force'tur (`_hdbscan_brute` → yoğun N×N `pairwise_distances`, O(n²)
+bellek) — 99623×99623 float64 matris 73.9 GiB istiyordu, makinede 31.7 GB
+RAM var. `metric="euclidean"`'a geçildi: L2-normalize vektörlerde
+`‖a−b‖²=2(1−cos(a,b))` olduğu için cosine'in monoton eşdeğeri, ve sklearn
+`algorithm="auto"` bunun için KD-tree tabanlı bir yola gidiyor (kaynak kodundan
+doğrulandı) — O(n²) bellek sorunu tamamen ortadan kalkıyor. Değiştirmeden önce
+doğrulandı, varsayılmadı: eski 2937 maçlık örneklemde (cosine hâlâ
+çalışabildiği ölçekte) iki metrik karşılaştırıldı — 22=22 cluster, off_meta
+oranı 0.1291=0.1291, **Adjusted Rand Index 0.9995**. Tam ölçekte euclidean
+~554-562 MB bellekte, ~17 dakikada tamamlandı (cosine hiç tamamlanamadı).
+Ayrıntı ve downstream-etkisi-yok kanıtı bölüm 9'da. Bu madde bölüm 9'un
+kendisiyle çelişmiyor — cosine'in artık **reddedilmiş** olduğunu bu bölümün
+"denenip reddedilenler" formatında kayda geçiriyor.
+
+**min_cluster_size'ı sabit 60'ta tutma (örnek sayısıyla ölçeklemek yerine) —
+reddedildi (2026-08-31, ölçüldü).** Euclidean'a geçiş kararı verilirken 15k
+koşusunda ham HDBSCAN noise'unun %12.9'dan (eski) %30.1'e (yeni,
+min_cluster_size=299) çıktığı görüldü — bunun min_cluster_size'ın büyümesinden
+mi kaynaklandığı sorgulandı. Test edildi: min_cluster_size 99623 boarda göre
+ölçeklenmeyip eski mutlak değerinde (**60**) sabit tutulsaydı ne olurdu?
+Sonuç **83 cluster, %68.8 noise** — 299'dan çok daha kötü, iyi değil. Yani
+noise artışı min_cluster_size'ın "çok büyük" olmasından kaynaklanmıyor; tam
+tersine, sabit tutmak (verideki payını küçültmek) noise'u ciddi biçimde
+kötüleştiriyor. Ayrıca ham noise'un büyük kısmı zaten nearest-centroid ile
+geri kazanılıyor: nihai (kullanıcıya yansıyan) off_meta oranı %14.41 (eski)
+→ %14.98 (yeni) — ham noise'daki %12.9→%30.1 sıçramasının izlenimi verdiği
+kadar dramatik değil. Yapılan: hiçbir şey — `min_cluster_size_fraction`
+config değeri (%0.3) korundu, sabit mutlak değere geçilmedi.

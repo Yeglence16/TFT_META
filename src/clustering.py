@@ -5,9 +5,39 @@ L2-normalized board vectors features.py produces. K-Means is not used
 (comps aren't equal-sized or spherical in general; HDBSCAN also finds its
 own cluster count instead of needing one guessed upfront).
 
-Distance metric is cosine, directly (`HDBSCAN(metric="cosine")` — verified
-against real data, sklearn 1.8 handles this via its brute-force path with no
-special-casing needed; ~20k boards clusters in under 10s).
+**Distance metric is euclidean, not cosine (changed 2026-08-31).** Cosine
+worked fine at 3k-match scale (~20k training boards clusters in under 10s)
+but doesn't scale: sklearn's HDBSCAN only has a brute-force path for cosine
+(`_hdbscan_brute` → a dense NxN `pairwise_distances` matrix, O(n²) memory),
+and at 15k-match scale (~100k training boards) that's a 99623x99623 float64
+matrix — 73.9 GiB, more than this machine's 31.7 GB RAM. It crashed with
+`numpy._core._exceptions._ArrayMemoryError` on a live run.
+
+Euclidean is mathematically equivalent here, not just a convenient
+workaround: for L2-normalized vectors, ‖a−b‖² = 2(1−cos(a,b)) — euclidean
+distance is a strictly monotonic transform of cosine distance. HDBSCAN's
+clustering is built entirely from *relative* distance ordering (mutual
+reachability graph + minimum spanning tree), so a monotonic transform can't
+change which points end up in which cluster. Verified, not just argued:
+sklearn's `algorithm="auto"` (default) routes `metric="euclidean"` to
+`_hdbscan_prims` (a KD-tree, since "euclidean" is in `KDTree.valid_metrics`)
+instead of the brute-force path — confirmed by reading sklearn 1.8's
+`_hdbscan/hdbscan.py` algorithm-selection code, not assumed. Empirically
+verified on the reconstructed original 2937-match dataset (both metrics fit
+without memory issues at that scale): identical cluster count (22 vs 22),
+identical off-meta fraction, **Adjusted Rand Index 0.9995** between the two
+label assignments — essentially the same partition. At full 15k-match scale,
+euclidean holds steady around ~550-560 MB (vs. cosine's fatal 73.9 GiB) and
+completes in ~17 minutes.
+
+Everything downstream of HDBSCAN's own fit (`_nearest_centroid_labels` /
+`reassign_noise` for noise/early-death assignment, `compute_centroids`,
+`cli.py`'s and `app.js`'s comp-matching) computes its own cosine dot-product
+distance independently on the L2-normalized vectors — none of it reads
+HDBSCAN's internal metric, so none of `config.yaml`'s
+`noise_distance_threshold`, `meta.json`'s `match_threshold`, or
+`cluster_selection_epsilon` (never set, stays at sklearn's inactive 0.0
+default either way) needed to change alongside this.
 
 min_cluster_size = round(config's clustering.min_cluster_size_fraction *
 sample_count) — not a fixed number, so it scales with however much data a
@@ -144,8 +174,12 @@ def _load_display_names() -> tuple[dict[str, str], dict[str, str]]:
 
 
 def fit_hdbscan(vectors: np.ndarray, min_cluster_size_fraction: float) -> tuple[HDBSCAN, np.ndarray, int]:
+    # metric="euclidean", not "cosine" — see module docstring (2026-08-31):
+    # mathematically equivalent for L2-normalized vectors (monotonic
+    # transform, HDBSCAN is rank-order-based), but avoids cosine's brute-force
+    # O(n²) memory path, which crashes past ~a few 10k training points.
     min_cluster_size = max(2, round(min_cluster_size_fraction * len(vectors)))
-    model = HDBSCAN(min_cluster_size=min_cluster_size, metric="cosine", copy=False)
+    model = HDBSCAN(min_cluster_size=min_cluster_size, metric="euclidean", copy=False)
     labels = model.fit_predict(vectors)
     return model, labels, min_cluster_size
 

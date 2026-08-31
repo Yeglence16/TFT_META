@@ -6,9 +6,9 @@
     "na1"
   ],
   "elo_range": "platinum+ (dev sample, ranked reset in progress)",
-  "match_count": 2937,
-  "board_count": 23496,
-  "collected_at": "2026-08-30",
+  "match_count": 14513,
+  "board_count": 116104,
+  "collected_at": "2026-08-31",
   "unit_order": [
     "DA_18_Ahri",
     "DA_18_Akali_AD",
@@ -116,5 +116,5 @@
   "vector_includes_traits": true,
   "normalization": "l2",
   "match_threshold": 0.35,
-  "clustering_training_board_count": 20152
+  "clustering_training_board_count": 99623
 }

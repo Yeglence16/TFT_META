@@ -1,6 +1,6 @@
 {
   "DA_18_Elderwood": {
-    "name": "Elderwood",
+    "name": "Kadim Orman",
     "breakpoints": [
       3,
       5,
@@ -18,7 +18,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_avatar.png"
   },
   "DA_18_Slayer": {
-    "name": "Ravager",
+    "name": "Tahripk\u00e2r",
     "breakpoints": [
       2,
       4,
@@ -27,21 +27,21 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_ravager.png"
   },
   "DA_DravenUniqueTrait18": {
-    "name": "Bounty Seeker",
+    "name": "\u00d6d\u00fcl Avc\u0131s\u0131",
     "breakpoints": [
       1
     ],
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_bountyseeker.png"
   },
   "DA_18_Solar": {
-    "name": "Solar",
+    "name": "G\u00fcne\u015f",
     "breakpoints": [
       3
     ],
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_solar.png"
   },
   "DA_18_Sprykin": {
-    "name": "Sprykin",
+    "name": "Z\u0131p\u0131rgil",
     "breakpoints": [
       3,
       5,
@@ -50,7 +50,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_sprykin.png"
   },
   "DA_18_Adaptor": {
-    "name": "Adaptor",
+    "name": "Ahenkli",
     "breakpoints": [
       2,
       3,
@@ -59,7 +59,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_adaptor.png"
   },
   "DA_18_Coven": {
-    "name": "Coven",
+    "name": "Cad\u0131lar Meclisi",
     "breakpoints": [
       3,
       4,
@@ -69,7 +69,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_coven.png"
   },
   "DA_18_Hunter": {
-    "name": "Hunter",
+    "name": "Avc\u0131",
     "breakpoints": [
       2,
       3,
@@ -79,21 +79,21 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_hunter.png"
   },
   "DA_18_Maokai_UniqueTrait": {
-    "name": "Old Growth",
+    "name": "Kadim B\u00fcy\u00fcme",
     "breakpoints": [
       1
     ],
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_oldgrowth.png"
   },
   "DA_18_Battlemage": {
-    "name": "Monolith",
+    "name": "Monolit",
     "breakpoints": [
       1
     ],
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_monolith.png"
   },
   "DA_Primal18": {
-    "name": "Primal",
+    "name": "\u0130lkel",
     "breakpoints": [
       2,
       4
@@ -101,14 +101,14 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_primal.png"
   },
   "DA_18_Greenfather": {
-    "name": "Greenfather",
+    "name": "Do\u011fasever Baba",
     "breakpoints": [
       1
     ],
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_greenfather.png"
   },
   "DA_18_Invoker": {
-    "name": "Invoker",
+    "name": "Manabaz",
     "breakpoints": [
       2,
       3,
@@ -118,7 +118,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_invoker.png"
   },
   "DA_18_Rapidfire": {
-    "name": "Rapidfire",
+    "name": "Bombard\u0131manc\u0131",
     "breakpoints": [
       2,
       3,
@@ -128,7 +128,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_rapidfire.png"
   },
   "DA_Juggernaut18": {
-    "name": "Juggernaut",
+    "name": "Ezerge\u00e7er",
     "breakpoints": [
       2,
       4,
@@ -137,7 +137,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_juggernaut.png"
   },
   "DA_18_Inferno": {
-    "name": "Inferno",
+    "name": "Alev",
     "breakpoints": [
       2,
       3,
@@ -147,14 +147,14 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_inferno.png"
   },
   "DA_AluneUniqueTrait18": {
-    "name": "Attuned",
+    "name": "Harmoni",
     "breakpoints": [
       1
     ],
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_attuned.png"
   },
   "DA_18_Rival": {
-    "name": "Rival",
+    "name": "Has\u0131m",
     "breakpoints": [
       1,
       2
@@ -162,7 +162,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_rival.png"
   },
   "DA_18_Vanguard": {
-    "name": "Vanguard",
+    "name": "\u00d6nc\u00fc",
     "breakpoints": [
       2,
       4,
@@ -171,7 +171,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_vanguard.png"
   },
   "DA_18_Brawler": {
-    "name": "Brawler",
+    "name": "D\u00f6v\u00fc\u015f\u00e7\u00fc",
     "breakpoints": [
       2,
       4,
@@ -180,7 +180,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_brawler.png"
   },
   "DA_18_Blackthorn": {
-    "name": "Blackthorn",
+    "name": "Karadiken",
     "breakpoints": [
       2,
       4,
@@ -189,7 +189,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_oldgod.png"
   },
   "DA_18_Executioner": {
-    "name": "Executioner",
+    "name": "\u0130nfazc\u0131",
     "breakpoints": [
       2,
       3,
@@ -198,14 +198,14 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_executioner.png"
   },
   "DA_18_ApexPredator": {
-    "name": "Apex Predator",
+    "name": "\u00dcst\u00fcn Y\u0131rt\u0131c\u0131",
     "breakpoints": [
       1
     ],
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_apexpredator.png"
   },
   "DA_Riftbeast18": {
-    "name": "Riftbeast",
+    "name": "Vadi Canavar\u0131",
     "breakpoints": [
       3,
       5,
@@ -215,14 +215,14 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_riftbeast.png"
   },
   "DA_18_Caustic": {
-    "name": "Caustic",
+    "name": "Y\u0131prat\u0131c\u0131",
     "breakpoints": [
       1
     ],
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_caustic.png"
   },
   "DA_18_Fae": {
-    "name": "Fae",
+    "name": "Fey",
     "breakpoints": [
       2,
       4
@@ -230,7 +230,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_fae.png"
   },
   "DA_18_Lunar": {
-    "name": "Lunar",
+    "name": "Ay",
     "breakpoints": [
       2,
       3,
@@ -240,7 +240,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_lunar.png"
   },
   "DA_18_Defender": {
-    "name": "Defender",
+    "name": "Savunucu",
     "breakpoints": [
       2,
       4,
@@ -249,7 +249,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_defender.png"
   },
   "DA_18_Spellweaver": {
-    "name": "Spellweaver",
+    "name": "Sihirk\u00e2r",
     "breakpoints": [
       2,
       4,
@@ -258,7 +258,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_spellweaver.png"
   },
   "DA_18_ZyraUniqueTrait": {
-    "name": "Thornmaiden",
+    "name": "Dikenli Leydi",
     "breakpoints": [
       1
     ],
@@ -273,7 +273,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_florafatalis.png"
   },
   "DA_18_Summoner": {
-    "name": "Summoner",
+    "name": "Efendi",
     "breakpoints": [
       2,
       3
@@ -281,7 +281,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_summoner.png"
   },
   "DA_18_Blossom": {
-    "name": "Blossom",
+    "name": "\u00c7i\u00e7ek",
     "breakpoints": [
       3,
       5,
@@ -292,7 +292,7 @@
     "icon": "https://raw.communitydragon.org/latest/game/assets/ux/traiticons/trait_icon_18_blossom.png"
   },
   "DA_Emerald18": {
-    "name": "Emerald Aspect",
+    "name": "Z\u00fcmr\u00fct Suret",
     "breakpoints": [
       1
     ],

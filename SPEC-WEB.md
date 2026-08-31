@@ -157,7 +157,10 @@ Head-to-head sıralama oranları. Yetersiz örnekli hücreler pipeline tarafınd
 
 `rate` = c_07'nin, aynı lobide c_12 varken ondan **yukarıda bitirme oranı.** Savaş kazanma oranı değil. Bu ayrım kritik, bölüm 8'e bak.
 
-> **İki hücre şekli var — üsttekinin bir varyantı, önceden belgelenmemişti (2026-08-30, web build validator'ında bulundu).** "Yetersiz örnekli hücreler zaten elenmiş olmalı" cümlesi yanıltıcı: `matchups.py` (SPEC.md bölüm 10) `n<100` çiftleri **silmiyor**, görünür tutup `{ "n": 91, "insufficient_data": true }` şeklinde işaretliyor — `rate`/`ci` alanları o hücrede hiç yok. Gerçek veride 484 çiftin 177'si (%36.6) bu ikinci şekilde. Arayüz her hücreyi okurken önce `insufficient_data === true` kontrolü yapmalı; true ise `rate`/`ci` okumaya çalışmadan "yetersiz veri" göstermeli (bölüm 8.1'in zaten istediği davranış — burada eksik olan şema tarafıydı, davranış tarafı değil).
+> **İki hücre şekli var — üsttekinin bir varyantı, önceden belgelenmemişti (2026-08-30, web build validator'ında bulundu).** "Yetersiz örnekli hücreler zaten elenmiş olmalı" cümlesi yanıltıcı: `matchups.py` (SPEC.md bölüm 10) `n<100` çiftleri **silmiyor**, görünür tutup `{ "n": 91, "insufficient_data": true }` şeklinde işaretliyor — `rate`/`ci` alanları o hücrede hiç yok. Gerçek veride (2937 maçlık ilk örneklem) 484 çiftin 177'si (%36.6) bu ikinci
+şekildeydi; 14513 maçlık koşuda (2026-08-31, 19 cluster'la) 361 çiftin
+sadece 18'i (%5.0) — 5 kat veriyle beklendiği gibi belirgin şekilde düştü,
+ama şema/davranış kuralı aynen geçerli. Arayüz her hücreyi okurken önce `insufficient_data === true` kontrolü yapmalı; true ise `rate`/`ci` okumaya çalışmadan "yetersiz veri" göstermeli (bölüm 8.1'in zaten istediği davranış — burada eksik olan şema tarafıydı, davranış tarafı değil).
 
 ### 3.6 augments.json
 
@@ -197,12 +200,12 @@ Head-to-head sıralama oranları. Yetersiz örnekli hücreler pipeline tarafınd
   "_metadata": {
     "known_limitation": "...",
     "coverage": {
-      "total_cluster_unit_pairs": 166,
-      "pairs_with_at_least_1_item": 125,
-      "pairs_with_full_3_items": 93,
-      "cells_below_min_n": 10829,
-      "cells_total": 11680,
-      "cells_below_min_n_fraction": 0.927
+      "total_cluster_unit_pairs": 144,
+      "pairs_with_at_least_1_item": 138,
+      "pairs_with_full_3_items": 129,
+      "cells_below_min_n": 15117,
+      "cells_total": 17574,
+      "cells_below_min_n_fraction": 0.86
     }
   },
   "c_07": {
@@ -289,7 +292,13 @@ Dört bölge + bir overlay:
 | Sağ kenar (overlay, varsayılan kapalı) | Sonuç paneli — bölüm 5.5, içerik bölüm 8; dil kuralı bölüm 8.2. |
 | Alt (tam genişlik) | Unit paleti — dikey değil yatay bir panel. Bölüm 5.2/5.4. |
 
-> **Sabit viewport kuralı — sonuç panelinin overlay'e taşınmasıyla kısmen kendiliğinden çözüldü (2026-08-30, ikinci güncelleme).** İlk düzeltme (bölüm 5.6'daki karar geçmişine bak) üç sütunu ortak bir ızgarada tutup her birine `overflow-y:auto` vermişti. Sonuç paneli artık ızgaranın tamamen dışında, `position: fixed` bir overlay olduğu için onun içeriği normal sayfa akışına hiç girmiyor — eski sorun (sonuç uzayınca sayfa uzaması) o panel için yapısal olarak imkânsız hale geldi. Geriye kalan iki bölge (önerilen comp'lar, board) için kural aynen geçerli: `body` dikey flex ve `height: 100vh`, ızgara bu flex içinde esnek (`flex: 1 1 auto; min-height: 0`), her sütun kendi taşmasını kendi içinde kaydırıyor (`overflow-y: auto; min-height: 0`). Palet ve kısıtlar kutusu sabit boyutlu (`flex: 0 0 auto`); palet genişletildiğinde bile kendi üst sınırını aşmıyor. Çok kısa bir ekranda gerçekten sığmıyorsa `body` son çare olarak kendi kaymasına izin veriyor.
+> **Sabit viewport kuralı — tamamen terk edildi (2026-08-31, gerçek bir sıkışma hatasına yol açtığı bulundu).** Önceki hal (2026-08-30, aşağıdaki eski metin) `body`'yi `height: 100vh` ile sabitleyip önerilen-comp'lar/board ızgarasını (`flex: 1 1 auto; min-height: 0`) tek esneyen bölge yapıyordu; palet, kısıtlar kutusu ve footer ise `flex: 0 0 auto` ile hiç küçülmüyordu. Bu dört sabit bölgenin toplam doğal yüksekliği 100vh'a yaklaştığında/aştığında, ızgaranın payına kalan yükseklik `min-height:0` sayesinde neredeyse 0'a kadar küçülüyordu — board sütunu palet ile kısıtlar kutusu arasında birkaç piksele sıkışıyor, `overflow-y:auto` teknik olarak devredeydi ama görünür alan tek bir unit kartının (128px) bile altına düşüyor, kartların altı kesiliyordu. `body`'nin "son çare" scroll'u hiç devreye girmiyordu çünkü flex-shrink açığı zaten kapatıyordu — body'nin toplam içerik yüksekliği hiçbir zaman 100vh'ı geçmediği için tarayıcı scroll'a gerek görmüyordu, içerik sadece görünmüyordu. Canlı ekran görüntüsüyle doğrulandı (headless Chrome, 1400×2400 pencere): eski haliyle board sütunu ve palet sıkışık, düzeltmeden sonra board'un 10 slotu ve paletteki tüm unit kartları (portre + trait + isim + maliyet) tam yükseklikte, kesilmeden görünüyor.
+>
+> Düzeltme: `body`'den `height`/`overflow-y`/flex-column zorlaması tamamen kaldırıldı (`min-height: 100vh` yeterli), `.layout-grid`'den `flex: 1 1 auto; min-height: 0` ve `grid-template-rows: minmax(0, 1fr)` kaldırıldı, `.side-column`/`.board-column`'dan `min-height: 0; overflow-y: auto` kaldırıldı. Sayfa artık doğal içerik yüksekliğine göre büyüyor, taştığında **sayfa düzeyinde** dikey scroll ediyor — iç içe küçülen flex/grid kutuları yok. Sonuç panelinin `position: fixed` overlay yapısı (yukarıdaki paragraf) değişmedi, zaten bu sorundan hiç etkilenmiyordu. Palet genişletildiğinde kendi `max-height: 45vh; overflow-y: auto`'sunu koruyor — bu, squeeze hatasıyla ilgisiz, ayrı ve kasıtlı bir tasarım kararı (bkz. 5.4).
+>
+> *Eski metin (2026-08-30, artık geçerli değil, referans için tutuluyor):* "Sonuç panelinin overlay'e taşınmasıyla kısmen kendiliğinden çözüldü ... Geriye kalan iki bölge (önerilen comp'lar, board) için kural aynen geçerli: `body` dikey flex ve `height: 100vh` ... Çok kısa bir ekranda gerçekten sığmıyorsa `body` son çare olarak kendi kaymasına izin veriyor." Bu "son çare" hiç çalışmıyordu — yukarıya bakın.
+
+> **İkinci bulgu (2026-08-31): `align-items: start` sıkışmayı çözdü ama yeni bir boşluk sorunu açtı — CSS Grid'in auto-satır boyutlandırması `align-items`'tan bağımsız çalışıyor.** Yukarıdaki düzeltme board'un sıkışmasını gerçekten çözdü, ama board ile alttaki unit paleti arasında ~120-160px boş alan bıraktı (ölçüldü: headless tarayıcıda `getComputedStyle(.layout-grid).gridTemplateRows`, `.side-column`'un [8 önerilen comp'lu] doğal yüksekliğiyle birebir aynı çıktı, üç board durumunda da [boş/5/10 unit] `.board-column` bundan 124-160px kısaydı). Sebep CSS Grid'in az bilinen bir kuralı: bir satırın `auto` yüksekliği, o satırdaki öğelerin `align-items`'tan tamamen bağımsız, salt içerik boyutuna (max-content) göre kuruluyor — `align-items: start` sadece KISA öğeyi o zaten uzun satırın içinde üste hizalıyor, satırın kendisini kısaltmıyor. Pure-CSS'te bunu çözecek bir yol yok (bir grid satırını "en kısa öğeye göre kur" diye ayarlayamazsınız). Düzeltme: `app.js`'e `.board-column`'u izleyen bir `ResizeObserver` eklendi (`setupSideColumnSync`), `.side-column`'un `max-height`'ini board'un GERÇEK render yüksekliğine eşitliyor — board hangi durumda olursa olsun satırı O belirliyor, `.side-column` taşarsa (bkz. `style.css`'teki `overflow-y: auto`) kendi içinde scroll ediyor. `ResizeObserver` seçildi (window `resize` event'i değil) çünkü board-column'un boyutu pencere resize dışında da değişebiliyor (board render, font yüklenmesi) ve `ResizeObserver` ilk gözlemde kendiliğinden bir kere tetiklendiği için ayrı bir "ilk render'da çağır" satırına gerek kalmıyor. Ölçüldü (headless tarayıcı, üç board durumu): boşluk 124-160px'ten **16px'e** düştü (kalan 16px `.layout-grid`'in kasıtlı `padding-bottom: 1rem`'i, ayrı bir sorun değil).
 
 **Tema:** Koyu arka plan, altın ve mor vurgu renkleri, TFT'nin oyun içi kart estetiğine yakın (gölgeli kartlar, belirgin çerçeveler). Kesin renk kodları CSS'te — spec sadece yönü belirtiyor, bir palet dayatmıyor.
 
@@ -406,16 +415,16 @@ const unit = norm > 0 ? vec.map(v => v / norm) : vec;
 
 **Neden seçici davranmak gerekti.** Board'un trait bileşeni Riot'un kendi `tier_current`'ı (bölüm 7.1, 8), ama bu değer bazen board'daki unit'lerin salt native üyeliğinden **daha yüksek** çıkıyor — SPEC.md bölüm 15'in belgelediği emblem etkisi bunun bilinen bir örneği (bir emblem, sahibi olmadığı bir trait'i "sanal üye" olarak ekliyor). v1 arayüzü item/emblem girişini desteklemediği için (bölüm 11), JS'in hesabı **her zaman** salt native unit sayımına dayanıyor. Gerçek bir maçtan alınan, item/emblem etkisi taşıyan bir board'u self-test'e koymak, doğru bir JS implementasyonunu haksız yere "FAIL" gösterirdi — bu yüzden `_selftest.json`'ı üreten `build_web_data.py`, her aday board için salt unit-üyeliğinden türetilen trait tier'larının gerçek `raw_traits` değeriyle **birebir** tuttuğunu önce doğruluyor; tutmayan board'lar fixture olarak hiç kullanılmıyor.
 
-**Ölçülen oran, beklenenden çok daha büyük çıktı — açık söylüyoruz.** 23496 gerçek ranked board'un **12410'u (%52.8)** bu birebir-eşleşme testini geçiyor; **11086'sı (%47.2)** eleniyor. (Bu sayılar `DA_18_Rival` düzeltmesinden [bkz. altta, SPEC.md bölüm 4] sonraki hal — düzeltme öncesi %52.0/%48.0'dı, fark küçük çünkü Rival'ın kendisi tek başına büyük bir pay değildi.) İkiye ayrıştırılmış hali:
+**Ölçülen oran, beklenenden çok daha büyük çıktı — açık söylüyoruz.** İlk ölçüm (2937 maçlık dev sample, `DA_18_Rival` düzeltmesinden sonraki hal): 23496 gerçek ranked board'un **12410'u (%52.8)** bu birebir-eşleşme testini geçiyor, **11086'sı (%47.2)** eleniyor. **15k koşusunda yeniden ölçüldü (2026-08-31):** 116104 board'un **61963'ü (%53.4)** geçiyor, **54141'i (%46.6)** eleniyor — oran neredeyse birebir korundu, 5 kat veriyle sistematik bir kayma yok. İkiye ayrıştırılmış hali (15k koşusu):
 
-- **Lux'lu board'lar: %99.0 elendi (2479/2504).** Lux'ın "Avatar" mekaniği, hangi köken origin'ini kopyaladığına göre değişen bir trait veriyor; `static_data.py` onun 9 köken-varyantını (`unit_aliases.json`) tek bir kanonik unit'e (`DA_Lux18_Base`) topluyor ve bu sırada hangi origin'in kopyalandığı bilgisi kayboluyor — salt unit listesinden o origin trait'i geri türetilemiyor.
-- **Lux'suz board'larda bile %41.0 elendi (8608/20992) — bileşenleri artık biliniyor.** `emblem_traits.json`'daki 21 bilinen emblem'in katkısı da sayıma katılınca oran **%41.0'dan %11.0'a** düşüyor — yani bu oranın büyük çoğunluğu zaten bilinen emblem etkisi (SPEC.md bölüm 15). Kalan %11.0'lık dilim şu kaynaktan geliyor:
-  - **Board/bench ayrımının API'de hiç olmaması (SPEC.md bölüm 8'in belgelediği kısıt, kabul edildi/düzeltilmedi).** `participant.units` board'da mı bench'te mi olduğunu söylemiyor; board'ların %7.2'sinde unit sayısı `level`'i aşıyor. Bunun kalıntı uyumsuzluğa katkısı düzensiz: kapasiteyi aşan board'larda kalıntı oranı %39, aşmayanlarda %12 — ama basit bir "fazlalığı sil" düzeltmesi denendi ve **kanıtla reddedildi** (uyumsuzluğu %39'dan %92'ye çıkardı, gerçek board unit'lerini bench sanıp siliyordu). Ayrıntı SPEC.md bölüm 8 ve "Ek: Karar geçmişi".
+- **Lux'lu board'lar: %98.8 elendi (11283/11418; ilk ölçüm %99.0, 2479/2504).** Lux'ın "Avatar" mekaniği, hangi köken origin'ini kopyaladığına göre değişen bir trait veriyor; `static_data.py` onun 9 köken-varyantını (`unit_aliases.json`) tek bir kanonik unit'e (`DA_Lux18_Base`) topluyor ve bu sırada hangi origin'in kopyalandığı bilgisi kayboluyor — salt unit listesinden o origin trait'i geri türetilemiyor.
+- **Lux'suz board'larda bile %40.9 elendi (42858/104686; ilk ölçüm %41.0, 8608/20992) — bileşenleri artık biliniyor.** `emblem_traits.json`'daki 21 bilinen emblem'in katkısı da sayıma katılınca oran (ilk ölçümde) **%41.0'dan %11.0'a** düşüyor — yani bu oranın büyük çoğunluğu zaten bilinen emblem etkisi (SPEC.md bölüm 15). *(Bu emblem-düzeltmeli alt kırılım 15k koşusunda yeniden hesaplanmadı — sadece üstteki toplam Lux'suz oran [%40.9] yeniden ölçüldü, ilk ölçümle tutarlı çıktığı için altındaki emblem-payı analizinin de benzer kaldığı varsayılıyor, doğrulanmadı.)* Kalan %11.0'lık dilim (ilk ölçüm) şu kaynaktan geliyor:
+  - **Board/bench ayrımının API'de hiç olmaması (SPEC.md bölüm 8'in belgelediği kısıt, kabul edildi/düzeltilmedi).** `participant.units` board'da mı bench'te mi olduğunu söylemiyor; board'ların %7.2'sinde (15k koşusunda %8.2, SPEC.md bölüm 8) unit sayısı `level`'i aşıyor. Bunun kalıntı uyumsuzluğa katkısı düzensiz: kapasiteyi aşan board'larda kalıntı oranı %39, aşmayanlarda %12 — ama basit bir "fazlalığı sil" düzeltmesi denendi ve **kanıtla reddedildi** (uyumsuzluğu %39'dan %92'ye çıkardı, gerçek board unit'lerini bench sanıp siliyordu). Ayrıntı SPEC.md bölüm 8 ve "Ek: Karar geçmişi".
   - **`DA_18_Rival`'ın tekrarlanan breakpoint'i — düzeltildi (SPEC.md bölüm 4, 2026-08-30).** `extract_traits()` artık `minUnits`'i dedupe ediyor, Rival'ın breakpoints'i `[1, 1, 2]`'den `[1, 2]`'ye düzeldi. Etkisi ölçüldü: Rival'ın rol oynadığı mismatch sayısı 878'den 455'e düştü, ama **tek başına açıklayıcı olduğu board sayısı 206'dan sadece 4'e indi** — çünkü düzeltme öncesinin asıl sorunu (native=1 board'larda yanlışlıkla tier=2 hesaplanması, gerçek tier=1) artık yok. Geriye kalan 455 vaka, düzeltmenin **çözmediği ayrı bir bulgudan** geliyor: native=2 olan board'ların **%99.8'inde (478/479)** Riot'un gerçek `tier_current`'ı **3** — düzeltilmiş `[1, 2]` breakpoint listesiyle native=2'den hesaplanabilecek en yüksek tier 2, asla 3 değil. Rival'ın gerçek tier skalası basit breakpoint-sayımıyla hâlâ tam örtüşmüyor; kök nedeni araştırılmadı, SPEC.md bölüm 4'te ayrı bir çözülmemiş bulgu olarak duruyor.
 
 **Bunun anlamı — ve anlamadığı şey.** Bu, arayüzün ya da self-test'in bir kusuru **değil**: kullanıcının sürükle-bırakla kurduğu bir board'da hiç item yok (v1 kapsamı), dolayısıyla salt unit sayımı o board için zaten **tanımı gereği doğru** hesap — %47'lik oran, "gerçek geçmiş maçlardan hangilerinin fixture olarak güvenilir olduğu" sorusuyla ilgili, "kullanıcının kurduğu board'ların %47'si yanlış hesaplanıyor" ile ilgili değil. Ama şunu da gösteriyor: item/emblem girişi ileride eklenirse (şu an bölüm 11'de kapsam dışı), aynı boşluk o zaman gerçek bir doğruluk sorunu haline gelir ve önce çözülmesi gerekir.
 
-Elenen board'lar arasından, farklı comp'ları temsil edecek şekilde (cluster başına bir örnek) **23 board** seçilip `_selftest.json`'a yazıldı — 22 gerçek comp + bir "hiçbir comp'a uymuyor" (off-meta) örneği.
+Elenen board'lar arasından, farklı comp'ları temsil edecek şekilde (cluster başına bir örnek) board seçilip `_selftest.json`'a yazılıyor — ilk ölçümde **23 board** (22 gerçek comp + bir "hiçbir comp'a uymuyor" [off-meta] örneği), 15k koşusunda (2026-08-31, 19 cluster'la) **20 board** (19 gerçek comp + off-meta). Sayı cluster sayısına bağlı, kod değişmedi.
 
 ### 7.3 Comp eşleştirme
 
@@ -427,16 +436,18 @@ Normalize vektör ile `comps.json`'daki her centroid arasında cosine mesafesi h
 
 ## 8. Sonuç paneli
 
-Yukarıdan aşağıya sıra:
+**Sıra 2026-08-31'de değişti — item önerileri en üste taşındı (kullanıcı kararı: görsel olması ve ilgi çekmesi nedeniyle).** Yukarıdan aşağıya güncel sıra:
 
 | Bölüm | İçerik ve kural |
 | --- | --- |
-| Comp kimliği | Comp adı, eşleşme mesafesi, örnek sayısı (n). Mesafe eşiğe yakınsa "zayıf eşleşme" rozeti. |
+| Comp kimliği | Comp adı, eşleşme mesafesi, örnek sayısı (n). Mesafe eşiğe yakınsa "zayıf eşleşme" rozeti. Panelin başlığı, sıralamanın parçası değil — her zaman en üstte. |
+| Item önerileri | Her core unit için ikon + önerilen item ikonları. Görsel, cümle değil — bölüm 8.3. |
 | Temel istatistik | Ortalama placement ve top-4 oranı. n mutlaka görünsün. |
 | Head-to-head | En iyi 5 ve en kötü 5 eşleşme. Her satırda oran, n ve güven aralığı. |
 | Trait analizi | Zorlandığı 5 ve rahat ettiği 5 trait, delta ve n ile. |
-| Item önerileri | Her core unit için ikon + önerilen item ikonları. Görsel, cümle değil — bölüm 8.3. |
 | Kısıtlar | Sayfanın altında sabit duran, kapanabilir bir kutu. İçeriği bölüm 9'da. |
+
+*Eski sıra (2026-08-30'a kadar): comp kimliği → temel istatistik → head-to-head → trait analizi → item önerileri (en altta). `app.js`'in `renderCompReport`'unda `appendChild` sırası değişti, section 8.1-8.3'ün kuralları (n zorunlu, dil, görsel gösterim) değişmedi.*
 
 > **Augment sekmesi v1'de yok.** İlk taslakta burada bir "Augment: silver / gold / prismatic" satırı vardı; kaldırıldı çünkü `augments.json` üretilmiyor (bölüm 3.6, SPEC.md bölüm 11 — Riot API'de `augments` alanı hiç yok). Veri bir gün gelirse bu sekme geri eklenir, şema referans olarak bölüm 3.6'da duruyor.
 
@@ -545,6 +556,10 @@ Bu bölüm, web arayüzü inşa edilirken alınan önemli kararları ve reddedil
 **Arama vs. maliyet sekmesi çakışması — arama kazanıyor (bölüm 5.4, kabul edildi).** Yatay palete geçince maliyet filtresi bir dropdown'dan sekmeye döndü; bu, arama ile sekmenin aynı anda aktifken çelişebileceği bir durum yarattı ("1 maliyet" sekmesi açıkken "Ahri" (4 maliyet) aranırsa hiç sonuç çıkmaz, kullanıcı "Ahri" yokmuş sanabilir). Karar: arama kutusunda metin varken maliyet sekmesi devre dışı kalır, sonuçlar tüm maliyetlerden gelir (hiçbir sekme "seçili" görünmez); trait filtresi bundan etkilenmez, aramayla VE mantığıyla birleşmeye devam eder.
 
 **Head-to-head'de yetersiz veri — gizlemek yerine isimlendirmek (bölüm 8, kabul edildi, CLI'den kasıtlı sapma).** `src/cli.py`'nin `format_head_to_head`'i `insufficient_data` eşleşmelerini sessizce atlar. Web arayüzü bölüm 8.1'in "yetersiz veri gizlenmeyecek" kuralını daha sıkı uyguluyor: bu eşleşmeler sıralamaya girmiyor ama ayrı bir cümlede karşı taraf isimleriyle birlikte açıkça belirtiliyor ("şu comp'larla yeterli veri olmadığı için karşılaştırma yapılamıyor: ...").
+
+**Sabit viewport (`body height:100vh` + tek esneyen flex çocuk) → doğal yükseklik + sayfa scroll'u (bölüm 5.0, 2026-08-31, gerçek bir hataya karşı düzeltildi).** 2026-08-30'da "çözüldü" denen model aslında board sütununu palet ile kısıtlar kutusu arasında birkaç piksele sıkıştırıyordu — küçülmeyen kardeşler (`flex:0 0 auto`) yüzünden tek esneyen bölgenin (`flex:1 1 auto; min-height:0`) payı 0'a yakın kalıyordu, `body`'nin "son çare" scroll'u da hiç tetiklenmiyordu çünkü flex-shrink açığı sessizce kapatıyordu. Canlı ekran görüntüsüyle doğrulandı. Düzeltme: `body`'nin sabit yüksekliği tamamen kaldırıldı, sayfa artık içeriğe göre büyüyor ve taştığında sayfa düzeyinde scroll ediyor. Sonuç panelinin `position:fixed` overlay'i bundan hiç etkilenmiyordu, değişmedi. Ayrıntı bölüm 5.0.
+
+**Sonuç panelinde item önerileri en alttan en üste (bölüm 8, 2026-08-31, kullanıcı kararı).** Item önerileri görsel olduğu ve kullanıcının ilgisini ilk çektiği için sıranın başına alındı: item önerileri → temel istatistik → head-to-head → trait analizi. Comp kimliği (ad + mesafe) panelin başlığı olduğu için sıralamanın dışında, her zaman en üstte kaldı. Sadece `app.js`'in `renderCompReport`'undaki DOM ekleme sırası değişti — hiçbir bölümün içeriği, hesaplama mantığı veya dil kuralı (8.1-8.3) değişmedi; self-test bu fonksiyona hiç bağlı olmadığı için (sadece vektör/eşleştirme mantığını test ediyor) etkilenmedi, 23/23 doğrulandı.
 
 **Diğer küçük kararlar (ayrıntı ilgili bölümlerde):** önerilen comp sayısı 8 (bölüm 5.3, "5-10" aralığından seçilmiş sabit), `core_units` 10'u aşarsa ilk 10'u alma (bölüm 5.3), arama kutusu ve trait filtresinin yeniden tasarımdan sonra da korunması (bölüm 5.4), unit portresi için CSS `background-image` değil gerçek `<img>` kullanılması (bölüm 5.2 — `onerror` yedek davranışı için zorunlu), "zayıf eşleşme" ve "düşük güven" eşiklerinin (%90, 15 puan) veriden değil uygulamadan seçilmiş sabitler olması (bölüm 8, 8.1).
 
