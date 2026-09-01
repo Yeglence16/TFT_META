@@ -1060,3 +1060,64 @@ sadece ölçüm amaçlı:
 Yapılan: hiçbir şey — `min_cluster_size_fraction` (%0.3) korundu. Kanıt,
 düşürmenin off_meta'dan yeni comp çıkarmadığını, sadece mevcut büyük
 aileleri ikincil unit farkıyla ince varyantlara böldüğünü gösteriyor.
+
+**Cost-ağırlıklı ve item-ağırlıklı vektörleme (Taric'in centroid'lere aşırı
+yakınlaştırıcı etkisini gidermek için) — reddedildi (2026-09-01, ölçüldü,
+uygulanmadı).** `scripts/diag_taric.py` ile (kod/config değiştirilmeden,
+tek seferlik ölçüm) iki karşı-olgusal ağırlıklandırma test edildi: (a) unit
+boyutlarını cost'la (1-5) ağırlıklandırıp yeniden normalize etmek, (b) item
+taşıyan unit'lerin board-bazlı ağırlığını 3x yapmak. Taric'i core_unit
+taşıyan 6 cluster'ın 15 çifti üzerinde:
+
+- **Hedefte fayda yok.** Ortalama Taric-çifti mesafesi cost-ağırlıklandırmayla
+  **0.6382 → 0.6209 (Δ=-0.0173)** — düzelmek yerine biraz daha **yakınlaştı**.
+  Item-ağırlıklandırma neredeyse etkisiz (Δ=+0.0037). Çift bazında da tutarsız:
+  en yakın çift (c_18-c_16) her iki şemada uzaklaşıyor (+0.077/+0.047) ama
+  c_15-c_14 ve c_14-c_16 her iki şemada da belirgin yakınlaşıyor (-0.09 ila
+  -0.16) — seçici, öngörülemez etki.
+- **Kapsam dışında geniş bozulma var.** Aynı iki ağırlıklandırma tüm 19
+  cluster'ın 171 çiftine uygulandığında, Taric'le hiçbir ilgisi olmayan
+  çiftler beklenmedik şekilde birbirine yaklaştı: cost-ağırlıklandırmada
+  **98/171 çift (%57)**, item-ağırlıklandırmada **21/171 çift (%12)**. En
+  büyüğü c_04-c_03 (cost: 0.6506→0.4877, Δ=-0.163) — Taric'le alakasız bir
+  çift, hedeflenen düzeltmeden daha büyük bir bozulma.
+
+Yapılan: hiçbir şey — board vektörü ağırlıksız (unpresence) kalmaya devam
+ediyor, `clustering.py`'ye hiçbir ağırlıklandırma eklenmedi. Gerekçe:
+hedefte ölçülebilir fayda yok, kapsam dışında ölçülebilir zarar var; kendi
+regresyon kriterine göre ("sadece hedef düzelip başka yer bozulursa iş
+yaramaz") ikisi de elenir.
+
+**"Taric ortak frontline yakınlaşma yaratıyor" hipotezi — ölçülüp
+çürütüldü (2026-09-01).** Aynı `diag_taric.py` koşusunda, Taric'in 6
+cluster'ın centroid cosine-benzerliğine dimension-bazlı katkısı ayrıştırıldı
+(bkz. yukarıdaki madde). Sonuç hipotezi doğrulamadı:
+
+- 6 cluster'ın **5'inde** (c_15/c_17/c_18/c_14/c_16 arası 10 çift) Taric'in
+  katkısı **%2.7-7.6** — sıralamada 4.-9. sırada. Asıl sürücü paylaşılan
+  trait'ler (Manabaz, Öncü — en yakın çift c_18-c_16'da tek başına %35.5) ve
+  paylaşılan core unit'ler (Morgana, Gözcü, Diana, Çakıl, Hecarim).
+- **c_09 istisna:** diğer 5 cluster'la ortak neredeyse hiçbir şeyi yok, bu
+  yüzden Taric o 5 çiftte katkının **%21-34**'ü ile #1 boyut. Ama bu bağ ham
+  yoğunluk uzayında güçlü değil — `_single_linkage_tree_` üzerinden (19
+  cluster'ın her birinden `probabilities_`'i en yüksek temsilci nokta,
+  union-find'le birleşme sırası) c_09, diğer 5'lik Taric grubuna **18
+  birleşmenin 14.'sünde**, mesafe **0.6321**'de katılıyor — aradan 4 başka
+  cluster (c_10/c_11/c_12/c_13) zaten girmiş durumda. Centroid-cosine'de
+  görünen "yakınlık" ham yoğunlukta karşılığını bulmuyor; c_09 yapısal
+  olarak ayrı bir comp.
+
+Yapılan: hiçbir şey — hipotez kod/feature değişikliği gerektirmiyordu,
+zaten sadece doğrulama amaçlıydı; çürütüldüğü için uygulanacak bir şey yok.
+
+**Not (2026-09-01, yukarıdaki iki maddeden çıkan genel ders):**
+centroid-cosine yakınlığı ile ham yoğunluk (single-linkage) yakınlığı
+**çelişebiliyor** — c_09 canlı örnek: centroid mesafesinde Taric üzerinden
+"yakın" görünüyor, ham ağaçta 18 birleşmenin 14.'sünde, açıkça geç/zayıf
+bir bağ. İkisi farklı şeyler ölçüyor (centroid mesafesi sadece 2 ortalama
+vektör arası; single-linkage tüm 99623 noktalı mutual-reachability
+uzayından). **Bundan sonra varyant/benzerlik kararlarında (iki cluster aynı
+comp mi, ayrı mı, ne kadar yakın) condensed tree / single-linkage hiyerarşisi
+esas alınacak, çıplak centroid cosine mesafesi değil** — centroid mesafesi
+hâlâ raporlama/görselleştirme için kullanılabilir ama tek başına ayrım kararı
+için yeterli kanıt sayılmayacak.
