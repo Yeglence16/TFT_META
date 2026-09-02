@@ -22,10 +22,12 @@ python src/scrape_ladder.py     # ladder'dan PUUID toplar
 python src/scrape_matches.py    # maç ID + maç detayı toplar, sete/queue'ya göre filtreler
 python src/features.py          # board vektörlerini üretir
 python src/clustering.py        # comp'ları HDBSCAN ile bulur
+python src/subdivide.py         # seçilmiş comp'ları alt-parçalara böler (config'ten kapatılabilir, SPEC.md bölüm 9a)
 python src/matchups.py          # head-to-head sıralama matrisi
 python src/traits.py            # trait bazlı güçlü/zayıf analiz
 python src/items.py             # item lift analizi
 python src/model.py             # placement modeli
+python src/build_web_data.py    # web/data/*.json'ı üretir
 ```
 
 Her aşama kaldığı yerden devam edebilir (`src/state_store.py`). `augments.py`

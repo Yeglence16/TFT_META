@@ -379,196 +379,6 @@
       }
     ]
   },
-  "c_02": {
-    "strong_against": [
-      {
-        "trait": "DA_18_Battlemage",
-        "delta": -0.049,
-        "n": 4560,
-        "ci": [
-          4.586,
-          4.736
-        ]
-      },
-      {
-        "trait": "DA_18_Coven",
-        "delta": -0.049,
-        "n": 1468,
-        "ci": [
-          4.53,
-          4.791
-        ]
-      },
-      {
-        "trait": "DA_18_Sprykin",
-        "delta": -0.033,
-        "n": 3221,
-        "ci": [
-          4.59,
-          4.764
-        ]
-      },
-      {
-        "trait": "DA_18_Blackthorn",
-        "delta": -0.024,
-        "n": 5329,
-        "ci": [
-          4.617,
-          4.755
-        ]
-      },
-      {
-        "trait": "DA_18_Slayer",
-        "delta": -0.019,
-        "n": 6534,
-        "ci": [
-          4.629,
-          4.753
-        ]
-      }
-    ],
-    "weak_against": [
-      {
-        "trait": "DA_18_Solar",
-        "delta": 0.919,
-        "n": 1337,
-        "ci": [
-          5.505,
-          5.753
-        ]
-      },
-      {
-        "trait": "DA_18_Fae",
-        "delta": 0.157,
-        "n": 4617,
-        "ci": [
-          4.795,
-          4.94
-        ]
-      },
-      {
-        "trait": "DA_18_Greenfather",
-        "delta": 0.111,
-        "n": 4428,
-        "ci": [
-          4.747,
-          4.895
-        ]
-      },
-      {
-        "trait": "DA_18_LuxUniqueTrait",
-        "delta": 0.109,
-        "n": 3993,
-        "ci": [
-          4.741,
-          4.898
-        ]
-      },
-      {
-        "trait": "DA_18_Elderwood",
-        "delta": 0.109,
-        "n": 5182,
-        "ci": [
-          4.751,
-          4.888
-        ]
-      }
-    ],
-    "strong_against_high_tier": [
-      {
-        "trait": "DA_18_Brawler",
-        "delta": -0.051,
-        "n": 188,
-        "ci": [
-          4.286,
-          5.034
-        ]
-      },
-      {
-        "trait": "DA_18_Battlemage",
-        "delta": -0.049,
-        "n": 4560,
-        "ci": [
-          4.586,
-          4.736
-        ]
-      },
-      {
-        "trait": "DA_Primal18",
-        "delta": -0.046,
-        "n": 644,
-        "ci": [
-          4.469,
-          4.86
-        ]
-      },
-      {
-        "trait": "DA_18_ZyraUniqueTrait",
-        "delta": 0.005,
-        "n": 5733,
-        "ci": [
-          4.649,
-          4.781
-        ]
-      },
-      {
-        "trait": "DA_DravenUniqueTrait18",
-        "delta": 0.007,
-        "n": 2597,
-        "ci": [
-          4.62,
-          4.815
-        ]
-      }
-    ],
-    "weak_against_high_tier": [
-      {
-        "trait": "DA_18_Solar",
-        "delta": 0.919,
-        "n": 1337,
-        "ci": [
-          5.505,
-          5.753
-        ]
-      },
-      {
-        "trait": "DA_18_Lunar",
-        "delta": 0.436,
-        "n": 240,
-        "ci": [
-          4.83,
-          5.462
-        ]
-      },
-      {
-        "trait": "DA_18_Adaptor",
-        "delta": 0.264,
-        "n": 632,
-        "ci": [
-          4.776,
-          5.173
-        ]
-      },
-      {
-        "trait": "DA_18_Fae",
-        "delta": 0.22,
-        "n": 1381,
-        "ci": [
-          4.799,
-          5.06
-        ]
-      },
-      {
-        "trait": "DA_18_Executioner",
-        "delta": 0.187,
-        "n": 1373,
-        "ci": [
-          4.762,
-          5.033
-        ]
-      }
-    ]
-  },
   "c_03": {
     "strong_against": [
       {
@@ -755,196 +565,6 @@
         "ci": [
           4.386,
           4.579
-        ]
-      }
-    ]
-  },
-  "c_04": {
-    "strong_against": [
-      {
-        "trait": "DA_18_Rival",
-        "delta": -0.061,
-        "n": 4227,
-        "ci": [
-          4.001,
-          4.136
-        ]
-      },
-      {
-        "trait": "DA_18_Adaptor",
-        "delta": -0.05,
-        "n": 5235,
-        "ci": [
-          4.018,
-          4.141
-        ]
-      },
-      {
-        "trait": "DA_18_Summoner",
-        "delta": -0.035,
-        "n": 7878,
-        "ci": [
-          4.046,
-          4.145
-        ]
-      },
-      {
-        "trait": "DA_18_Battlemage",
-        "delta": -0.026,
-        "n": 6192,
-        "ci": [
-          4.047,
-          4.159
-        ]
-      },
-      {
-        "trait": "DA_18_Blossom",
-        "delta": -0.023,
-        "n": 8710,
-        "ci": [
-          4.06,
-          4.154
-        ]
-      }
-    ],
-    "weak_against": [
-      {
-        "trait": "DA_18_Coven",
-        "delta": 0.143,
-        "n": 1804,
-        "ci": [
-          4.171,
-          4.373
-        ]
-      },
-      {
-        "trait": "DA_18_Sprykin",
-        "delta": 0.124,
-        "n": 4341,
-        "ci": [
-          4.187,
-          4.32
-        ]
-      },
-      {
-        "trait": "DA_18_LuxUniqueTrait",
-        "delta": 0.121,
-        "n": 5253,
-        "ci": [
-          4.191,
-          4.311
-        ]
-      },
-      {
-        "trait": "DA_18_Greenfather",
-        "delta": 0.111,
-        "n": 5761,
-        "ci": [
-          4.184,
-          4.298
-        ]
-      },
-      {
-        "trait": "DA_DravenUniqueTrait18",
-        "delta": 0.086,
-        "n": 3208,
-        "ci": [
-          4.139,
-          4.293
-        ]
-      }
-    ],
-    "strong_against_high_tier": [
-      {
-        "trait": "DA_Juggernaut18",
-        "delta": -0.291,
-        "n": 223,
-        "ci": [
-          3.545,
-          4.132
-        ]
-      },
-      {
-        "trait": "DA_18_Rival",
-        "delta": -0.273,
-        "n": 1604,
-        "ci": [
-          3.748,
-          3.965
-        ]
-      },
-      {
-        "trait": "DA_18_Slayer",
-        "delta": -0.095,
-        "n": 114,
-        "ci": [
-          3.619,
-          4.452
-        ]
-      },
-      {
-        "trait": "DA_18_Battlemage",
-        "delta": -0.026,
-        "n": 6192,
-        "ci": [
-          4.047,
-          4.159
-        ]
-      },
-      {
-        "trait": "DA_18_Caustic",
-        "delta": -0.023,
-        "n": 6838,
-        "ci": [
-          4.053,
-          4.16
-        ]
-      }
-    ],
-    "weak_against_high_tier": [
-      {
-        "trait": "DA_18_Defender",
-        "delta": 0.861,
-        "n": 2507,
-        "ci": [
-          4.907,
-          5.073
-        ]
-      },
-      {
-        "trait": "DA_Riftbeast18",
-        "delta": 0.352,
-        "n": 668,
-        "ci": [
-          4.32,
-          4.644
-        ]
-      },
-      {
-        "trait": "DA_18_Sprykin",
-        "delta": 0.347,
-        "n": 193,
-        "ci": [
-          4.166,
-          4.787
-        ]
-      },
-      {
-        "trait": "DA_18_Spellweaver",
-        "delta": 0.317,
-        "n": 168,
-        "ci": [
-          4.101,
-          4.792
-        ]
-      },
-      {
-        "trait": "DA_18_Lunar",
-        "delta": 0.264,
-        "n": 340,
-        "ci": [
-          4.166,
-          4.622
         ]
       }
     ]
@@ -3229,196 +2849,6 @@
       }
     ]
   },
-  "c_17": {
-    "strong_against": [
-      {
-        "trait": "DA_18_Coven",
-        "delta": -0.223,
-        "n": 1772,
-        "ci": [
-          4.353,
-          4.545
-        ]
-      },
-      {
-        "trait": "DA_18_Battlemage",
-        "delta": -0.021,
-        "n": 6008,
-        "ci": [
-          4.597,
-          4.703
-        ]
-      },
-      {
-        "trait": "DA_18_Blackthorn",
-        "delta": -0.011,
-        "n": 6778,
-        "ci": [
-          4.61,
-          4.711
-        ]
-      },
-      {
-        "trait": "DA_18_Sprykin",
-        "delta": -0.011,
-        "n": 3858,
-        "ci": [
-          4.595,
-          4.726
-        ]
-      },
-      {
-        "trait": "DA_18_Solar",
-        "delta": -0.008,
-        "n": 4196,
-        "ci": [
-          4.601,
-          4.726
-        ]
-      }
-    ],
-    "weak_against": [
-      {
-        "trait": "DA_18_LuxUniqueTrait",
-        "delta": 0.101,
-        "n": 5038,
-        "ci": [
-          4.715,
-          4.829
-        ]
-      },
-      {
-        "trait": "DA_AluneUniqueTrait18",
-        "delta": 0.097,
-        "n": 6218,
-        "ci": [
-          4.716,
-          4.82
-        ]
-      },
-      {
-        "trait": "DA_18_Greenfather",
-        "delta": 0.084,
-        "n": 5448,
-        "ci": [
-          4.701,
-          4.811
-        ]
-      },
-      {
-        "trait": "DA_18_ApexPredator",
-        "delta": 0.084,
-        "n": 3574,
-        "ci": [
-          4.687,
-          4.823
-        ]
-      },
-      {
-        "trait": "DA_18_Lunar",
-        "delta": 0.071,
-        "n": 7729,
-        "ci": [
-          4.696,
-          4.789
-        ]
-      }
-    ],
-    "strong_against_high_tier": [
-      {
-        "trait": "DA_18_Sprykin",
-        "delta": -0.121,
-        "n": 180,
-        "ci": [
-          4.265,
-          4.835
-        ]
-      },
-      {
-        "trait": "DA_18_Blackthorn",
-        "delta": -0.1,
-        "n": 252,
-        "ci": [
-          4.317,
-          4.826
-        ]
-      },
-      {
-        "trait": "DA_18_Battlemage",
-        "delta": -0.021,
-        "n": 6008,
-        "ci": [
-          4.597,
-          4.703
-        ]
-      },
-      {
-        "trait": "DA_18_Summoner",
-        "delta": -0.018,
-        "n": 3762,
-        "ci": [
-          4.586,
-          4.721
-        ]
-      },
-      {
-        "trait": "DA_FloraFatalis18",
-        "delta": -0.016,
-        "n": 7245,
-        "ci": [
-          4.607,
-          4.704
-        ]
-      }
-    ],
-    "weak_against_high_tier": [
-      {
-        "trait": "DA_Juggernaut18",
-        "delta": 0.402,
-        "n": 232,
-        "ci": [
-          4.81,
-          5.336
-        ]
-      },
-      {
-        "trait": "DA_18_Hunter",
-        "delta": 0.346,
-        "n": 113,
-        "ci": [
-          4.645,
-          5.391
-        ]
-      },
-      {
-        "trait": "DA_18_Vanguard",
-        "delta": 0.297,
-        "n": 284,
-        "ci": [
-          4.732,
-          5.205
-        ]
-      },
-      {
-        "trait": "DA_Riftbeast18",
-        "delta": 0.243,
-        "n": 549,
-        "ci": [
-          4.75,
-          5.078
-        ]
-      },
-      {
-        "trait": "DA_18_Brawler",
-        "delta": 0.229,
-        "n": 201,
-        "ci": [
-          4.629,
-          5.172
-        ]
-      }
-    ]
-  },
   "c_18": {
     "strong_against": [
       {
@@ -3605,6 +3035,1526 @@
         "ci": [
           4.495,
           5.025
+        ]
+      }
+    ]
+  },
+  "c_19": {
+    "strong_against": [
+      {
+        "trait": "DA_18_Battlemage",
+        "delta": -0.052,
+        "n": 2873,
+        "ci": [
+          5.383,
+          5.565
+        ]
+      },
+      {
+        "trait": "DA_18_Rival",
+        "delta": -0.044,
+        "n": 1924,
+        "ci": [
+          5.374,
+          5.591
+        ]
+      },
+      {
+        "trait": "DA_18_Blackthorn",
+        "delta": -0.032,
+        "n": 3350,
+        "ci": [
+          5.41,
+          5.578
+        ]
+      },
+      {
+        "trait": "DA_DravenUniqueTrait18",
+        "delta": -0.032,
+        "n": 1659,
+        "ci": [
+          5.377,
+          5.612
+        ]
+      },
+      {
+        "trait": "DA_18_Sprykin",
+        "delta": -0.022,
+        "n": 2009,
+        "ci": [
+          5.398,
+          5.611
+        ]
+      }
+    ],
+    "weak_against": [
+      {
+        "trait": "DA_18_Solar",
+        "delta": 0.616,
+        "n": 963,
+        "ci": [
+          6.007,
+          6.277
+        ]
+      },
+      {
+        "trait": "DA_18_Fae",
+        "delta": 0.135,
+        "n": 2974,
+        "ci": [
+          5.575,
+          5.747
+        ]
+      },
+      {
+        "trait": "DA_18_LuxUniqueTrait",
+        "delta": 0.103,
+        "n": 2553,
+        "ci": [
+          5.537,
+          5.721
+        ]
+      },
+      {
+        "trait": "DA_18_Greenfather",
+        "delta": 0.091,
+        "n": 2835,
+        "ci": [
+          5.529,
+          5.705
+        ]
+      },
+      {
+        "trait": "DA_AluneUniqueTrait18",
+        "delta": 0.087,
+        "n": 3173,
+        "ci": [
+          5.53,
+          5.697
+        ]
+      }
+    ],
+    "strong_against_high_tier": [
+      {
+        "trait": "DA_18_Brawler",
+        "delta": -0.179,
+        "n": 124,
+        "ci": [
+          4.876,
+          5.818
+        ]
+      },
+      {
+        "trait": "DA_Juggernaut18",
+        "delta": -0.076,
+        "n": 120,
+        "ci": [
+          5.003,
+          5.897
+        ]
+      },
+      {
+        "trait": "DA_18_Rival",
+        "delta": -0.058,
+        "n": 723,
+        "ci": [
+          5.293,
+          5.642
+        ]
+      },
+      {
+        "trait": "DA_18_Battlemage",
+        "delta": -0.052,
+        "n": 2873,
+        "ci": [
+          5.383,
+          5.565
+        ]
+      },
+      {
+        "trait": "DA_DravenUniqueTrait18",
+        "delta": -0.032,
+        "n": 1659,
+        "ci": [
+          5.377,
+          5.612
+        ]
+      }
+    ],
+    "weak_against_high_tier": [
+      {
+        "trait": "DA_18_Solar",
+        "delta": 0.616,
+        "n": 963,
+        "ci": [
+          6.007,
+          6.277
+        ]
+      },
+      {
+        "trait": "DA_18_Lunar",
+        "delta": 0.407,
+        "n": 163,
+        "ci": [
+          5.573,
+          6.292
+        ]
+      },
+      {
+        "trait": "DA_18_Spellweaver",
+        "delta": 0.374,
+        "n": 100,
+        "ci": [
+          5.462,
+          6.338
+        ]
+      },
+      {
+        "trait": "DA_18_Adaptor",
+        "delta": 0.252,
+        "n": 401,
+        "ci": [
+          5.548,
+          6.008
+        ]
+      },
+      {
+        "trait": "DA_18_Executioner",
+        "delta": 0.215,
+        "n": 880,
+        "ci": [
+          5.583,
+          5.899
+        ]
+      }
+    ]
+  },
+  "c_20": {
+    "strong_against": [
+      {
+        "trait": "DA_18_Coven",
+        "delta": -0.196,
+        "n": 506,
+        "ci": [
+          2.853,
+          3.187
+        ]
+      },
+      {
+        "trait": "DA_18_Battlemage",
+        "delta": -0.041,
+        "n": 1571,
+        "ci": [
+          3.074,
+          3.275
+        ]
+      },
+      {
+        "trait": "DA_18_Caustic",
+        "delta": -0.04,
+        "n": 1709,
+        "ci": [
+          3.08,
+          3.273
+        ]
+      },
+      {
+        "trait": "DA_18_Slayer",
+        "delta": -0.025,
+        "n": 2206,
+        "ci": [
+          3.105,
+          3.276
+        ]
+      },
+      {
+        "trait": "DA_18_Blossom",
+        "delta": -0.016,
+        "n": 2199,
+        "ci": [
+          3.115,
+          3.284
+        ]
+      }
+    ],
+    "weak_against": [
+      {
+        "trait": "DA_18_Solar",
+        "delta": 0.991,
+        "n": 310,
+        "ci": [
+          3.954,
+          4.459
+        ]
+      },
+      {
+        "trait": "DA_18_Fae",
+        "delta": 0.134,
+        "n": 1490,
+        "ci": [
+          3.245,
+          3.454
+        ]
+      },
+      {
+        "trait": "DA_18_Elderwood",
+        "delta": 0.118,
+        "n": 1685,
+        "ci": [
+          3.234,
+          3.433
+        ]
+      },
+      {
+        "trait": "DA_18_Greenfather",
+        "delta": 0.104,
+        "n": 1478,
+        "ci": [
+          3.215,
+          3.424
+        ]
+      },
+      {
+        "trait": "DA_18_ApexPredator",
+        "delta": 0.098,
+        "n": 997,
+        "ci": [
+          3.187,
+          3.441
+        ]
+      }
+    ],
+    "strong_against_high_tier": [
+      {
+        "trait": "DA_18_Battlemage",
+        "delta": -0.041,
+        "n": 1571,
+        "ci": [
+          3.074,
+          3.275
+        ]
+      },
+      {
+        "trait": "DA_18_Caustic",
+        "delta": -0.04,
+        "n": 1709,
+        "ci": [
+          3.08,
+          3.273
+        ]
+      },
+      {
+        "trait": "DA_18_Invoker",
+        "delta": -0.038,
+        "n": 258,
+        "ci": [
+          2.92,
+          3.436
+        ]
+      },
+      {
+        "trait": "DA_Emerald18",
+        "delta": -0.007,
+        "n": 2274,
+        "ci": [
+          3.125,
+          3.292
+        ]
+      },
+      {
+        "trait": "DA_18_ZyraUniqueTrait",
+        "delta": -0.005,
+        "n": 1934,
+        "ci": [
+          3.119,
+          3.302
+        ]
+      }
+    ],
+    "weak_against_high_tier": [
+      {
+        "trait": "DA_18_Solar",
+        "delta": 0.991,
+        "n": 310,
+        "ci": [
+          3.954,
+          4.459
+        ]
+      },
+      {
+        "trait": "DA_Riftbeast18",
+        "delta": 0.42,
+        "n": 181,
+        "ci": [
+          3.335,
+          3.936
+        ]
+      },
+      {
+        "trait": "DA_18_Adaptor",
+        "delta": 0.289,
+        "n": 208,
+        "ci": [
+          3.206,
+          3.803
+        ]
+      },
+      {
+        "trait": "DA_18_Fae",
+        "delta": 0.243,
+        "n": 445,
+        "ci": [
+          3.269,
+          3.648
+        ]
+      },
+      {
+        "trait": "DA_18_Defender",
+        "delta": 0.149,
+        "n": 1278,
+        "ci": [
+          3.25,
+          3.479
+        ]
+      }
+    ]
+  },
+  "c_21": {
+    "strong_against": [
+      {
+        "trait": "DA_18_Adaptor",
+        "delta": -0.066,
+        "n": 1685,
+        "ci": [
+          3.453,
+          3.658
+        ]
+      },
+      {
+        "trait": "DA_18_Rival",
+        "delta": -0.05,
+        "n": 1287,
+        "ci": [
+          3.456,
+          3.687
+        ]
+      },
+      {
+        "trait": "DA_18_Summoner",
+        "delta": -0.047,
+        "n": 2555,
+        "ci": [
+          3.493,
+          3.657
+        ]
+      },
+      {
+        "trait": "DA_18_Caustic",
+        "delta": -0.041,
+        "n": 2213,
+        "ci": [
+          3.491,
+          3.67
+        ]
+      },
+      {
+        "trait": "DA_18_Blossom",
+        "delta": -0.036,
+        "n": 2752,
+        "ci": [
+          3.506,
+          3.665
+        ]
+      }
+    ],
+    "weak_against": [
+      {
+        "trait": "DA_18_Coven",
+        "delta": 0.199,
+        "n": 565,
+        "ci": [
+          3.647,
+          3.995
+        ]
+      },
+      {
+        "trait": "DA_18_Solar",
+        "delta": 0.184,
+        "n": 1398,
+        "ci": [
+          3.694,
+          3.917
+        ]
+      },
+      {
+        "trait": "DA_DravenUniqueTrait18",
+        "delta": 0.173,
+        "n": 996,
+        "ci": [
+          3.664,
+          3.926
+        ]
+      },
+      {
+        "trait": "DA_18_Sprykin",
+        "delta": 0.132,
+        "n": 1335,
+        "ci": [
+          3.637,
+          3.87
+        ]
+      },
+      {
+        "trait": "DA_18_Greenfather",
+        "delta": 0.129,
+        "n": 1818,
+        "ci": [
+          3.653,
+          3.849
+        ]
+      }
+    ],
+    "strong_against_high_tier": [
+      {
+        "trait": "DA_18_Rival",
+        "delta": -0.194,
+        "n": 507,
+        "ci": [
+          3.249,
+          3.607
+        ]
+      },
+      {
+        "trait": "DA_18_Adaptor",
+        "delta": -0.126,
+        "n": 266,
+        "ci": [
+          3.246,
+          3.746
+        ]
+      },
+      {
+        "trait": "DA_18_Caustic",
+        "delta": -0.041,
+        "n": 2213,
+        "ci": [
+          3.491,
+          3.67
+        ]
+      },
+      {
+        "trait": "DA_18_ZyraUniqueTrait",
+        "delta": -0.034,
+        "n": 2546,
+        "ci": [
+          3.505,
+          3.67
+        ]
+      },
+      {
+        "trait": "DA_18_Battlemage",
+        "delta": -0.017,
+        "n": 2097,
+        "ci": [
+          3.514,
+          3.696
+        ]
+      }
+    ],
+    "weak_against_high_tier": [
+      {
+        "trait": "DA_18_Defender",
+        "delta": 0.89,
+        "n": 694,
+        "ci": [
+          4.353,
+          4.67
+        ]
+      },
+      {
+        "trait": "DA_18_Lunar",
+        "delta": 0.497,
+        "n": 109,
+        "ci": [
+          3.736,
+          4.502
+        ]
+      },
+      {
+        "trait": "DA_Riftbeast18",
+        "delta": 0.278,
+        "n": 229,
+        "ci": [
+          3.646,
+          4.153
+        ]
+      },
+      {
+        "trait": "DA_18_Vanguard",
+        "delta": 0.271,
+        "n": 131,
+        "ci": [
+          3.523,
+          4.264
+        ]
+      },
+      {
+        "trait": "DA_Primal18",
+        "delta": 0.191,
+        "n": 256,
+        "ci": [
+          3.54,
+          4.085
+        ]
+      }
+    ]
+  },
+  "c_22": {
+    "strong_against": [
+      {
+        "trait": "DA_18_Rival",
+        "delta": -0.045,
+        "n": 1315,
+        "ci": [
+          5.168,
+          5.389
+        ]
+      },
+      {
+        "trait": "DA_18_Solar",
+        "delta": -0.032,
+        "n": 1400,
+        "ci": [
+          5.185,
+          5.398
+        ]
+      },
+      {
+        "trait": "DA_18_Hunter",
+        "delta": -0.026,
+        "n": 2026,
+        "ci": [
+          5.208,
+          5.387
+        ]
+      },
+      {
+        "trait": "DA_18_Fae",
+        "delta": -0.022,
+        "n": 2426,
+        "ci": [
+          5.22,
+          5.383
+        ]
+      },
+      {
+        "trait": "DA_Primal18",
+        "delta": -0.017,
+        "n": 2468,
+        "ci": [
+          5.226,
+          5.388
+        ]
+      }
+    ],
+    "weak_against": [
+      {
+        "trait": "DA_18_ApexPredator",
+        "delta": 0.13,
+        "n": 1256,
+        "ci": [
+          5.343,
+          5.565
+        ]
+      },
+      {
+        "trait": "DA_18_LuxUniqueTrait",
+        "delta": 0.106,
+        "n": 1677,
+        "ci": [
+          5.335,
+          5.524
+        ]
+      },
+      {
+        "trait": "DA_18_Inferno",
+        "delta": 0.072,
+        "n": 2185,
+        "ci": [
+          5.31,
+          5.48
+        ]
+      },
+      {
+        "trait": "DA_AluneUniqueTrait18",
+        "delta": 0.071,
+        "n": 2111,
+        "ci": [
+          5.308,
+          5.48
+        ]
+      },
+      {
+        "trait": "DA_18_Greenfather",
+        "delta": 0.061,
+        "n": 1855,
+        "ci": [
+          5.293,
+          5.476
+        ]
+      }
+    ],
+    "strong_against_high_tier": [
+      {
+        "trait": "DA_18_Rival",
+        "delta": -0.205,
+        "n": 457,
+        "ci": [
+          4.93,
+          5.307
+        ]
+      },
+      {
+        "trait": "DA_18_Fae",
+        "delta": -0.081,
+        "n": 710,
+        "ci": [
+          5.093,
+          5.391
+        ]
+      },
+      {
+        "trait": "DA_18_Invoker",
+        "delta": -0.055,
+        "n": 336,
+        "ci": [
+          5.047,
+          5.489
+        ]
+      },
+      {
+        "trait": "DA_18_Solar",
+        "delta": -0.032,
+        "n": 1400,
+        "ci": [
+          5.185,
+          5.398
+        ]
+      },
+      {
+        "trait": "DA_18_Battlemage",
+        "delta": 0.008,
+        "n": 1923,
+        "ci": [
+          5.239,
+          5.424
+        ]
+      }
+    ],
+    "weak_against_high_tier": [
+      {
+        "trait": "DA_18_Defender",
+        "delta": 0.498,
+        "n": 926,
+        "ci": [
+          5.704,
+          5.94
+        ]
+      },
+      {
+        "trait": "DA_Riftbeast18",
+        "delta": 0.349,
+        "n": 223,
+        "ci": [
+          5.42,
+          5.925
+        ]
+      },
+      {
+        "trait": "DA_18_Adaptor",
+        "delta": 0.253,
+        "n": 290,
+        "ci": [
+          5.352,
+          5.799
+        ]
+      },
+      {
+        "trait": "DA_18_Executioner",
+        "delta": 0.19,
+        "n": 583,
+        "ci": [
+          5.351,
+          5.675
+        ]
+      },
+      {
+        "trait": "DA_18_Lunar",
+        "delta": 0.132,
+        "n": 112,
+        "ci": [
+          5.107,
+          5.803
+        ]
+      }
+    ]
+  },
+  "c_23": {
+    "strong_against": [
+      {
+        "trait": "DA_18_Adaptor",
+        "delta": -0.101,
+        "n": 1053,
+        "ci": [
+          3.581,
+          3.844
+        ]
+      },
+      {
+        "trait": "DA_18_Rival",
+        "delta": -0.056,
+        "n": 876,
+        "ci": [
+          3.617,
+          3.899
+        ]
+      },
+      {
+        "trait": "DA_18_Battlemage",
+        "delta": -0.055,
+        "n": 1207,
+        "ci": [
+          3.639,
+          3.878
+        ]
+      },
+      {
+        "trait": "DA_18_Summoner",
+        "delta": -0.05,
+        "n": 1538,
+        "ci": [
+          3.657,
+          3.871
+        ]
+      },
+      {
+        "trait": "DA_18_Lunar",
+        "delta": -0.034,
+        "n": 1709,
+        "ci": [
+          3.678,
+          3.882
+        ]
+      }
+    ],
+    "weak_against": [
+      {
+        "trait": "DA_18_Coven",
+        "delta": 0.207,
+        "n": 330,
+        "ci": [
+          3.796,
+          4.246
+        ]
+      },
+      {
+        "trait": "DA_18_LuxUniqueTrait",
+        "delta": 0.126,
+        "n": 1032,
+        "ci": [
+          3.81,
+          4.07
+        ]
+      },
+      {
+        "trait": "DA_18_Inferno",
+        "delta": 0.097,
+        "n": 1341,
+        "ci": [
+          3.797,
+          4.024
+        ]
+      },
+      {
+        "trait": "DA_18_Sprykin",
+        "delta": 0.094,
+        "n": 849,
+        "ci": [
+          3.762,
+          4.055
+        ]
+      },
+      {
+        "trait": "DA_FloraFatalis18",
+        "delta": 0.087,
+        "n": 1750,
+        "ci": [
+          3.8,
+          4.002
+        ]
+      }
+    ],
+    "strong_against_high_tier": [
+      {
+        "trait": "DA_18_Rival",
+        "delta": -0.206,
+        "n": 344,
+        "ci": [
+          3.374,
+          3.841
+        ]
+      },
+      {
+        "trait": "DA_18_Adaptor",
+        "delta": -0.145,
+        "n": 172,
+        "ci": [
+          3.368,
+          3.97
+        ]
+      },
+      {
+        "trait": "DA_Primal18",
+        "delta": -0.106,
+        "n": 195,
+        "ci": [
+          3.39,
+          4.025
+        ]
+      },
+      {
+        "trait": "DA_18_Summoner",
+        "delta": -0.058,
+        "n": 758,
+        "ci": [
+          3.606,
+          3.905
+        ]
+      },
+      {
+        "trait": "DA_18_Battlemage",
+        "delta": -0.055,
+        "n": 1207,
+        "ci": [
+          3.639,
+          3.878
+        ]
+      }
+    ],
+    "weak_against_high_tier": [
+      {
+        "trait": "DA_18_Defender",
+        "delta": 0.945,
+        "n": 473,
+        "ci": [
+          4.569,
+          4.949
+        ]
+      },
+      {
+        "trait": "DA_Riftbeast18",
+        "delta": 0.449,
+        "n": 114,
+        "ci": [
+          3.87,
+          4.656
+        ]
+      },
+      {
+        "trait": "DA_18_Fae",
+        "delta": 0.258,
+        "n": 417,
+        "ci": [
+          3.87,
+          4.274
+        ]
+      },
+      {
+        "trait": "DA_18_Executioner",
+        "delta": 0.249,
+        "n": 348,
+        "ci": [
+          3.841,
+          4.286
+        ]
+      },
+      {
+        "trait": "DA_18_LuxUniqueTrait",
+        "delta": 0.126,
+        "n": 1032,
+        "ci": [
+          3.81,
+          4.07
+        ]
+      }
+    ]
+  },
+  "c_24": {
+    "strong_against": [
+      {
+        "trait": "DA_18_Rival",
+        "delta": -0.075,
+        "n": 746,
+        "ci": [
+          3.007,
+          3.288
+        ]
+      },
+      {
+        "trait": "DA_18_Summoner",
+        "delta": -0.069,
+        "n": 1300,
+        "ci": [
+          3.045,
+          3.261
+        ]
+      },
+      {
+        "trait": "DA_18_Battlemage",
+        "delta": -0.053,
+        "n": 963,
+        "ci": [
+          3.043,
+          3.295
+        ]
+      },
+      {
+        "trait": "DA_18_ApexPredator",
+        "delta": -0.039,
+        "n": 671,
+        "ci": [
+          3.037,
+          3.33
+        ]
+      },
+      {
+        "trait": "DA_18_ZyraUniqueTrait",
+        "delta": -0.037,
+        "n": 1297,
+        "ci": [
+          3.076,
+          3.294
+        ]
+      }
+    ],
+    "weak_against": [
+      {
+        "trait": "DA_18_Sprykin",
+        "delta": 0.178,
+        "n": 735,
+        "ci": [
+          3.253,
+          3.547
+        ]
+      },
+      {
+        "trait": "DA_18_Greenfather",
+        "delta": 0.155,
+        "n": 948,
+        "ci": [
+          3.252,
+          3.503
+        ]
+      },
+      {
+        "trait": "DA_DravenUniqueTrait18",
+        "delta": 0.108,
+        "n": 585,
+        "ci": [
+          3.168,
+          3.492
+        ]
+      },
+      {
+        "trait": "DA_18_LuxUniqueTrait",
+        "delta": 0.099,
+        "n": 856,
+        "ci": [
+          3.189,
+          3.453
+        ]
+      },
+      {
+        "trait": "DA_FloraFatalis18",
+        "delta": 0.097,
+        "n": 1462,
+        "ci": [
+          3.216,
+          3.423
+        ]
+      }
+    ],
+    "strong_against_high_tier": [
+      {
+        "trait": "DA_18_Rival",
+        "delta": -0.297,
+        "n": 295,
+        "ci": [
+          2.715,
+          3.136
+        ]
+      },
+      {
+        "trait": "DA_18_Battlemage",
+        "delta": -0.053,
+        "n": 963,
+        "ci": [
+          3.043,
+          3.295
+        ]
+      },
+      {
+        "trait": "DA_18_Summoner",
+        "delta": -0.047,
+        "n": 564,
+        "ci": [
+          3.012,
+          3.339
+        ]
+      },
+      {
+        "trait": "DA_18_ApexPredator",
+        "delta": -0.039,
+        "n": 671,
+        "ci": [
+          3.037,
+          3.33
+        ]
+      },
+      {
+        "trait": "DA_18_ZyraUniqueTrait",
+        "delta": -0.037,
+        "n": 1297,
+        "ci": [
+          3.076,
+          3.294
+        ]
+      }
+    ],
+    "weak_against_high_tier": [
+      {
+        "trait": "DA_18_Defender",
+        "delta": 0.968,
+        "n": 411,
+        "ci": [
+          3.987,
+          4.393
+        ]
+      },
+      {
+        "trait": "DA_18_Invoker",
+        "delta": 0.235,
+        "n": 199,
+        "ci": [
+          3.161,
+          3.754
+        ]
+      },
+      {
+        "trait": "DA_Riftbeast18",
+        "delta": 0.209,
+        "n": 102,
+        "ci": [
+          3.077,
+          3.786
+        ]
+      },
+      {
+        "trait": "DA_18_Greenfather",
+        "delta": 0.155,
+        "n": 948,
+        "ci": [
+          3.252,
+          3.503
+        ]
+      },
+      {
+        "trait": "DA_FloraFatalis18",
+        "delta": 0.142,
+        "n": 1054,
+        "ci": [
+          3.241,
+          3.488
+        ]
+      }
+    ]
+  },
+  "c_25": {
+    "strong_against": [
+      {
+        "trait": "DA_18_Coven",
+        "delta": -0.267,
+        "n": 1316,
+        "ci": [
+          4.567,
+          4.785
+        ]
+      },
+      {
+        "trait": "DA_18_Solar",
+        "delta": -0.043,
+        "n": 3089,
+        "ci": [
+          4.83,
+          4.971
+        ]
+      },
+      {
+        "trait": "DA_18_Adaptor",
+        "delta": -0.034,
+        "n": 3626,
+        "ci": [
+          4.843,
+          4.975
+        ]
+      },
+      {
+        "trait": "DA_18_Hunter",
+        "delta": -0.022,
+        "n": 4332,
+        "ci": [
+          4.861,
+          4.982
+        ]
+      },
+      {
+        "trait": "DA_18_Battlemage",
+        "delta": -0.018,
+        "n": 4430,
+        "ci": [
+          4.865,
+          4.985
+        ]
+      }
+    ],
+    "weak_against": [
+      {
+        "trait": "DA_18_ApexPredator",
+        "delta": 0.102,
+        "n": 2602,
+        "ci": [
+          4.969,
+          5.122
+        ]
+      },
+      {
+        "trait": "DA_18_LuxUniqueTrait",
+        "delta": 0.099,
+        "n": 3756,
+        "ci": [
+          4.978,
+          5.106
+        ]
+      },
+      {
+        "trait": "DA_AluneUniqueTrait18",
+        "delta": 0.085,
+        "n": 4616,
+        "ci": [
+          4.97,
+          5.086
+        ]
+      },
+      {
+        "trait": "DA_18_Greenfather",
+        "delta": 0.075,
+        "n": 4055,
+        "ci": [
+          4.957,
+          5.08
+        ]
+      },
+      {
+        "trait": "DA_18_Slayer",
+        "delta": 0.073,
+        "n": 5961,
+        "ci": [
+          4.965,
+          5.067
+        ]
+      }
+    ],
+    "strong_against_high_tier": [
+      {
+        "trait": "DA_18_Sprykin",
+        "delta": -0.199,
+        "n": 137,
+        "ci": [
+          4.436,
+          5.053
+        ]
+      },
+      {
+        "trait": "DA_18_Solar",
+        "delta": -0.043,
+        "n": 3089,
+        "ci": [
+          4.83,
+          4.971
+        ]
+      },
+      {
+        "trait": "DA_18_Blackthorn",
+        "delta": -0.02,
+        "n": 170,
+        "ci": [
+          4.621,
+          5.226
+        ]
+      },
+      {
+        "trait": "DA_18_Battlemage",
+        "delta": -0.018,
+        "n": 4430,
+        "ci": [
+          4.865,
+          4.985
+        ]
+      },
+      {
+        "trait": "DA_18_Summoner",
+        "delta": -0.018,
+        "n": 2762,
+        "ci": [
+          4.848,
+          5.003
+        ]
+      }
+    ],
+    "weak_against_high_tier": [
+      {
+        "trait": "DA_Riftbeast18",
+        "delta": 0.273,
+        "n": 394,
+        "ci": [
+          5.032,
+          5.399
+        ]
+      },
+      {
+        "trait": "DA_Juggernaut18",
+        "delta": 0.253,
+        "n": 184,
+        "ci": [
+          4.906,
+          5.485
+        ]
+      },
+      {
+        "trait": "DA_18_Spellweaver",
+        "delta": 0.215,
+        "n": 139,
+        "ci": [
+          4.818,
+          5.498
+        ]
+      },
+      {
+        "trait": "DA_18_Brawler",
+        "delta": 0.185,
+        "n": 141,
+        "ci": [
+          4.803,
+          5.452
+        ]
+      },
+      {
+        "trait": "DA_18_Vanguard",
+        "delta": 0.184,
+        "n": 213,
+        "ci": [
+          4.865,
+          5.389
+        ]
+      }
+    ]
+  },
+  "c_26": {
+    "strong_against": [
+      {
+        "trait": "DA_18_Coven",
+        "delta": -0.081,
+        "n": 425,
+        "ci": [
+          3.519,
+          3.902
+        ]
+      },
+      {
+        "trait": "DA_18_Blackthorn",
+        "delta": -0.035,
+        "n": 1690,
+        "ci": [
+          3.659,
+          3.853
+        ]
+      },
+      {
+        "trait": "DA_18_Inferno",
+        "delta": -0.024,
+        "n": 1666,
+        "ci": [
+          3.669,
+          3.865
+        ]
+      },
+      {
+        "trait": "DA_18_Summoner",
+        "delta": -0.015,
+        "n": 1750,
+        "ci": [
+          3.681,
+          3.873
+        ]
+      },
+      {
+        "trait": "DA_18_Battlemage",
+        "delta": -0.014,
+        "n": 1472,
+        "ci": [
+          3.673,
+          3.881
+        ]
+      }
+    ],
+    "weak_against": [
+      {
+        "trait": "DA_18_Hunter",
+        "delta": 0.11,
+        "n": 1473,
+        "ci": [
+          3.797,
+          4.006
+        ]
+      },
+      {
+        "trait": "DA_AluneUniqueTrait18",
+        "delta": 0.105,
+        "n": 1478,
+        "ci": [
+          3.791,
+          4.002
+        ]
+      },
+      {
+        "trait": "DA_18_Greenfather",
+        "delta": 0.1,
+        "n": 1294,
+        "ci": [
+          3.78,
+          4.002
+        ]
+      },
+      {
+        "trait": "DA_18_LuxUniqueTrait",
+        "delta": 0.094,
+        "n": 1187,
+        "ci": [
+          3.769,
+          4.002
+        ]
+      },
+      {
+        "trait": "DA_18_Solar",
+        "delta": 0.093,
+        "n": 1029,
+        "ci": [
+          3.759,
+          4.01
+        ]
+      }
+    ],
+    "strong_against_high_tier": [
+      {
+        "trait": "DA_18_Defender",
+        "delta": -0.078,
+        "n": 1230,
+        "ci": [
+          3.599,
+          3.827
+        ]
+      },
+      {
+        "trait": "DA_FloraFatalis18",
+        "delta": -0.049,
+        "n": 1763,
+        "ci": [
+          3.647,
+          3.837
+        ]
+      },
+      {
+        "trait": "DA_18_Battlemage",
+        "delta": -0.014,
+        "n": 1472,
+        "ci": [
+          3.673,
+          3.881
+        ]
+      },
+      {
+        "trait": "DA_18_Summoner",
+        "delta": 0.013,
+        "n": 938,
+        "ci": [
+          3.672,
+          3.935
+        ]
+      },
+      {
+        "trait": "DA_18_ZyraUniqueTrait",
+        "delta": 0.022,
+        "n": 1749,
+        "ci": [
+          3.717,
+          3.91
+        ]
+      }
+    ],
+    "weak_against_high_tier": [
+      {
+        "trait": "DA_Riftbeast18",
+        "delta": 0.202,
+        "n": 142,
+        "ci": [
+          3.668,
+          4.318
+        ]
+      },
+      {
+        "trait": "DA_18_Fae",
+        "delta": 0.185,
+        "n": 459,
+        "ci": [
+          3.79,
+          4.162
+        ]
+      },
+      {
+        "trait": "DA_Primal18",
+        "delta": 0.147,
+        "n": 211,
+        "ci": [
+          3.672,
+          4.205
+        ]
+      },
+      {
+        "trait": "DA_18_Executioner",
+        "delta": 0.116,
+        "n": 461,
+        "ci": [
+          3.714,
+          4.099
+        ]
+      },
+      {
+        "trait": "DA_AluneUniqueTrait18",
+        "delta": 0.105,
+        "n": 1478,
+        "ci": [
+          3.791,
+          4.002
         ]
       }
     ]

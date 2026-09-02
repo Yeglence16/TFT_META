@@ -53,6 +53,7 @@ tft-comp-analyzer/
     scrape_matches.py
     features.py
     clustering.py
+    subdivide.py
     matchups.py
     augments.py
     traits.py
@@ -583,6 +584,172 @@ Model ve centroid'ler `models/` altına kaydedilsin.
 
 ---
 
+## 9a. Comp alt-bölme (`subdivide.py`, eklendi 2026-09-02)
+
+**19 → 24 comp.** Faz 1 (`clustering.py`, yukarıdaki bölüm 9) hiç
+değiştirilmedi — `min_cluster_size_fraction` aynen 0.003, global fit aynen
+çalışıyor. `subdivide.py` faz 1'in KENDİ çıktısı üzerinde çalışan ayrı, ek
+bir adım: seçilmiş 3 comp'u (Kayle — Bombardımancı, Cassiopeia — Savunucu,
+Aphelios — Öncü) daha ince parçalara böldü. Karar, bir önceki oturumun
+`scripts/sensitivity_mcs.py` → `measure_variants.py` → `resolve_variant_gap.py`
+→ `measure_residual.py` ölçüm zincirine dayanıyor (script'ler `scripts/`
+altında duruyor, tek seferlik ölçüm — pipeline'ın parçası değil).
+
+**Mimari — Seçenek B (global probe fit'i filtrelemek), Seçenek A değil.**
+İki mimari karşılaştırıldı: (A) her hedef comp'un kendi eğitim noktaları
+İZOLE EDİLİP üzerinde ayrı bir HDBSCAN çalıştırmak; (B) TÜM eğitim
+popülasyonu üzerinde tek bir global probe fit (`min_cluster_size=200`) çalıştırıp
+sonucu hedef comp'lara göre FİLTRELEMEK. (A) reddedildi: izole bir fit'te
+komşuluk havuzu (mutual-reachability/core-distance hesabı SADECE o comp'un
+kendi noktalarına bakar, global fit'te diğer comp'lardan gelen komşular artık
+yok) ve `min_cluster_size`'ın GÖRELİ eşiği (aynı "200" sayısı, 99623 noktanın
+%0.20'si yerine örn. Kayle'nin kendi 5523 noktasının %3.6'sı — tamamen farklı
+yoğunluk eşiği) değişir; bu, önceki oturumda ölçülüp karakterize edilen 8
+parçayı (n'ler, avg_placement, dimension-diff'ler) GEÇERSİZ kılardı — yeniden
+ölçüm gerektirirdi ve 2/4/2 parça sayısını garanti etmezdi. (B) seçildi:
+zaten ölçülmüş/doğrulanmış global mcs=200 sonucunu birebir kullanıyor.
+
+**Bilinçli melez eşik.** 19 değişmeyen comp `min_cluster_size_fraction=0.003`
+(→ `min_cluster_size=299`) ile; 8 yeni parça AYRI bir probe
+`min_cluster_size=200` ile geliyor. Bu İKİ FARKLI eşiğin bilinçli, kayıtlı bir
+tercihi — global fit'in "299" değeri parçaları hiç bulamıyordu (bkz. yukarıdaki
+bölüm 9'un "min_cluster_size'ı düşürme" kararı: fraction küçültmek OFF_META'dan
+yeni comp çıkarmıyor, mevcut ailelerin kendi içinde ince varyantlara bölünmesine
+yol açıyor — 200'ün yaptığı tam olarak bu, ama sadece 3 aile için, kasıtlı
+şekilde). `config.yaml`'ın `clustering.min_cluster_size_fraction`'ı DEĞİŞMEDİ.
+
+**Cache bağımlılığı — açıkça yazılıyor.** `subdivide.py` kendi probe fit'ini
+HER ÇALIŞTIRMADA yeniden yapıyor (kod içi cache yok — bir geliştirme oturumu
+scratch dizinine cache'lemişti, üretim modülüne bilerek taşınmadı, bkz. modülün
+docstring'i). Veri yenilenip (yeni maç, `features.py` yeniden çalışıp) faz 1
+yeniden fit edildiğinde, `subdivide.py` de MUTLAKA yeniden çalıştırılmalı —
+aksi halde `comps.json`/`cluster_labels.npy` faz-1 ile faz-2 arasında
+tutarsız kalır (parçalar eski eğitim verisine, geri kalan 16 comp yeni
+veriye ait olur).
+
+**Bölme kriteri — C2 (parça saflığı ≥%90), C1 (CI çakışmaması) DEĞİL.**
+İki aday kriter ölçüldü (5 aday comp üzerinde: Kayle, Cassiopeia,
+Aphelios-Öncü, Draven-Alev, Tristana-Fey — hepsi mcs=200'de 2+ parçaya
+bölünmüştü):
+- **C1 (parçalar arası avg_placement CI'ları çakışmıyor mu) TEK BAŞINA
+  YETERSİZ.** Draven-Alev'in kendi 2 parçası da CI çakışmıyor gösteriyordu
+  (z=3.69, p=0.0002) — C1 tek başına kullanılsaydı Draven-Alev de
+  bölünecekti, ama parça saflığı sadece %69.7'ydi (aşağıya bkz.).
+- **C2 (parça saflığı: probe cluster'ın TAM popülasyonunun, üretimin FİNAL
+  etiketiyle aynı hedef comp'a ait olma oranı) ≥%90 eşiği doğru ayırdı.**
+  Kayle/Cassiopeia/Aphelios-Öncü'nün 8 parçasının TAMAMI %96.1-100.0 saflık
+  ölçtü; Draven-Alev'in kendi en zayıf parçası %69.7'de kaldı.
+- Config: `clustering.subdivide.purity_threshold: 0.90`.
+
+**Bölünmeyenler — ölçülüp bilerek dışarıda bırakıldı:**
+- **Tristana-Fey**: parçaları arası avg_placement farkı istatistiksel olarak
+  ANLAMSIZ (z=-1.161, p=0.246, CI çakışıyor: [4.293,4.462] vs [4.342,4.591])
+  — kozmetik ayrım, gerçek varyant değil.
+  **Draven-Alev**: CI çakışmıyordu ama parça saflığı %69.7 — parçanın
+  %30.3'ü aslında üretimin başka yerinden/off_meta'dan geliyordu, güvenilir
+  bir ayrım değil.
+
+**Artık noktalar — Seçenek (i), 0.35 eşikli en-yakın-parça ataması.**
+Hedef comp'un kendi ham-noise (probe fit'te -1) VE early-death (hiç HDBSCAN
+fit'ine girmemiş) noktaları, 8 parçanın TAMAMINA karşı cosine mesafeyle
+test edildi — sadece aynı aileye değil, tüm 8'e (aile-kısıtlı arama YAPILMADI,
+çünkü gereksiz olduğu ölçüldü: aşağıya bkz.). `noise_distance_threshold`
+(0.35, aynı config değeri — yeni bir sayı DEĞİL) içindeyse en yakın parçaya
+atandı, dışındaysa off_meta'ya gitti.
+- **Ölçülen etki**: hiçbir müdahale yapılmadan ("baseline" — sadece kendi
+  comp'undan ham-atanmış noktalar), 8 parça arasında **97** yetersiz
+  (n<100) head-to-head hücresi vardı. Seçenek (i) sonrası **7**'ye düştü.
+  Gerçek `matchups.json`'da doğrulandı: `c_01-c_24(n=70)`, `c_01-c_23(n=85)`,
+  `c_00-c_23(n=90)`, `c_01-c_26(n=90)`, `c_23-c_24(n=91)`, `c_00-c_24(n=91)`,
+  `c_01-c_20(n=94)` — hepsi zaten en küçük rakiplere (c_00, c_01) karşı ya
+  da iki küçük Cassiopeia parçası arasında. Ayrıca 2 self-mirror hücre de
+  yetersiz: `c_20-c_20(n=46)`, `c_24-c_24(n=86)`.
+- **Çapraz kirlenme riski ölçülüp reddedildi**: 6 kategorinin (3 comp × {ham-noise,
+  early-death}) HER BİRİNDE, en yakın parça noktaların **%100'ünde AYNI
+  aileden** çıktı — hiçbir Kayle artığı bir Cassiopeia/Aphelios parçasına,
+  ya da tersi, en yakın olmadı. Aile-kısıtlı arama ile aile-kısıtsız arama
+  arasında pratik fark yok, ölçülerek doğrulandı.
+
+**Sabit bir "varyant sınırı" mesafesi YOK — ölçülüp çürütüldü.** mcs=60/90/120/200
+probe'larının her birinde, condensed tree'deki EN BÜYÜK birleşme-mesafesi
+boşluğunun konumu **kayıyor**: mcs=60'ta ~0.35, mcs=90'da ~0.26, mcs=120'de
+~0.23, mcs=200'de ~0.21 (alt sınır). Boşluğun iki yanındaki cluster'lar
+isimleriyle karşılaştırıldığında (mcs=60/120'de boşluk İKİ FARKLI ailenin
+kendi-iç-birleşmesi arasında; mcs=90'da AYNI ailenin iç birleşmesi içinde;
+sadece mcs=200'de temiz bir "aynı ailenin kendi 2 parçası + farklı bir comp"
+sınırı) — tüm mcs değerlerinde AYNI iki tarafı ayıran evrensel bir eşik
+mesafesi yok. Bu yüzden bölme kararı comp başına, tek bir global mesafe
+eşiğiyle DEĞİL, C2 kriteriyle (ölçülmüş saflık) verildi.
+
+**Cassiopeia'nın 4 parçasını ayıran şey frekans değil, YILDIZ SEVİYESİ.**
+Gerçek board verisinde ölçüldü: Lillia'nın core_units listesindeki
+varlığı/yokluğu (≥%50 sıklık) 4 parçanın TAMAMINDA aynı (hepsi Lillia
+taşıyor) — asıl fark parça-A'da Lillia'nın ort. **1.97★**'a (gerçek 2-yıldız
+yatırımı) çıkması, parça-B'de ise ort. **1.00★**'da (hiç yükseltilmeden)
+kalması. Aynı desen Soraka için parça-C (ort. 1.00★) vs parça-D (ort.
+1.96★) arasında. Önceki (2026-09-01) rapor bu farkı "centroid'de zayıf/
+ağırlıklı" diye tanımlamıştı — gerçek ölçüm bunun yıldız-seviyesi farkı
+olduğunu, frekans farkı olmadığını gösterdi.
+
+**Bench izi — bilinen bir kısıtın gözlenen sonucu, düzeltme yapılmadı.**
+`c_19` (Kayle, Hecarim'siz)'da Hecarim board'ların %25.4'ünde var ama HER
+ZAMAN 1★ (bench-düzeyi, gerçek yatırım değil); `c_22`'de (Yavan Cassiopeia)
+Lillia %86.9 sıklıkla var ama ort. 1.00★ (hiç yükseltilmiyor). Bölüm 8'in
+belgelediği kısıt ("bench unit'lerini board vektöründen çıkarma —
+reddedildi", ölçülen heuristik uyumsuzluğu %39→%92'ye çıkarmıştı)
+burada somut bir sonuç veriyor: bench-düzeyi unit'ler vektörde kaldığı için
+cluster ayrımına (hem faz 1'in hem faz 2'nin) karışabiliyor. Bilinen,
+kayıtlı bir kısıt — yeni bir düzeltme YAPILMADI (eskisi zaten reddedilmişti,
+gerekçe değişmedi).
+
+**Eksik-board deseni.** `c_19` ort. **6.94** unit oynuyor, `c_20` **7.74** —
+Hecarim'siz versiyonda Öncü (ort. tier 0.39 vs 0.99) ve Kadim Orman (ort.
+tier 0.58 vs 1.03) breakpoint'leri büyük ölçüde açılmıyor; Hecarim'in kendi
+2 trait'i (`DA_18_Elderwood`, `DA_18_Vanguard`) tam olarak bunlar.
+
+**Determinizm — doğrulandı, iki kez.** `subdivide.py` temiz faz-1
+durumundan iki bağımsız kez çalıştırıldı: `comps.json`, `cluster_labels.npy`,
+`models/centroids.npz` **byte-byte identical**. Ardından
+`matchups.py`/`traits.py`/`items.py`/`build_web_data.py` da iki kez
+çalıştırıldı — tüm çıktı dosyaları (dahil `web/data/*.json`) byte-byte
+identical. Ayrıca `subdivide.py` kendi içinde bir cross-check yapıyor: 16
+değişmeyen comp `build_cluster_report()` ile YENİDEN hesaplanıp faz-1'in
+kayıtlı `comps.json`'uyla birebir karşılaştırılıyor, uyuşmazsa hiçbir dosya
+yazılmadan `SystemExit` ile duruyor.
+
+**Sonuç — 24 comp, self-test 25/25, pytest 154/154.** items coverage: 8
+yeni parça için `n<50` elenme oranı **%85.1-89.5** (global: **%87.0**,
+bölüm 15'teki %86.0'ya yakın, hafif kötüleşme beklenen yönde — daha küçük
+parça n'leri). Yeni 8 comp:
+
+| id | isim | n_total | avg_placement | top4_rate |
+|---|---|---|---|---|
+| c_19 | Çakma Kayle | 4729 | 5.526 | 0.320 |
+| c_20 | Kayle the Supreme | 2530 | 3.216 | 0.748 |
+| c_21 | Cassiopeia-Fortress | 3186 | 3.622 | 0.668 |
+| c_22 | Yavan Cassiopeia | 3173 | 5.323 | 0.333 |
+| c_23 | Şifalı Cassiopeia | 1981 | 3.814 | 0.634 |
+| c_24 | Antik Muz | 1706 | 3.222 | 0.756 |
+| c_25 | Dikenli Ay | 7100 | 4.943 | 0.423 |
+| c_26 | Lunari Kardeşler | 2342 | 3.791 | 0.650 |
+
+`c_24` ("Antik Muz") ismi Fiddlesticks/Rammus/Ornn/Soraka'nın paylaştığı bir
+temaya gönderme — ama **tek bir ortak trait yok**: Ornn/Rammus/Fiddlesticks
+üçü de Savunucu taşıyor, Soraka taşımıyor (onun traitleri Flora Fatalis +
+İnfazcı); 4'ünün ortak kesişimi boş küme. İsim bir kelime oyunu olarak
+kalıyor, bir trait adı değil.
+
+Retired id'ler (`c_02`, `c_04`, `c_17`) hiçbir zaman yeniden kullanılmayacak
+— bir id'nin anlamı bir daha asla sessizce değişmeyecek (SPEC-WEB.md'nin
+karar geçmişinde ayrıntı).
+
+`config.yaml`'ın yeni `clustering.subdivide` bloğu: `enabled`,
+`probe_min_cluster_size` (200), `purity_threshold` (0.90), `target_comps`
+(her biri `core_units` SETİ ile eşleşiyor — ham `c_XX` id'siyle DEĞİL, çünkü
+bu id'ler koşular arası anlamsız, bkz. bölüm 9'un karar geçmişi).
+
+---
+
 ## 10. Head-to-head matrisi (`matchups.py`)
 
 Her maçta, cluster etiketi atanmış her katılımcı çifti (i, j) için: i'nin j'den
@@ -763,6 +930,10 @@ maçlık koşuda (2026-08-31, 19 cluster'la — cluster sayısı azaldığı iç
 sayısı da düştü): **144 çiftin 138'i en az 1 item üretti (%95.8), 129'u tam
 3'ü (%89.6), ham hücrelerin %86.0'sı `n<50` yüzünden elendi** — kapsam
 belirgin şekilde iyileşti, beklendiği gibi (5 kat veri, aynı `n<50` eşiği).
+19→24 comp alt-bölmesinden sonra (2026-09-02, `subdivide.py` — bölüm 9a):
+global oran **%87.0**'a çıktı (hafif kötüleşme, beklenen yönde — yeni
+parçaların n'leri eskisinden küçük). 8 yeni parçanın kendi elenme oranları
+**%85.1-89.5** arasında, en küçük parçalar (n≈1700-2000) en yüksekte.
 
 **Emblem — kontrol edildi, features.py'de düzeltme yapılmadı (bulgu,
 2026-08-30).** Önce varsayım şuydu: `itemNames` içindeki emblem item'ları
@@ -1121,3 +1292,31 @@ comp mi, ayrı mı, ne kadar yakın) condensed tree / single-linkage hiyerarşis
 esas alınacak, çıplak centroid cosine mesafesi değil** — centroid mesafesi
 hâlâ raporlama/görselleştirme için kullanılabilir ama tek başına ayrım kararı
 için yeterli kanıt sayılmayacak.
+
+**Comp alt-bölme — izole (Seçenek A) fit reddedildi (2026-09-02).** Bölüm
+9a'nın kendisiyle çelişmiyor — orada uygulanan (Seçenek B, global probe
+fit'i filtrelemek) kararının, denenip reddedilen alternatifini bu bölümün
+formatında kayda geçiriyor. Seçenek A (her hedef comp'un kendi noktalarını
+izole edip ayrı bir HDBSCAN çalıştırmak) reddedildi çünkü: (1) izole fit'te
+mutual-reachability/core-distance hesabı sadece o comp'un kendi noktalarına
+bakar — global fit'te diğer comp'lardan gelen komşular kaybolur; (2)
+`min_cluster_size`'ın aynı sayısal değeri (200) tamamen farklı bir GÖRELİ
+eşiğe karşılık gelir (99623'ün %0.20'si vs. örn. Kayle'nin kendi 5523'ünün
+%3.6'sı). Sonuç: izole fit, önceki oturumda ölçülüp doğrulanmış 8 parçayı
+(n, avg_placement, dimension-diff) geçersiz kılardı, yeniden ölçüm
+gerektirirdi, 2/4/2 parça sayısını garanti etmezdi. Yapılan: hiçbir izole
+fit denenmedi — Seçenek B doğrudan uygulandı, çünkü zaten ölçülmüş global
+mcs=200 sonucunu birebir kullanıyordu.
+
+**Bölme kriteri olarak sadece CI-çakışmaması (C1) — reddedildi (2026-09-02,
+ölçülerek).** 5 aday comp'un (Kayle, Cassiopeia, Aphelios-Öncü, Draven-Alev,
+Tristana-Fey) hepsinde parçalar arası avg_placement CI çakışması ölçüldü.
+C1 tek başına kullanılsaydı Draven-Alev de bölünecekti (z=3.69, p=0.0002,
+CI çakışmıyor) — ama parça saflığı (probe cluster'ın tam popülasyonunun ne
+kadarı üretimin aynı comp'una ait) sadece %69.7'ydi, yani "parça"nın
+%30.3'ü aslında başka bir kaynaktan geliyordu. C2 (saflık ≥%90) eklendi,
+Draven-Alev'i doğru şekilde dışarıda bıraktı; Kayle/Cassiopeia/Aphelios-
+Öncü'nün 8 parçası %96.1-100.0 saflıkla rahatça geçti. Tristana-Fey ise C1'i
+bile geçemedi (p=0.246, CI çakışıyor) — kozmetik ayrım, hiçbir kriterle
+bölünmedi. Yapılan: `clustering.subdivide.purity_threshold: 0.90` config'e
+eklendi, C1 tek başına kriter olarak kullanılmadı. Ayrıntı bölüm 9a'da.

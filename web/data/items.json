@@ -2,12 +2,12 @@
   "_metadata": {
     "known_limitation": "This lift is confounded: reaching a completed item at all (let alone on the intended carry) correlates with a game that was already going well (enough gold/rolls, no early elimination) \u2014 the lift measures a mix of the item's own effect and 'was able to build this item at all', and the two can't be separated from placement data alone. Augments are comparatively exogenous (offered from a small random set), so this concern is much weaker in augments.json than it is here.",
     "coverage": {
-      "total_cluster_unit_pairs": 144,
-      "pairs_with_at_least_1_item": 138,
-      "pairs_with_full_3_items": 129,
-      "cells_below_min_n": 15117,
-      "cells_total": 17574,
-      "cells_below_min_n_fraction": 0.86
+      "total_cluster_unit_pairs": 183,
+      "pairs_with_at_least_1_item": 174,
+      "pairs_with_full_3_items": 158,
+      "cells_below_min_n": 17639,
+      "cells_total": 20282,
+      "cells_below_min_n_fraction": 0.87
     },
     "item_pool_usage": {
       "other": {
@@ -78,7 +78,7 @@
       {
         "id": "DA_HandOfJustice",
         "name": "Adaletin Eli",
-        "lift": -0.3,
+        "lift": -0.302,
         "n": 64,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_unstableconcoction.png"
       }
@@ -87,7 +87,7 @@
       {
         "id": "DA_IonicSpark",
         "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
-        "lift": -0.456,
+        "lift": -0.457,
         "n": 359,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
       },
@@ -124,7 +124,7 @@
       {
         "id": "DA_Evenshroud",
         "name": "Denge \u00d6rt\u00fcs\u00fc",
-        "lift": -0.686,
+        "lift": -0.687,
         "n": 421,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
       }
@@ -156,21 +156,21 @@
       {
         "id": "DA_Evenshroud",
         "name": "Denge \u00d6rt\u00fcs\u00fc",
-        "lift": -0.605,
+        "lift": -0.606,
         "n": 148,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
       },
       {
         "id": "DA_SunfireCape",
         "name": "G\u00fcnate\u015fi Pelerini",
-        "lift": -0.494,
+        "lift": -0.496,
         "n": 97,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_redbuff.png"
       },
       {
         "id": "DA_Crownguard",
         "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
-        "lift": -0.468,
+        "lift": -0.469,
         "n": 67,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
       }
@@ -193,7 +193,7 @@
       {
         "id": "DA_EdgeOfNight",
         "name": "Gecenin K\u0131y\u0131s\u0131",
-        "lift": -0.314,
+        "lift": -0.315,
         "n": 419,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_guardianangel.png"
       }
@@ -211,7 +211,7 @@
       {
         "id": "DA_Evenshroud",
         "name": "Denge \u00d6rt\u00fcs\u00fc",
-        "lift": -0.369,
+        "lift": -0.37,
         "n": 102,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
       },
@@ -296,21 +296,21 @@
       {
         "id": "DA_Bloodthirster",
         "name": "Kanasusam\u0131\u015f",
-        "lift": -0.431,
+        "lift": -0.432,
         "n": 71,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bloodthirster.png"
       },
       {
         "id": "DA_Evenshroud",
         "name": "Denge \u00d6rt\u00fcs\u00fc",
-        "lift": -0.273,
+        "lift": -0.275,
         "n": 70,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
       },
       {
         "id": "DA_SteraksGage",
         "name": "Sterak'\u0131n G\u00fcvencesi",
-        "lift": -0.246,
+        "lift": -0.247,
         "n": 107,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
       }
@@ -349,7 +349,7 @@
       {
         "id": "DA_NashorsTooth",
         "name": "Nashor'un Di\u015fi",
-        "lift": -0.288,
+        "lift": -0.289,
         "n": 81,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_leviathan.png"
       },
@@ -372,7 +372,7 @@
       {
         "id": "DA_BrambleVest",
         "name": "Dikenli Yelek",
-        "lift": -1.021,
+        "lift": -1.022,
         "n": 187,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
       },
@@ -385,368 +385,19 @@
       }
     ]
   },
-  "c_04": {
-    "DA_Fiddlesticks18": [
-      {
-        "id": "DA_ArchangelsStaff",
-        "name": "Ba\u015fmelek Asas\u0131",
-        "lift": -0.482,
-        "n": 624,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
-      },
-      {
-        "id": "DA_SpiritVisage",
-        "name": "Ruh G\u00f6mle\u011fi",
-        "lift": -0.368,
-        "n": 1447,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spiritvisagerr.png"
-      },
-      {
-        "id": "DA_ProtectorsVow",
-        "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
-        "lift": -0.359,
-        "n": 656,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
-      }
-    ],
-    "DA_18_Rammus": [
-      {
-        "id": "DA_ProtectorsVow",
-        "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
-        "lift": -0.581,
-        "n": 716,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
-      },
-      {
-        "id": "DA_BrambleVest",
-        "name": "Dikenli Yelek",
-        "lift": -0.569,
-        "n": 754,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
-      },
-      {
-        "id": "DA_SpiritVisage",
-        "name": "Ruh G\u00f6mle\u011fi",
-        "lift": -0.471,
-        "n": 1971,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spiritvisagerr.png"
-      }
-    ],
-    "DA_18_Cassiopeia": [
-      {
-        "id": "DA_ArchangelsStaff",
-        "name": "Ba\u015fmelek Asas\u0131",
-        "lift": -0.164,
-        "n": 8480,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
-      },
-      {
-        "id": "DA_HextechGunblade",
-        "name": "Hextech Silahk\u0131l\u0131\u00e7",
-        "lift": -0.058,
-        "n": 8235,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_hextechgunblade.png"
-      },
-      {
-        "id": "DA_BlueBuff",
-        "name": "Mavi G\u00fc\u00e7lendirme",
-        "lift": -0.054,
-        "n": 1698,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bluebuff.png"
-      }
-    ],
-    "DA_18_Shen": [
-      {
-        "id": "DA_IonicSpark",
-        "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
-        "lift": -0.636,
-        "n": 212,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
-      },
-      {
-        "id": "DA_WarmogsArmor",
-        "name": "Warmog'un Z\u0131rh\u0131",
-        "lift": -0.59,
-        "n": 230,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_warmogsarmor.png"
-      },
-      {
-        "id": "DA_SteraksGage",
-        "name": "Sterak'\u0131n G\u00fcvencesi",
-        "lift": -0.539,
-        "n": 172,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
-      }
-    ],
-    "DA_18_Lillia": [
-      {
-        "id": "DA_ProtectorsVow",
-        "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
-        "lift": -0.925,
-        "n": 1034,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
-      },
-      {
-        "id": "DA_Crownguard",
-        "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
-        "lift": -0.772,
-        "n": 530,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
-      },
-      {
-        "id": "DA_AdaptiveHelm",
-        "name": "De\u011fi\u015fken Mi\u011ffer",
-        "lift": -0.76,
-        "n": 837,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_adaptivehelm.png"
-      }
-    ],
-    "DA_18_Ornn": [
-      {
-        "id": "DA_AdaptiveHelm",
-        "name": "De\u011fi\u015fken Mi\u011ffer",
-        "lift": -0.504,
-        "n": 65,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_adaptivehelm.png"
-      },
-      {
-        "id": "DA_Crownguard",
-        "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
-        "lift": -0.448,
-        "n": 70,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
-      },
-      {
-        "id": "DA_SteraksGage",
-        "name": "Sterak'\u0131n G\u00fcvencesi",
-        "lift": -0.431,
-        "n": 59,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
-      }
-    ],
-    "DA_18_Leona": [
-      {
-        "id": "DA_IonicSpark",
-        "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
-        "lift": -0.135,
-        "n": 52,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
-      },
-      {
-        "id": "DA_SunfireCape",
-        "name": "G\u00fcnate\u015fi Pelerini",
-        "lift": -0.103,
-        "n": 68,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_redbuff.png"
-      },
-      {
-        "id": "DA_WarmogsArmor",
-        "name": "Warmog'un Z\u0131rh\u0131",
-        "lift": -0.034,
-        "n": 55,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_warmogsarmor.png"
-      }
-    ]
-  },
-  "c_17": {
-    "DA_18_Diana": [
-      {
-        "id": "DA_HextechGunblade",
-        "name": "Hextech Silahk\u0131l\u0131\u00e7",
-        "lift": -0.874,
-        "n": 67,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_hextechgunblade.png"
-      },
-      {
-        "id": "DA_GiantSlayer",
-        "name": "Dev Katili",
-        "lift": -0.848,
-        "n": 61,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_madredsbloodrazor.png"
-      },
-      {
-        "id": "DA_Evenshroud",
-        "name": "Denge \u00d6rt\u00fcs\u00fc",
-        "lift": -0.81,
-        "n": 205,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
-      }
-    ],
-    "DA_18_Aphelios": [
-      {
-        "id": "DA_StrikersFlail",
-        "name": "H\u00fccum G\u00fcrz\u00fc",
-        "lift": -0.316,
-        "n": 442,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_powergauntlet.png"
-      },
-      {
-        "id": "DA_HandOfJustice",
-        "name": "Adaletin Eli",
-        "lift": -0.264,
-        "n": 56,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_unstableconcoction.png"
-      },
-      {
-        "id": "DA_InfinityEdge",
-        "name": "Ebedi K\u0131l\u0131\u00e7",
-        "lift": -0.127,
-        "n": 3354,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_infinityedge.png"
-      }
-    ],
-    "DA_CrimsonRaptor18": [
-      {
-        "id": "DA_TacticiansCrown",
-        "name": "Strateji Ustas\u0131 Tac\u0131",
-        "lift": -0.951,
-        "n": 54,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_forceofnature.png"
-      },
-      {
-        "id": "DA_HextechGunblade",
-        "name": "Hextech Silahk\u0131l\u0131\u00e7",
-        "lift": -0.645,
-        "n": 152,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_hextechgunblade.png"
-      },
-      {
-        "id": "DA_Quicksilver",
-        "name": "C\u0131va",
-        "lift": -0.565,
-        "n": 94,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_quicksilver.png"
-      }
-    ],
-    "DA_Sentinel18": [
-      {
-        "id": "DA_IonicSpark",
-        "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
-        "lift": -0.455,
-        "n": 77,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
-      },
-      {
-        "id": "DA_BrambleVest",
-        "name": "Dikenli Yelek",
-        "lift": -0.412,
-        "n": 514,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
-      },
-      {
-        "id": "DA_SteadfastHeart",
-        "name": "Kararl\u0131 Y\u00fcrek",
-        "lift": -0.35,
-        "n": 719,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_nightharvester.png"
-      }
-    ],
-    "DA_Brambleback18": [
-      {
-        "id": "DA_DragonsClaw",
-        "name": "Ejder Pen\u00e7esi",
-        "lift": -0.602,
-        "n": 55,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_dragonsclaw.png"
-      },
-      {
-        "id": "DA_SteadfastHeart",
-        "name": "Kararl\u0131 Y\u00fcrek",
-        "lift": -0.596,
-        "n": 72,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_nightharvester.png"
-      },
-      {
-        "id": "DA_Deathblade",
-        "name": "\u00d6l\u00fcm K\u0131l\u0131c\u0131",
-        "lift": -0.458,
-        "n": 844,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_deathblade.png"
-      }
-    ],
-    "DA_18_Hecarim": [
-      {
-        "id": "DA_IonicSpark",
-        "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
-        "lift": -0.762,
-        "n": 98,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
-      },
-      {
-        "id": "DA_SteraksGage",
-        "name": "Sterak'\u0131n G\u00fcvencesi",
-        "lift": -0.515,
-        "n": 98,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
-      },
-      {
-        "id": "DA_DragonsClaw",
-        "name": "Ejder Pen\u00e7esi",
-        "lift": -0.395,
-        "n": 346,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_dragonsclaw.png"
-      }
-    ],
-    "DA_18_Zyra": [
-      {
-        "id": "DA_NashorsTooth",
-        "name": "Nashor'un Di\u015fi",
-        "lift": -0.681,
-        "n": 238,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_leviathan.png"
-      },
-      {
-        "id": "DA_HextechGunblade",
-        "name": "Hextech Silahk\u0131l\u0131\u00e7",
-        "lift": -0.636,
-        "n": 295,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_hextechgunblade.png"
-      },
-      {
-        "id": "DA_StrikersFlail",
-        "name": "H\u00fccum G\u00fcrz\u00fc",
-        "lift": -0.624,
-        "n": 135,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_powergauntlet.png"
-      }
-    ],
-    "DA_Taric18": [
-      {
-        "id": "DA_AdaptiveHelm",
-        "name": "De\u011fi\u015fken Mi\u011ffer",
-        "lift": -1.178,
-        "n": 175,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_adaptivehelm.png"
-      },
-      {
-        "id": "DA_SteraksGage",
-        "name": "Sterak'\u0131n G\u00fcvencesi",
-        "lift": -1.165,
-        "n": 67,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
-      },
-      {
-        "id": "DA_Evenshroud",
-        "name": "Denge \u00d6rt\u00fcs\u00fc",
-        "lift": -1.151,
-        "n": 332,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
-      }
-    ]
-  },
   "c_05": {
     "DA_18_Azir": [
       {
         "id": "DA_Quicksilver",
         "name": "C\u0131va",
-        "lift": -0.852,
+        "lift": -0.854,
         "n": 97,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_quicksilver.png"
       },
       {
         "id": "DA_HandOfJustice",
         "name": "Adaletin Eli",
-        "lift": -0.736,
+        "lift": -0.738,
         "n": 53,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_unstableconcoction.png"
       },
@@ -762,14 +413,14 @@
       {
         "id": "DA_HandOfJustice",
         "name": "Adaletin Eli",
-        "lift": -0.515,
+        "lift": -0.517,
         "n": 74,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_unstableconcoction.png"
       },
       {
         "id": "DA_ArchangelsStaff",
         "name": "Ba\u015fmelek Asas\u0131",
-        "lift": -0.371,
+        "lift": -0.372,
         "n": 1433,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
       },
@@ -838,7 +489,7 @@
       {
         "id": "DA_SpiritVisage",
         "name": "Ruh G\u00f6mle\u011fi",
-        "lift": -0.682,
+        "lift": -0.683,
         "n": 155,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spiritvisagerr.png"
       },
@@ -861,7 +512,7 @@
       {
         "id": "DA_Evenshroud",
         "name": "Denge \u00d6rt\u00fcs\u00fc",
-        "lift": -0.746,
+        "lift": -0.747,
         "n": 73,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
       },
@@ -906,166 +557,26 @@
       }
     ]
   },
-  "c_02": {
-    "DA_18_Kayle": [
-      {
-        "id": "DA_RabadonsDeathcap",
-        "name": "Rabadon'un \u015eapkas\u0131",
-        "lift": -0.297,
-        "n": 2109,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_rabadonsdeathcap.png"
-      },
-      {
-        "id": "DA_TacticiansCrown",
-        "name": "Strateji Ustas\u0131 Tac\u0131",
-        "lift": -0.206,
-        "n": 53,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_forceofnature.png"
-      },
-      {
-        "id": "DA_JeweledGauntlet",
-        "name": "M\u00fccevherli Eldiven",
-        "lift": -0.047,
-        "n": 3341,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_jeweledgauntlet.png"
-      }
-    ],
-    "DA_18_Leona": [
-      {
-        "id": "DA_Evenshroud",
-        "name": "Denge \u00d6rt\u00fcs\u00fc",
-        "lift": -1.06,
-        "n": 243,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
-      },
-      {
-        "id": "DA_IonicSpark",
-        "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
-        "lift": -0.921,
-        "n": 185,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
-      },
-      {
-        "id": "DA_Bloodthirster",
-        "name": "Kanasusam\u0131\u015f",
-        "lift": -0.902,
-        "n": 78,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bloodthirster.png"
-      }
-    ],
-    "DA_18_Sejuani": [
-      {
-        "id": "DA_BrambleVest",
-        "name": "Dikenli Yelek",
-        "lift": -1.239,
-        "n": 328,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
-      },
-      {
-        "id": "DA_Evenshroud",
-        "name": "Denge \u00d6rt\u00fcs\u00fc",
-        "lift": -1.239,
-        "n": 242,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
-      },
-      {
-        "id": "DA_Crownguard",
-        "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
-        "lift": -1.155,
-        "n": 321,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
-      }
-    ],
-    "DA_18_Xayah": [
-      {
-        "id": "DA_GiantSlayer",
-        "name": "Dev Katili",
-        "lift": -0.708,
-        "n": 1599,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_madredsbloodrazor.png"
-      },
-      {
-        "id": "DA_KrakensFury",
-        "name": "Kraken'in \u00d6fkesi",
-        "lift": -0.692,
-        "n": 1625,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_krakenslayer.png"
-      },
-      {
-        "id": "DA_StrikersFlail",
-        "name": "H\u00fccum G\u00fcrz\u00fc",
-        "lift": -0.664,
-        "n": 380,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_powergauntlet.png"
-      }
-    ],
-    "DA_18_Ornn": [
-      {
-        "id": "DA_Evenshroud",
-        "name": "Denge \u00d6rt\u00fcs\u00fc",
-        "lift": -0.896,
-        "n": 146,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
-      },
-      {
-        "id": "DA_IonicSpark",
-        "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
-        "lift": -0.773,
-        "n": 69,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
-      },
-      {
-        "id": "DA_Crownguard",
-        "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
-        "lift": -0.668,
-        "n": 280,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
-      }
-    ],
-    "DA_18_Rakan": [
-      {
-        "id": "DA_Crownguard",
-        "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
-        "lift": -1.525,
-        "n": 214,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
-      },
-      {
-        "id": "DA_Evenshroud",
-        "name": "Denge \u00d6rt\u00fcs\u00fc",
-        "lift": -1.305,
-        "n": 154,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
-      },
-      {
-        "id": "DA_AdaptiveHelm",
-        "name": "De\u011fi\u015fken Mi\u011ffer",
-        "lift": -1.191,
-        "n": 326,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_adaptivehelm.png"
-      }
-    ]
-  },
   "c_11": {
     "DA_18_MasterYi_AD": [
       {
         "id": "DA_KrakensFury",
         "name": "Kraken'in \u00d6fkesi",
-        "lift": -0.146,
+        "lift": -0.147,
         "n": 54,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_krakenslayer.png"
       },
       {
         "id": "DA_Quicksilver",
         "name": "C\u0131va",
-        "lift": -0.082,
+        "lift": -0.083,
         "n": 865,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_quicksilver.png"
       },
       {
         "id": "DA_SteraksGage",
         "name": "Sterak'\u0131n G\u00fcvencesi",
-        "lift": -0.066,
+        "lift": -0.067,
         "n": 111,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
       }
@@ -1120,7 +631,7 @@
       {
         "id": "DA_ThiefsGloves",
         "name": "H\u0131rs\u0131z Eldiveni",
-        "lift": -0.306,
+        "lift": -0.307,
         "n": 75,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
       }
@@ -1129,21 +640,21 @@
       {
         "id": "DA_HandOfJustice",
         "name": "Adaletin Eli",
-        "lift": -0.863,
+        "lift": -0.864,
         "n": 189,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_unstableconcoction.png"
       },
       {
         "id": "DA_EdgeOfNight",
         "name": "Gecenin K\u0131y\u0131s\u0131",
-        "lift": -0.83,
+        "lift": -0.831,
         "n": 200,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_guardianangel.png"
       },
       {
         "id": "DA_SteraksGage",
         "name": "Sterak'\u0131n G\u00fcvencesi",
-        "lift": -0.748,
+        "lift": -0.749,
         "n": 172,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
       }
@@ -1175,7 +686,7 @@
       {
         "id": "DA_BrambleVest",
         "name": "Dikenli Yelek",
-        "lift": -0.891,
+        "lift": -0.892,
         "n": 179,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
       },
@@ -1200,7 +711,7 @@
       {
         "id": "DA_Evenshroud",
         "name": "Denge \u00d6rt\u00fcs\u00fc",
-        "lift": -0.443,
+        "lift": -0.444,
         "n": 142,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
       },
@@ -1214,7 +725,7 @@
       {
         "id": "DA_SteraksGage",
         "name": "Sterak'\u0131n G\u00fcvencesi",
-        "lift": -0.358,
+        "lift": -0.359,
         "n": 131,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
       }
@@ -1235,18 +746,18 @@
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bluebuff.png"
       },
       {
-        "id": "DA_NashorsTooth",
-        "name": "Nashor'un Di\u015fi",
-        "lift": -0.29,
-        "n": 925,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_leviathan.png"
+        "id": "DA_Morellonomicon",
+        "name": "Morellonomikon",
+        "lift": -0.291,
+        "n": 105,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_morellonomicon.png"
       }
     ],
     "DA_18_Yorick": [
       {
         "id": "DA_ThiefsGloves",
         "name": "H\u0131rs\u0131z Eldiveni",
-        "lift": -0.394,
+        "lift": -0.395,
         "n": 79,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
       },
@@ -1260,7 +771,7 @@
       {
         "id": "DA_SunfireCape",
         "name": "G\u00fcnate\u015fi Pelerini",
-        "lift": -0.08,
+        "lift": -0.081,
         "n": 62,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_redbuff.png"
       }
@@ -1278,7 +789,7 @@
       {
         "id": "DA_Evenshroud",
         "name": "Denge \u00d6rt\u00fcs\u00fc",
-        "lift": -0.891,
+        "lift": -0.892,
         "n": 118,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
       },
@@ -1308,7 +819,7 @@
       {
         "id": "DA_Quicksilver",
         "name": "C\u0131va",
-        "lift": -0.546,
+        "lift": -0.548,
         "n": 52,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_quicksilver.png"
       },
@@ -1324,7 +835,7 @@
       {
         "id": "DA_StrikersFlail",
         "name": "H\u00fccum G\u00fcrz\u00fc",
-        "lift": -1.087,
+        "lift": -1.088,
         "n": 181,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_powergauntlet.png"
       },
@@ -1347,21 +858,21 @@
       {
         "id": "DA_SteraksGage",
         "name": "Sterak'\u0131n G\u00fcvencesi",
-        "lift": -1.277,
+        "lift": -1.278,
         "n": 269,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
       },
       {
         "id": "DA_TitansResolve",
         "name": "Titan\u0131n Azmi",
-        "lift": -1.226,
+        "lift": -1.227,
         "n": 167,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_titansresolve.png"
       },
       {
         "id": "DA_HandOfJustice",
         "name": "Adaletin Eli",
-        "lift": -1.174,
+        "lift": -1.176,
         "n": 107,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_unstableconcoction.png"
       }
@@ -1372,14 +883,14 @@
       {
         "id": "DA_DragonsClaw",
         "name": "Ejder Pen\u00e7esi",
-        "lift": -0.501,
+        "lift": -0.502,
         "n": 90,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_dragonsclaw.png"
       },
       {
         "id": "DA_BrambleVest",
         "name": "Dikenli Yelek",
-        "lift": -0.416,
+        "lift": -0.417,
         "n": 81,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
       },
@@ -1395,21 +906,21 @@
       {
         "id": "DA_Evenshroud",
         "name": "Denge \u00d6rt\u00fcs\u00fc",
-        "lift": -0.468,
+        "lift": -0.469,
         "n": 83,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
       },
       {
         "id": "DA_ThiefsGloves",
         "name": "H\u0131rs\u0131z Eldiveni",
-        "lift": -0.402,
+        "lift": -0.403,
         "n": 66,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
       },
       {
         "id": "DA_SteadfastHeart",
         "name": "Kararl\u0131 Y\u00fcrek",
-        "lift": -0.344,
+        "lift": -0.345,
         "n": 54,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_nightharvester.png"
       }
@@ -1464,7 +975,7 @@
       {
         "id": "DA_InfinityEdge",
         "name": "Ebedi K\u0131l\u0131\u00e7",
-        "lift": -0.249,
+        "lift": -0.25,
         "n": 1420,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_infinityedge.png"
       },
@@ -1494,7 +1005,7 @@
       {
         "id": "DA_Crownguard",
         "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
-        "lift": -1.189,
+        "lift": -1.19,
         "n": 51,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
       },
@@ -1524,7 +1035,7 @@
       {
         "id": "DA_BrambleVest",
         "name": "Dikenli Yelek",
-        "lift": -0.432,
+        "lift": -0.433,
         "n": 190,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
       }
@@ -1533,21 +1044,21 @@
       {
         "id": "DA_Evenshroud",
         "name": "Denge \u00d6rt\u00fcs\u00fc",
-        "lift": -0.315,
+        "lift": -0.316,
         "n": 64,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
       },
       {
         "id": "DA_SunfireCape",
         "name": "G\u00fcnate\u015fi Pelerini",
-        "lift": -0.312,
+        "lift": -0.313,
         "n": 56,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_redbuff.png"
       },
       {
         "id": "DA_IonicSpark",
         "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
-        "lift": -0.256,
+        "lift": -0.257,
         "n": 52,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
       }
@@ -1563,7 +1074,7 @@
       {
         "id": "DA_ArchangelsStaff",
         "name": "Ba\u015fmelek Asas\u0131",
-        "lift": -0.104,
+        "lift": -0.105,
         "n": 61,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
       },
@@ -1595,7 +1106,7 @@
       {
         "id": "DA_SteadfastHeart",
         "name": "Kararl\u0131 Y\u00fcrek",
-        "lift": -0.062,
+        "lift": -0.063,
         "n": 179,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_nightharvester.png"
       }
@@ -1673,7 +1184,7 @@
       {
         "id": "DA_RedBuff",
         "name": "K\u0131rm\u0131z\u0131 G\u00fc\u00e7lendirme",
-        "lift": -0.556,
+        "lift": -0.557,
         "n": 334,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_rapidfirecannon.png"
       },
@@ -1710,7 +1221,7 @@
       {
         "id": "DA_GiantSlayer",
         "name": "Dev Katili",
-        "lift": -0.317,
+        "lift": -0.318,
         "n": 386,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_madredsbloodrazor.png"
       }
@@ -1733,7 +1244,7 @@
       {
         "id": "DA_TitansResolve",
         "name": "Titan\u0131n Azmi",
-        "lift": -0.667,
+        "lift": -0.668,
         "n": 244,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_titansresolve.png"
       }
@@ -1776,14 +1287,14 @@
       {
         "id": "DA_GiantSlayer",
         "name": "Dev Katili",
-        "lift": -0.418,
+        "lift": -0.419,
         "n": 1017,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_madredsbloodrazor.png"
       },
       {
         "id": "DA_Quicksilver",
         "name": "C\u0131va",
-        "lift": -0.281,
+        "lift": -0.282,
         "n": 76,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_quicksilver.png"
       },
@@ -1799,21 +1310,21 @@
       {
         "id": "DA_BrambleVest",
         "name": "Dikenli Yelek",
-        "lift": -0.792,
+        "lift": -0.793,
         "n": 142,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
       },
       {
         "id": "DA_SteraksGage",
         "name": "Sterak'\u0131n G\u00fcvencesi",
-        "lift": -0.701,
+        "lift": -0.702,
         "n": 124,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
       },
       {
         "id": "DA_Bloodthirster",
         "name": "Kanasusam\u0131\u015f",
-        "lift": -0.606,
+        "lift": -0.607,
         "n": 62,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bloodthirster.png"
       }
@@ -1822,7 +1333,7 @@
       {
         "id": "DA_Evenshroud",
         "name": "Denge \u00d6rt\u00fcs\u00fc",
-        "lift": -0.946,
+        "lift": -0.947,
         "n": 281,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
       },
@@ -1834,11 +1345,11 @@
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
       },
       {
-        "id": "DA_AdaptiveHelm",
-        "name": "De\u011fi\u015fken Mi\u011ffer",
-        "lift": -0.794,
-        "n": 413,
-        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_adaptivehelm.png"
+        "id": "DA_Bloodthirster",
+        "name": "Kanasusam\u0131\u015f",
+        "lift": -0.795,
+        "n": 52,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bloodthirster.png"
       }
     ],
     "DA_18_Sivir": [
@@ -1868,7 +1379,7 @@
       {
         "id": "DA_BrambleVest",
         "name": "Dikenli Yelek",
-        "lift": -0.581,
+        "lift": -0.582,
         "n": 175,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
       },
@@ -1909,7 +1420,7 @@
       {
         "id": "DA_StrikersFlail",
         "name": "H\u00fccum G\u00fcrz\u00fc",
-        "lift": -0.205,
+        "lift": -0.206,
         "n": 217,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_powergauntlet.png"
       },
@@ -1939,14 +1450,14 @@
       {
         "id": "DA_BrambleVest",
         "name": "Dikenli Yelek",
-        "lift": -0.429,
+        "lift": -0.43,
         "n": 96,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
       },
       {
         "id": "DA_ProtectorsVow",
         "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
-        "lift": -0.329,
+        "lift": -0.33,
         "n": 121,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
       }
@@ -1962,14 +1473,14 @@
       {
         "id": "DA_IonicSpark",
         "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
-        "lift": -0.379,
+        "lift": -0.38,
         "n": 169,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
       },
       {
         "id": "DA_BrambleVest",
         "name": "Dikenli Yelek",
-        "lift": -0.367,
+        "lift": -0.368,
         "n": 135,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
       }
@@ -2031,7 +1542,7 @@
       {
         "id": "DA_AdaptiveHelm",
         "name": "De\u011fi\u015fken Mi\u011ffer",
-        "lift": -0.324,
+        "lift": -0.325,
         "n": 127,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_adaptivehelm.png"
       },
@@ -2049,7 +1560,7 @@
       {
         "id": "DA_StrikersFlail",
         "name": "H\u00fccum G\u00fcrz\u00fc",
-        "lift": -0.476,
+        "lift": -0.477,
         "n": 81,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_powergauntlet.png"
       },
@@ -2095,7 +1606,7 @@
       {
         "id": "DA_Bloodthirster",
         "name": "Kanasusam\u0131\u015f",
-        "lift": -0.806,
+        "lift": -0.807,
         "n": 54,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bloodthirster.png"
       },
@@ -2118,7 +1629,7 @@
       {
         "id": "DA_SunfireCape",
         "name": "G\u00fcnate\u015fi Pelerini",
-        "lift": -0.388,
+        "lift": -0.389,
         "n": 68,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_redbuff.png"
       },
@@ -2132,7 +1643,7 @@
       {
         "id": "DA_Evenshroud",
         "name": "Denge \u00d6rt\u00fcs\u00fc",
-        "lift": -0.329,
+        "lift": -0.331,
         "n": 56,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
       }
@@ -2141,7 +1652,7 @@
       {
         "id": "DA_ArchangelsStaff",
         "name": "Ba\u015fmelek Asas\u0131",
-        "lift": -0.521,
+        "lift": -0.522,
         "n": 53,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
       }
@@ -2150,14 +1661,14 @@
       {
         "id": "DA_Bloodthirster",
         "name": "Kanasusam\u0131\u015f",
-        "lift": -0.377,
+        "lift": -0.378,
         "n": 340,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bloodthirster.png"
       },
       {
         "id": "DA_HandOfJustice",
         "name": "Adaletin Eli",
-        "lift": -0.36,
+        "lift": -0.361,
         "n": 190,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_unstableconcoction.png"
       },
@@ -2173,7 +1684,7 @@
       {
         "id": "DA_RedBuff",
         "name": "K\u0131rm\u0131z\u0131 G\u00fc\u00e7lendirme",
-        "lift": -0.56,
+        "lift": -0.561,
         "n": 58,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_rapidfirecannon.png"
       },
@@ -2203,14 +1714,14 @@
       {
         "id": "DA_SteadfastHeart",
         "name": "Kararl\u0131 Y\u00fcrek",
-        "lift": -1.274,
+        "lift": -1.275,
         "n": 129,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_nightharvester.png"
       },
       {
         "id": "DA_Crownguard",
         "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
-        "lift": -1.216,
+        "lift": -1.217,
         "n": 120,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
       }
@@ -2226,7 +1737,7 @@
       {
         "id": "DA_ArchangelsStaff",
         "name": "Ba\u015fmelek Asas\u0131",
-        "lift": -1.154,
+        "lift": -1.155,
         "n": 191,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
       },
@@ -2244,7 +1755,7 @@
       {
         "id": "DA_NashorsTooth",
         "name": "Nashor'un Di\u015fi",
-        "lift": -0.718,
+        "lift": -0.719,
         "n": 55,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_leviathan.png"
       },
@@ -2267,21 +1778,21 @@
       {
         "id": "DA_Bloodthirster",
         "name": "Kanasusam\u0131\u015f",
-        "lift": -0.874,
+        "lift": -0.875,
         "n": 101,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bloodthirster.png"
       },
       {
         "id": "DA_SunfireCape",
         "name": "G\u00fcnate\u015fi Pelerini",
-        "lift": -0.83,
+        "lift": -0.831,
         "n": 107,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_redbuff.png"
       },
       {
         "id": "DA_Crownguard",
         "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
-        "lift": -0.829,
+        "lift": -0.83,
         "n": 73,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
       }
@@ -2313,7 +1824,7 @@
       {
         "id": "DA_Quicksilver",
         "name": "C\u0131va",
-        "lift": -0.386,
+        "lift": -0.387,
         "n": 208,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_quicksilver.png"
       },
@@ -2337,7 +1848,7 @@
       {
         "id": "DA_StrikersFlail",
         "name": "H\u00fccum G\u00fcrz\u00fc",
-        "lift": -1.078,
+        "lift": -1.079,
         "n": 106,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_powergauntlet.png"
       },
@@ -2367,14 +1878,14 @@
       {
         "id": "DA_KrakensFury",
         "name": "Kraken'in \u00d6fkesi",
-        "lift": -1.013,
+        "lift": -1.014,
         "n": 147,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_krakenslayer.png"
       },
       {
         "id": "DA_InfinityEdge",
         "name": "Ebedi K\u0131l\u0131\u00e7",
-        "lift": -0.814,
+        "lift": -0.815,
         "n": 132,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_infinityedge.png"
       }
@@ -2415,7 +1926,7 @@
       {
         "id": "DA_SteraksGage",
         "name": "Sterak'\u0131n G\u00fcvencesi",
-        "lift": -0.711,
+        "lift": -0.713,
         "n": 51,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
       },
@@ -2438,14 +1949,14 @@
       {
         "id": "DA_IonicSpark",
         "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
-        "lift": -0.541,
+        "lift": -0.542,
         "n": 52,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
       },
       {
         "id": "DA_Bloodthirster",
         "name": "Kanasusam\u0131\u015f",
-        "lift": -0.535,
+        "lift": -0.536,
         "n": 54,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bloodthirster.png"
       }
@@ -2454,7 +1965,7 @@
       {
         "id": "DA_ThiefsGloves",
         "name": "H\u0131rs\u0131z Eldiveni",
-        "lift": -0.682,
+        "lift": -0.683,
         "n": 52,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
       },
@@ -2523,21 +2034,21 @@
       {
         "id": "DA_IonicSpark",
         "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
-        "lift": -0.499,
+        "lift": -0.5,
         "n": 66,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
       },
       {
         "id": "DA_ThiefsGloves",
         "name": "H\u0131rs\u0131z Eldiveni",
-        "lift": -0.499,
+        "lift": -0.5,
         "n": 126,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
       },
       {
         "id": "DA_Crownguard",
         "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
-        "lift": -0.46,
+        "lift": -0.461,
         "n": 61,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
       }
@@ -2546,7 +2057,7 @@
       {
         "id": "DA_AdaptiveHelm",
         "name": "De\u011fi\u015fken Mi\u011ffer",
-        "lift": -1.455,
+        "lift": -1.456,
         "n": 152,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_adaptivehelm.png"
       },
@@ -2576,14 +2087,14 @@
       {
         "id": "DA_SpiritVisage",
         "name": "Ruh G\u00f6mle\u011fi",
-        "lift": -1.279,
+        "lift": -1.28,
         "n": 120,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spiritvisagerr.png"
       },
       {
         "id": "DA_SteadfastHeart",
         "name": "Kararl\u0131 Y\u00fcrek",
-        "lift": -1.227,
+        "lift": -1.228,
         "n": 137,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_nightharvester.png"
       }
@@ -2601,7 +2112,7 @@
       {
         "id": "DA_IonicSpark",
         "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
-        "lift": -0.595,
+        "lift": -0.596,
         "n": 55,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
       },
@@ -2624,14 +2135,14 @@
       {
         "id": "DA_ArchangelsStaff",
         "name": "Ba\u015fmelek Asas\u0131",
-        "lift": -0.694,
+        "lift": -0.695,
         "n": 51,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
       },
       {
         "id": "DA_NashorsTooth",
         "name": "Nashor'un Di\u015fi",
-        "lift": -0.672,
+        "lift": -0.673,
         "n": 51,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_leviathan.png"
       }
@@ -2640,7 +2151,7 @@
       {
         "id": "DA_StrikersFlail",
         "name": "H\u00fccum G\u00fcrz\u00fc",
-        "lift": -0.575,
+        "lift": -0.576,
         "n": 56,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_powergauntlet.png"
       },
@@ -2663,7 +2174,7 @@
       {
         "id": "DA_NashorsTooth",
         "name": "Nashor'un Di\u015fi",
-        "lift": -0.401,
+        "lift": -0.402,
         "n": 77,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_leviathan.png"
       },
@@ -2686,21 +2197,21 @@
       {
         "id": "DA_SteraksGage",
         "name": "Sterak'\u0131n G\u00fcvencesi",
-        "lift": -0.809,
+        "lift": -0.81,
         "n": 53,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
       },
       {
         "id": "DA_SteadfastHeart",
         "name": "Kararl\u0131 Y\u00fcrek",
-        "lift": -0.577,
+        "lift": -0.578,
         "n": 79,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_nightharvester.png"
       },
       {
         "id": "DA_BrambleVest",
         "name": "Dikenli Yelek",
-        "lift": -0.531,
+        "lift": -0.532,
         "n": 59,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
       }
@@ -2741,21 +2252,21 @@
       {
         "id": "DA_ProtectorsVow",
         "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
-        "lift": -1.144,
+        "lift": -1.145,
         "n": 71,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
       },
       {
         "id": "DA_SteadfastHeart",
         "name": "Kararl\u0131 Y\u00fcrek",
-        "lift": -1.055,
+        "lift": -1.056,
         "n": 80,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_nightharvester.png"
       },
       {
         "id": "DA_Crownguard",
         "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
-        "lift": -1.046,
+        "lift": -1.047,
         "n": 59,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
       }
@@ -2766,7 +2277,7 @@
       {
         "id": "DA_SteraksGage",
         "name": "Sterak'\u0131n G\u00fcvencesi",
-        "lift": -0.444,
+        "lift": -0.445,
         "n": 56,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
       },
@@ -2796,7 +2307,7 @@
       {
         "id": "DA_Deathblade",
         "name": "\u00d6l\u00fcm K\u0131l\u0131c\u0131",
-        "lift": -0.205,
+        "lift": -0.206,
         "n": 329,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_deathblade.png"
       },
@@ -2827,7 +2338,7 @@
       {
         "id": "DA_LastWhisper",
         "name": "Son F\u0131s\u0131lt\u0131",
-        "lift": -0.427,
+        "lift": -0.428,
         "n": 663,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_lastwhisper.png"
       }
@@ -2850,7 +2361,7 @@
       {
         "id": "DA_Crownguard",
         "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
-        "lift": -0.51,
+        "lift": -0.511,
         "n": 91,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
       }
@@ -2859,7 +2370,7 @@
       {
         "id": "DA_DragonsClaw",
         "name": "Ejder Pen\u00e7esi",
-        "lift": -0.547,
+        "lift": -0.548,
         "n": 71,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_dragonsclaw.png"
       },
@@ -2873,7 +2384,7 @@
       {
         "id": "DA_Crownguard",
         "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
-        "lift": -0.406,
+        "lift": -0.407,
         "n": 122,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
       }
@@ -2882,7 +2393,7 @@
       {
         "id": "DA_GiantSlayer",
         "name": "Dev Katili",
-        "lift": -0.35,
+        "lift": -0.351,
         "n": 90,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_madredsbloodrazor.png"
       },
@@ -2939,21 +2450,21 @@
       {
         "id": "DA_SteadfastHeart",
         "name": "Kararl\u0131 Y\u00fcrek",
-        "lift": -0.9,
+        "lift": -0.901,
         "n": 50,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_nightharvester.png"
       },
       {
         "id": "DA_ProtectorsVow",
         "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
-        "lift": -0.699,
+        "lift": -0.7,
         "n": 62,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
       },
       {
         "id": "DA_DragonsClaw",
         "name": "Ejder Pen\u00e7esi",
-        "lift": -0.608,
+        "lift": -0.609,
         "n": 88,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_dragonsclaw.png"
       }
@@ -2963,14 +2474,14 @@
       {
         "id": "DA_RedBuff",
         "name": "K\u0131rm\u0131z\u0131 G\u00fc\u00e7lendirme",
-        "lift": -0.581,
+        "lift": -0.582,
         "n": 68,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_rapidfirecannon.png"
       },
       {
         "id": "DA_Morellonomicon",
         "name": "Morellonomikon",
-        "lift": -0.555,
+        "lift": -0.556,
         "n": 56,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_morellonomicon.png"
       },
@@ -2986,14 +2497,14 @@
       {
         "id": "DA_Bloodthirster",
         "name": "Kanasusam\u0131\u015f",
-        "lift": -0.654,
+        "lift": -0.655,
         "n": 53,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bloodthirster.png"
       },
       {
         "id": "DA_SteraksGage",
         "name": "Sterak'\u0131n G\u00fcvencesi",
-        "lift": -0.536,
+        "lift": -0.537,
         "n": 64,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
       },
@@ -3009,21 +2520,21 @@
       {
         "id": "DA_SteraksGage",
         "name": "Sterak'\u0131n G\u00fcvencesi",
-        "lift": -0.839,
+        "lift": -0.84,
         "n": 79,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
       },
       {
         "id": "DA_TitansResolve",
         "name": "Titan\u0131n Azmi",
-        "lift": -0.782,
+        "lift": -0.784,
         "n": 58,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_titansresolve.png"
       },
       {
         "id": "DA_EdgeOfNight",
         "name": "Gecenin K\u0131y\u0131s\u0131",
-        "lift": -0.767,
+        "lift": -0.769,
         "n": 68,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_guardianangel.png"
       }
@@ -3057,7 +2568,7 @@
       {
         "id": "DA_Bloodthirster",
         "name": "Kanasusam\u0131\u015f",
-        "lift": -0.515,
+        "lift": -0.516,
         "n": 63,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bloodthirster.png"
       },
@@ -3071,7 +2582,7 @@
       {
         "id": "DA_GiantSlayer",
         "name": "Dev Katili",
-        "lift": -0.329,
+        "lift": -0.33,
         "n": 57,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_madredsbloodrazor.png"
       }
@@ -3080,7 +2591,7 @@
       {
         "id": "DA_RedBuff",
         "name": "K\u0131rm\u0131z\u0131 G\u00fc\u00e7lendirme",
-        "lift": -0.599,
+        "lift": -0.6,
         "n": 60,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_rapidfirecannon.png"
       }
@@ -3097,14 +2608,14 @@
       {
         "id": "DA_ProtectorsVow",
         "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
-        "lift": -0.653,
+        "lift": -0.654,
         "n": 130,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
       },
       {
         "id": "DA_Crownguard",
         "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
-        "lift": -0.617,
+        "lift": -0.618,
         "n": 54,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
       }
@@ -3120,19 +2631,1265 @@
       {
         "id": "DA_SteadfastHeart",
         "name": "Kararl\u0131 Y\u00fcrek",
-        "lift": -0.261,
+        "lift": -0.262,
         "n": 55,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_nightharvester.png"
       },
       {
         "id": "DA_SpiritVisage",
         "name": "Ruh G\u00f6mle\u011fi",
-        "lift": -0.235,
+        "lift": -0.236,
         "n": 217,
         "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spiritvisagerr.png"
       }
     ],
     "DA_Cinderling18": [],
     "DA_18_RekSai": []
+  },
+  "c_19": {
+    "DA_18_Kayle": [
+      {
+        "id": "DA_Quicksilver",
+        "name": "C\u0131va",
+        "lift": -0.447,
+        "n": 64,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_quicksilver.png"
+      },
+      {
+        "id": "DA_RabadonsDeathcap",
+        "name": "Rabadon'un \u015eapkas\u0131",
+        "lift": -0.333,
+        "n": 1274,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_rabadonsdeathcap.png"
+      },
+      {
+        "id": "DA_StrikersFlail",
+        "name": "H\u00fccum G\u00fcrz\u00fc",
+        "lift": -0.148,
+        "n": 190,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_powergauntlet.png"
+      }
+    ],
+    "DA_18_Leona": [
+      {
+        "id": "DA_Evenshroud",
+        "name": "Denge \u00d6rt\u00fcs\u00fc",
+        "lift": -1.355,
+        "n": 145,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
+      },
+      {
+        "id": "DA_IonicSpark",
+        "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
+        "lift": -1.218,
+        "n": 107,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
+      },
+      {
+        "id": "DA_SteraksGage",
+        "name": "Sterak'\u0131n G\u00fcvencesi",
+        "lift": -1.081,
+        "n": 85,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
+      }
+    ],
+    "DA_18_Xayah": [
+      {
+        "id": "DA_Quicksilver",
+        "name": "C\u0131va",
+        "lift": -0.862,
+        "n": 155,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_quicksilver.png"
+      },
+      {
+        "id": "DA_HandOfJustice",
+        "name": "Adaletin Eli",
+        "lift": -0.843,
+        "n": 64,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_unstableconcoction.png"
+      },
+      {
+        "id": "DA_StrikersFlail",
+        "name": "H\u00fccum G\u00fcrz\u00fc",
+        "lift": -0.793,
+        "n": 217,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_powergauntlet.png"
+      }
+    ],
+    "DA_18_Sejuani": [
+      {
+        "id": "DA_Evenshroud",
+        "name": "Denge \u00d6rt\u00fcs\u00fc",
+        "lift": -1.501,
+        "n": 128,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
+      },
+      {
+        "id": "DA_SteraksGage",
+        "name": "Sterak'\u0131n G\u00fcvencesi",
+        "lift": -1.444,
+        "n": 72,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
+      },
+      {
+        "id": "DA_IonicSpark",
+        "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
+        "lift": -1.432,
+        "n": 93,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
+      }
+    ],
+    "DA_18_Ornn": [
+      {
+        "id": "DA_Evenshroud",
+        "name": "Denge \u00d6rt\u00fcs\u00fc",
+        "lift": -1.091,
+        "n": 89,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
+      },
+      {
+        "id": "DA_Crownguard",
+        "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
+        "lift": -0.863,
+        "n": 176,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "H\u0131rs\u0131z Eldiveni",
+        "lift": -0.665,
+        "n": 115,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
+      }
+    ],
+    "DA_18_Rakan": [
+      {
+        "id": "DA_Crownguard",
+        "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
+        "lift": -1.746,
+        "n": 101,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
+      },
+      {
+        "id": "DA_Evenshroud",
+        "name": "Denge \u00d6rt\u00fcs\u00fc",
+        "lift": -1.58,
+        "n": 72,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
+      },
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "De\u011fi\u015fken Mi\u011ffer",
+        "lift": -1.227,
+        "n": 154,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_adaptivehelm.png"
+      }
+    ]
+  },
+  "c_20": {
+    "DA_18_Hecarim": [
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "De\u011fi\u015fken Mi\u011ffer",
+        "lift": -0.038,
+        "n": 73,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_adaptivehelm.png"
+      },
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
+        "lift": -0.031,
+        "n": 118,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmog'un Z\u0131rh\u0131",
+        "lift": 0.22,
+        "n": 74,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_warmogsarmor.png"
+      }
+    ],
+    "DA_18_Leona": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "H\u0131rs\u0131z Eldiveni",
+        "lift": -0.319,
+        "n": 300,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
+      },
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
+        "lift": -0.294,
+        "n": 165,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
+      },
+      {
+        "id": "DA_SunfireCape",
+        "name": "G\u00fcnate\u015fi Pelerini",
+        "lift": -0.196,
+        "n": 196,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_redbuff.png"
+      }
+    ],
+    "DA_18_Kayle": [
+      {
+        "id": "DA_RabadonsDeathcap",
+        "name": "Rabadon'un \u015eapkas\u0131",
+        "lift": -0.012,
+        "n": 785,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_rabadonsdeathcap.png"
+      },
+      {
+        "id": "DA_JeweledGauntlet",
+        "name": "M\u00fccevherli Eldiven",
+        "lift": 0.051,
+        "n": 1137,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_jeweledgauntlet.png"
+      },
+      {
+        "id": "DA_GuinsoosRageblade",
+        "name": "Guinsoo'nun Hiddeti",
+        "lift": 0.086,
+        "n": 2254,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_guinsoosrageblade.png"
+      }
+    ],
+    "DA_18_Xayah": [
+      {
+        "id": "DA_KrakensFury",
+        "name": "Kraken'in \u00d6fkesi",
+        "lift": -0.326,
+        "n": 657,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_krakenslayer.png"
+      },
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Dev Katili",
+        "lift": -0.307,
+        "n": 663,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_madredsbloodrazor.png"
+      },
+      {
+        "id": "DA_RedBuff",
+        "name": "K\u0131rm\u0131z\u0131 G\u00fc\u00e7lendirme",
+        "lift": -0.255,
+        "n": 794,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_rapidfirecannon.png"
+      }
+    ],
+    "DA_18_Ornn": [
+      {
+        "id": "DA_Evenshroud",
+        "name": "Denge \u00d6rt\u00fcs\u00fc",
+        "lift": -0.156,
+        "n": 57,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmog'un Z\u0131rh\u0131",
+        "lift": -0.114,
+        "n": 894,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_warmogsarmor.png"
+      },
+      {
+        "id": "DA_Crownguard",
+        "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
+        "lift": -0.106,
+        "n": 103,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
+      }
+    ],
+    "DA_18_Sejuani": [
+      {
+        "id": "DA_SteadfastHeart",
+        "name": "Kararl\u0131 Y\u00fcrek",
+        "lift": -0.417,
+        "n": 214,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_nightharvester.png"
+      },
+      {
+        "id": "DA_BrambleVest",
+        "name": "Dikenli Yelek",
+        "lift": -0.281,
+        "n": 168,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
+      },
+      {
+        "id": "DA_SunfireCape",
+        "name": "G\u00fcnate\u015fi Pelerini",
+        "lift": -0.231,
+        "n": 272,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_redbuff.png"
+      }
+    ],
+    "DA_18_Rakan": [
+      {
+        "id": "DA_Crownguard",
+        "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
+        "lift": -0.346,
+        "n": 113,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
+      },
+      {
+        "id": "DA_SteadfastHeart",
+        "name": "Kararl\u0131 Y\u00fcrek",
+        "lift": -0.33,
+        "n": 116,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_nightharvester.png"
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "H\u0131rs\u0131z Eldiveni",
+        "lift": -0.328,
+        "n": 209,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
+      }
+    ]
+  },
+  "c_22": {
+    "DA_Fiddlesticks18": [
+      {
+        "id": "DA_SteraksGage",
+        "name": "Sterak'\u0131n G\u00fcvencesi",
+        "lift": -0.697,
+        "n": 65,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
+      },
+      {
+        "id": "DA_Bloodthirster",
+        "name": "Kanasusam\u0131\u015f",
+        "lift": -0.665,
+        "n": 119,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bloodthirster.png"
+      },
+      {
+        "id": "DA_BrambleVest",
+        "name": "Dikenli Yelek",
+        "lift": -0.646,
+        "n": 108,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
+      }
+    ],
+    "DA_18_Rammus": [
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
+        "lift": -0.704,
+        "n": 207,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
+      },
+      {
+        "id": "DA_BrambleVest",
+        "name": "Dikenli Yelek",
+        "lift": -0.688,
+        "n": 205,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
+      },
+      {
+        "id": "DA_Crownguard",
+        "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
+        "lift": -0.65,
+        "n": 186,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
+      }
+    ],
+    "DA_18_Cassiopeia": [
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Dev Katili",
+        "lift": -0.392,
+        "n": 78,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_madredsbloodrazor.png"
+      },
+      {
+        "id": "DA_NashorsTooth",
+        "name": "Nashor'un Di\u015fi",
+        "lift": -0.253,
+        "n": 51,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_leviathan.png"
+      },
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Ba\u015fmelek Asas\u0131",
+        "lift": -0.141,
+        "n": 2653,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
+      }
+    ],
+    "DA_18_Shen": [
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
+        "lift": -1.223,
+        "n": 61,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
+      },
+      {
+        "id": "DA_Crownguard",
+        "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
+        "lift": -1.175,
+        "n": 50,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
+      },
+      {
+        "id": "DA_IonicSpark",
+        "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
+        "lift": -1.123,
+        "n": 77,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
+      }
+    ],
+    "DA_18_Ornn": [
+      {
+        "id": "DA_SteadfastHeart",
+        "name": "Kararl\u0131 Y\u00fcrek",
+        "lift": -1.011,
+        "n": 59,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_nightharvester.png"
+      },
+      {
+        "id": "DA_SunfireCape",
+        "name": "G\u00fcnate\u015fi Pelerini",
+        "lift": -0.967,
+        "n": 68,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_redbuff.png"
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "H\u0131rs\u0131z Eldiveni",
+        "lift": -0.919,
+        "n": 101,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
+      }
+    ],
+    "DA_18_Leona": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "H\u0131rs\u0131z Eldiveni",
+        "lift": -0.751,
+        "n": 76,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
+      }
+    ],
+    "DA_18_Lillia": [
+      {
+        "id": "DA_BrambleVest",
+        "name": "Dikenli Yelek",
+        "lift": -1.397,
+        "n": 59,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
+      },
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
+        "lift": -1.331,
+        "n": 195,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
+      },
+      {
+        "id": "DA_Evenshroud",
+        "name": "Denge \u00d6rt\u00fcs\u00fc",
+        "lift": -1.171,
+        "n": 58,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
+      }
+    ]
+  },
+  "c_21": {
+    "DA_18_Lillia": [
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
+        "lift": -0.389,
+        "n": 409,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
+      },
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "De\u011fi\u015fken Mi\u011ffer",
+        "lift": -0.368,
+        "n": 355,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_adaptivehelm.png"
+      },
+      {
+        "id": "DA_SteraksGage",
+        "name": "Sterak'\u0131n G\u00fcvencesi",
+        "lift": -0.318,
+        "n": 177,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
+      }
+    ],
+    "DA_Fiddlesticks18": [
+      {
+        "id": "DA_Crownguard",
+        "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
+        "lift": -0.339,
+        "n": 663,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
+      },
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
+        "lift": -0.331,
+        "n": 225,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
+      },
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Ruh G\u00f6mle\u011fi",
+        "lift": -0.301,
+        "n": 406,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spiritvisagerr.png"
+      }
+    ],
+    "DA_18_Rammus": [
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Ruh G\u00f6mle\u011fi",
+        "lift": -0.461,
+        "n": 684,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spiritvisagerr.png"
+      },
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
+        "lift": -0.421,
+        "n": 244,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
+      },
+      {
+        "id": "DA_BrambleVest",
+        "name": "Dikenli Yelek",
+        "lift": -0.421,
+        "n": 243,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
+      }
+    ],
+    "DA_18_Shen": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "H\u0131rs\u0131z Eldiveni",
+        "lift": -0.515,
+        "n": 260,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
+      },
+      {
+        "id": "DA_IonicSpark",
+        "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
+        "lift": -0.447,
+        "n": 78,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmog'un Z\u0131rh\u0131",
+        "lift": -0.357,
+        "n": 67,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_warmogsarmor.png"
+      }
+    ],
+    "DA_18_Cassiopeia": [
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Ba\u015fmelek Asas\u0131",
+        "lift": -0.157,
+        "n": 2655,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
+      },
+      {
+        "id": "DA_HextechGunblade",
+        "name": "Hextech Silahk\u0131l\u0131\u00e7",
+        "lift": -0.007,
+        "n": 2573,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_hextechgunblade.png"
+      },
+      {
+        "id": "DA_SpearOfShojin",
+        "name": "Shojin'in M\u0131zra\u011f\u0131",
+        "lift": 0.155,
+        "n": 1250,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spearofshojin.png"
+      }
+    ],
+    "DA_18_Ornn": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "H\u0131rs\u0131z Eldiveni",
+        "lift": -0.311,
+        "n": 79,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
+      },
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmog'un Z\u0131rh\u0131",
+        "lift": -0.071,
+        "n": 59,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_warmogsarmor.png"
+      }
+    ],
+    "DA_18_Leona": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "H\u0131rs\u0131z Eldiveni",
+        "lift": 0.24,
+        "n": 51,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
+      }
+    ]
+  },
+  "c_23": {
+    "DA_Fiddlesticks18": [
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "De\u011fi\u015fken Mi\u011ffer",
+        "lift": -0.382,
+        "n": 697,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_adaptivehelm.png"
+      },
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Ba\u015fmelek Asas\u0131",
+        "lift": -0.344,
+        "n": 139,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
+      },
+      {
+        "id": "DA_Crownguard",
+        "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
+        "lift": -0.242,
+        "n": 373,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
+      }
+    ],
+    "DA_18_Rammus": [
+      {
+        "id": "DA_DragonsClaw",
+        "name": "Ejder Pen\u00e7esi",
+        "lift": -0.549,
+        "n": 328,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_dragonsclaw.png"
+      },
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Ruh G\u00f6mle\u011fi",
+        "lift": -0.434,
+        "n": 369,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spiritvisagerr.png"
+      },
+      {
+        "id": "DA_SteadfastHeart",
+        "name": "Kararl\u0131 Y\u00fcrek",
+        "lift": -0.382,
+        "n": 607,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_nightharvester.png"
+      }
+    ],
+    "DA_18_Cassiopeia": [
+      {
+        "id": "DA_BlueBuff",
+        "name": "Mavi G\u00fc\u00e7lendirme",
+        "lift": -0.241,
+        "n": 360,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bluebuff.png"
+      },
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Ba\u015fmelek Asas\u0131",
+        "lift": -0.141,
+        "n": 1701,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
+      },
+      {
+        "id": "DA_HextechGunblade",
+        "name": "Hextech Silahk\u0131l\u0131\u00e7",
+        "lift": -0.081,
+        "n": 1675,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_hextechgunblade.png"
+      }
+    ],
+    "DA_18_Shen": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "H\u0131rs\u0131z Eldiveni",
+        "lift": -0.08,
+        "n": 168,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
+      }
+    ],
+    "DA_18_Lillia": [
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
+        "lift": -0.675,
+        "n": 246,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
+      },
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "De\u011fi\u015fken Mi\u011ffer",
+        "lift": -0.605,
+        "n": 165,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_adaptivehelm.png"
+      },
+      {
+        "id": "DA_BrambleVest",
+        "name": "Dikenli Yelek",
+        "lift": -0.572,
+        "n": 82,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
+      }
+    ],
+    "DA_18_Ornn": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "H\u0131rs\u0131z Eldiveni",
+        "lift": 0.067,
+        "n": 50,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
+      }
+    ],
+    "DA_18_Leona": [],
+    "DA_18_Soraka": [
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Ba\u015fmelek Asas\u0131",
+        "lift": -0.423,
+        "n": 85,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
+      },
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "De\u011fi\u015fken Mi\u011ffer",
+        "lift": -0.381,
+        "n": 86,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_adaptivehelm.png"
+      },
+      {
+        "id": "DA_BlueBuff",
+        "name": "Mavi G\u00fc\u00e7lendirme",
+        "lift": -0.242,
+        "n": 86,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bluebuff.png"
+      }
+    ]
+  },
+  "c_24": {
+    "DA_18_Soraka": [
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Ba\u015fmelek Asas\u0131",
+        "lift": -0.223,
+        "n": 210,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
+      },
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "De\u011fi\u015fken Mi\u011ffer",
+        "lift": -0.152,
+        "n": 149,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_adaptivehelm.png"
+      },
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Dev Katili",
+        "lift": -0.073,
+        "n": 240,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_madredsbloodrazor.png"
+      }
+    ],
+    "DA_Fiddlesticks18": [
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "De\u011fi\u015fken Mi\u011ffer",
+        "lift": -0.291,
+        "n": 531,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_adaptivehelm.png"
+      },
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Ba\u015fmelek Asas\u0131",
+        "lift": -0.23,
+        "n": 95,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
+      },
+      {
+        "id": "DA_Crownguard",
+        "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
+        "lift": -0.21,
+        "n": 346,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
+      }
+    ],
+    "DA_18_Rammus": [
+      {
+        "id": "DA_IonicSpark",
+        "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
+        "lift": -0.279,
+        "n": 310,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
+      },
+      {
+        "id": "DA_SunfireCape",
+        "name": "G\u00fcnate\u015fi Pelerini",
+        "lift": -0.258,
+        "n": 447,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_redbuff.png"
+      },
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
+        "lift": -0.221,
+        "n": 118,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
+      }
+    ],
+    "DA_18_Cassiopeia": [
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Ba\u015fmelek Asas\u0131",
+        "lift": -0.191,
+        "n": 1470,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
+      },
+      {
+        "id": "DA_HextechGunblade",
+        "name": "Hextech Silahk\u0131l\u0131\u00e7",
+        "lift": -0.109,
+        "n": 1397,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_hextechgunblade.png"
+      },
+      {
+        "id": "DA_SpearOfShojin",
+        "name": "Shojin'in M\u0131zra\u011f\u0131",
+        "lift": -0.028,
+        "n": 646,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spearofshojin.png"
+      }
+    ],
+    "DA_18_Shen": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "H\u0131rs\u0131z Eldiveni",
+        "lift": 0.091,
+        "n": 97,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
+      }
+    ],
+    "DA_18_Lillia": [
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "H\u0131rs\u0131z Eldiveni",
+        "lift": -0.332,
+        "n": 332,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
+      },
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
+        "lift": -0.264,
+        "n": 184,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
+      },
+      {
+        "id": "DA_Crownguard",
+        "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
+        "lift": -0.23,
+        "n": 107,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
+      }
+    ],
+    "DA_18_Ornn": [],
+    "DA_18_Leona": []
+  },
+  "c_26": {
+    "DA_18_Diana": [
+      {
+        "id": "DA_Evenshroud",
+        "name": "Denge \u00d6rt\u00fcs\u00fc",
+        "lift": -0.146,
+        "n": 53,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "H\u0131rs\u0131z Eldiveni",
+        "lift": -0.073,
+        "n": 166,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
+      }
+    ],
+    "DA_18_Aphelios": [
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Dev Katili",
+        "lift": -0.119,
+        "n": 574,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_madredsbloodrazor.png"
+      },
+      {
+        "id": "DA_StrikersFlail",
+        "name": "H\u00fccum G\u00fcrz\u00fc",
+        "lift": -0.099,
+        "n": 120,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_powergauntlet.png"
+      },
+      {
+        "id": "DA_InfinityEdge",
+        "name": "Ebedi K\u0131l\u0131\u00e7",
+        "lift": -0.087,
+        "n": 890,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_infinityedge.png"
+      }
+    ],
+    "DA_CrimsonRaptor18": [
+      {
+        "id": "DA_LastWhisper",
+        "name": "Son F\u0131s\u0131lt\u0131",
+        "lift": -0.367,
+        "n": 599,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_lastwhisper.png"
+      },
+      {
+        "id": "DA_RedBuff",
+        "name": "K\u0131rm\u0131z\u0131 G\u00fc\u00e7lendirme",
+        "lift": -0.143,
+        "n": 52,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_rapidfirecannon.png"
+      },
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Dev Katili",
+        "lift": -0.138,
+        "n": 56,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_madredsbloodrazor.png"
+      }
+    ],
+    "DA_Sentinel18": [
+      {
+        "id": "DA_WarmogsArmor",
+        "name": "Warmog'un Z\u0131rh\u0131",
+        "lift": -0.281,
+        "n": 829,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_warmogsarmor.png"
+      },
+      {
+        "id": "DA_ProtectorsVow",
+        "name": "Muhaf\u0131z\u0131n Ada\u011f\u0131",
+        "lift": -0.225,
+        "n": 1465,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_frozenheart.png"
+      },
+      {
+        "id": "DA_Evenshroud",
+        "name": "Denge \u00d6rt\u00fcs\u00fc",
+        "lift": -0.199,
+        "n": 270,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
+      }
+    ],
+    "DA_Brambleback18": [
+      {
+        "id": "DA_Bloodthirster",
+        "name": "Kanasusam\u0131\u015f",
+        "lift": -0.38,
+        "n": 277,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bloodthirster.png"
+      },
+      {
+        "id": "DA_EdgeOfNight",
+        "name": "Gecenin K\u0131y\u0131s\u0131",
+        "lift": -0.344,
+        "n": 739,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_guardianangel.png"
+      },
+      {
+        "id": "DA_SteraksGage",
+        "name": "Sterak'\u0131n G\u00fcvencesi",
+        "lift": -0.341,
+        "n": 764,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
+      }
+    ],
+    "DA_18_Hecarim": [
+      {
+        "id": "DA_Evenshroud",
+        "name": "Denge \u00d6rt\u00fcs\u00fc",
+        "lift": -0.234,
+        "n": 123,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
+      },
+      {
+        "id": "DA_SteadfastHeart",
+        "name": "Kararl\u0131 Y\u00fcrek",
+        "lift": -0.21,
+        "n": 62,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_nightharvester.png"
+      },
+      {
+        "id": "DA_SunfireCape",
+        "name": "G\u00fcnate\u015fi Pelerini",
+        "lift": -0.055,
+        "n": 105,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_redbuff.png"
+      }
+    ],
+    "DA_18_Alune": [
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Ba\u015fmelek Asas\u0131",
+        "lift": -0.419,
+        "n": 143,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
+      },
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Dev Katili",
+        "lift": -0.319,
+        "n": 67,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_madredsbloodrazor.png"
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "H\u0131rs\u0131z Eldiveni",
+        "lift": -0.276,
+        "n": 57,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
+      }
+    ],
+    "DA_Taric18": [
+      {
+        "id": "DA_Crownguard",
+        "name": "Kraliyet Ba\u015fl\u0131\u011f\u0131",
+        "lift": -0.587,
+        "n": 111,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_crownguard.png"
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "H\u0131rs\u0131z Eldiveni",
+        "lift": -0.56,
+        "n": 93,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
+      },
+      {
+        "id": "DA_SpiritVisage",
+        "name": "Ruh G\u00f6mle\u011fi",
+        "lift": -0.556,
+        "n": 130,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spiritvisagerr.png"
+      }
+    ],
+    "DA_18_Zyra": [
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Ba\u015fmelek Asas\u0131",
+        "lift": -0.646,
+        "n": 87,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
+      },
+      {
+        "id": "DA_HextechGunblade",
+        "name": "Hextech Silahk\u0131l\u0131\u00e7",
+        "lift": -0.521,
+        "n": 58,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_hextechgunblade.png"
+      },
+      {
+        "id": "DA_SpearOfShojin",
+        "name": "Shojin'in M\u0131zra\u011f\u0131",
+        "lift": -0.459,
+        "n": 198,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spearofshojin.png"
+      }
+    ]
+  },
+  "c_25": {
+    "DA_18_Diana": [
+      {
+        "id": "DA_Evenshroud",
+        "name": "Denge \u00d6rt\u00fcs\u00fc",
+        "lift": -0.991,
+        "n": 148,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
+      },
+      {
+        "id": "DA_EdgeOfNight",
+        "name": "Gecenin K\u0131y\u0131s\u0131",
+        "lift": -0.957,
+        "n": 85,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_guardianangel.png"
+      },
+      {
+        "id": "DA_ArchangelsStaff",
+        "name": "Ba\u015fmelek Asas\u0131",
+        "lift": -0.953,
+        "n": 63,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_archangelsstaff.png"
+      }
+    ],
+    "DA_18_Aphelios": [
+      {
+        "id": "DA_StrikersFlail",
+        "name": "H\u00fccum G\u00fcrz\u00fc",
+        "lift": -0.328,
+        "n": 317,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_powergauntlet.png"
+      },
+      {
+        "id": "DA_InfinityEdge",
+        "name": "Ebedi K\u0131l\u0131\u00e7",
+        "lift": -0.107,
+        "n": 2424,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_infinityedge.png"
+      },
+      {
+        "id": "DA_GiantSlayer",
+        "name": "Dev Katili",
+        "lift": -0.09,
+        "n": 1686,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_madredsbloodrazor.png"
+      }
+    ],
+    "DA_CrimsonRaptor18": [
+      {
+        "id": "DA_Quicksilver",
+        "name": "C\u0131va",
+        "lift": -0.846,
+        "n": 74,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_quicksilver.png"
+      },
+      {
+        "id": "DA_HextechGunblade",
+        "name": "Hextech Silahk\u0131l\u0131\u00e7",
+        "lift": -0.743,
+        "n": 111,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_hextechgunblade.png"
+      },
+      {
+        "id": "DA_KrakensFury",
+        "name": "Kraken'in \u00d6fkesi",
+        "lift": -0.733,
+        "n": 410,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_krakenslayer.png"
+      }
+    ],
+    "DA_Sentinel18": [
+      {
+        "id": "DA_SteraksGage",
+        "name": "Sterak'\u0131n G\u00fcvencesi",
+        "lift": -0.582,
+        "n": 58,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "H\u0131rs\u0131z Eldiveni",
+        "lift": -0.566,
+        "n": 96,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
+      },
+      {
+        "id": "DA_BrambleVest",
+        "name": "Dikenli Yelek",
+        "lift": -0.503,
+        "n": 373,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bramblevest.png"
+      }
+    ],
+    "DA_Brambleback18": [
+      {
+        "id": "DA_SteadfastHeart",
+        "name": "Kararl\u0131 Y\u00fcrek",
+        "lift": -0.688,
+        "n": 56,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_nightharvester.png"
+      },
+      {
+        "id": "DA_RedBuff",
+        "name": "K\u0131rm\u0131z\u0131 G\u00fc\u00e7lendirme",
+        "lift": -0.587,
+        "n": 60,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_rapidfirecannon.png"
+      },
+      {
+        "id": "DA_BlueBuff",
+        "name": "Mavi G\u00fc\u00e7lendirme",
+        "lift": -0.521,
+        "n": 56,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_bluebuff.png"
+      }
+    ],
+    "DA_18_Hecarim": [
+      {
+        "id": "DA_IonicSpark",
+        "name": "\u0130yon K\u0131v\u0131lc\u0131m\u0131",
+        "lift": -0.988,
+        "n": 74,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_ionicspark.png"
+      },
+      {
+        "id": "DA_SteraksGage",
+        "name": "Sterak'\u0131n G\u00fcvencesi",
+        "lift": -0.77,
+        "n": 77,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_steraksgage.png"
+      },
+      {
+        "id": "DA_DragonsClaw",
+        "name": "Ejder Pen\u00e7esi",
+        "lift": -0.571,
+        "n": 268,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_dragonsclaw.png"
+      }
+    ],
+    "DA_18_Zyra": [
+      {
+        "id": "DA_NashorsTooth",
+        "name": "Nashor'un Di\u015fi",
+        "lift": -0.772,
+        "n": 202,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_leviathan.png"
+      },
+      {
+        "id": "DA_StrikersFlail",
+        "name": "H\u00fccum G\u00fcrz\u00fc",
+        "lift": -0.682,
+        "n": 106,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_powergauntlet.png"
+      },
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "De\u011fi\u015fken Mi\u011ffer",
+        "lift": -0.638,
+        "n": 304,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_adaptivehelm.png"
+      }
+    ],
+    "DA_Taric18": [
+      {
+        "id": "DA_Evenshroud",
+        "name": "Denge \u00d6rt\u00fcs\u00fc",
+        "lift": -1.21,
+        "n": 203,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_spectralgauntlet.png"
+      },
+      {
+        "id": "DA_ThiefsGloves",
+        "name": "H\u0131rs\u0131z Eldiveni",
+        "lift": -1.121,
+        "n": 191,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_thiefsgloves.png"
+      },
+      {
+        "id": "DA_AdaptiveHelm",
+        "name": "De\u011fi\u015fken Mi\u011ffer",
+        "lift": -1.12,
+        "n": 114,
+        "icon": "https://raw.communitydragon.org/latest/game/assets/maps/tft/icons/items/hexcore/tft_item_adaptivehelm.png"
+      }
+    ]
   }
 }

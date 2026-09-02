@@ -77,6 +77,39 @@ clustering:
   min_cluster_size_fraction: 0.003   # 0.2%-0.5% of sample count, per spec section 9
   noise_distance_threshold: 0.35     # max cosine distance before a noise point stays off-meta
 
+  # Phase 2 (src/subdivide.py, added 2026-09-02) — splits selected phase-1
+  # comps into finer pieces via a SEPARATE probe HDBSCAN fit, without
+  # touching min_cluster_size_fraction or clustering.py's own fit. Measured
+  # first (scripts/sensitivity_mcs.py, measure_variants.py,
+  # resolve_variant_gap.py, measure_residual.py this session) before being
+  # turned into a real pipeline step — see SPEC.md's decision history once
+  # it's updated with this feature.
+  subdivide:
+    enabled: true
+    probe_min_cluster_size: 200   # NOT min_cluster_size_fraction-derived — a separate, literal probe value
+    # C2 criterion: a probe cluster only counts as an official "piece" of a
+    # target comp if >=90% of ITS OWN full population (train+early-death,
+    # after the probe fit's own standard noise/early-death reassignment)
+    # carries that target comp's PRODUCTION FINAL label. Measured directly
+    # (resolve_variant_gap.py's Part A) against the 8 candidate pieces
+    # before this threshold was chosen: all 8 measured between 96.1%-100%
+    # purity, comfortably above 90%; Draven-Alev's own weakest mcs=200
+    # sub-piece measured 69.7% and is correctly excluded by this threshold
+    # (also excluded because Draven-Alev isn't in target_comps below).
+    purity_threshold: 0.90
+    # Matched against phase-1's comps.json by core_units SET equality, not
+    # by raw c_XX id (those are HDBSCAN's own arbitrary per-run labels,
+    # meaningless across runs — SPEC.md's decision history). `name` is a
+    # human-readable cross-check only (logged as a warning, not fatal, if it
+    # ever stops matching — core_units is the real key).
+    target_comps:
+      - name: "Kayle — Bombardımancı"
+        core_units: [DA_18_Kayle, DA_18_Leona, DA_18_Sejuani, DA_18_Xayah, DA_18_Ornn, DA_18_Rakan]
+      - name: "Cassiopeia — Savunucu"
+        core_units: [DA_Fiddlesticks18, DA_18_Rammus, DA_18_Cassiopeia, DA_18_Shen, DA_18_Lillia, DA_18_Ornn, DA_18_Leona]
+      - name: "Aphelios — Öncü"
+        core_units: [DA_18_Diana, DA_18_Aphelios, DA_CrimsonRaptor18, DA_Sentinel18, DA_Brambleback18, DA_18_Hecarim, DA_18_Zyra, DA_Taric18]
+
 augment_shrinkage_k: 50       # empirical Bayes shrinkage constant. Used by items.py
                                # (section 15) today; will be shared by augments.py
                                # (section 11) too whenever Riot's API actually
