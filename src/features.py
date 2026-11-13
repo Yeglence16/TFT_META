@@ -10,7 +10,7 @@ analysis layer (SPEC.md section 15) — that's metadata for a downstream
 module, not a change to the vector.
 
 **unit_order / trait_order now come from static_data.py (SPEC.md section
-4), not from the match sample.** Earlier this session they were derived
+4), not from the match sample.** An earlier version derived them
 empirically from whatever character_id/trait strings appeared in the data —
 that meant vector dimensionality depended on sample size (a full-scale run
 seeing different units would silently produce a different-shaped vector,
@@ -21,7 +21,7 @@ that module's docstring) are now the fixed, sample-independent vocabulary.
 
 Any `character_id` seen in match data but NOT in the static champion list
 is dropped from the vector and logged (count per id), never silently
-discarded — SPEC.md is explicit about this. In this session's ~3000-match
+discarded — SPEC.md is explicit about this. In the initial ~3000-match
 sample that caught exactly 2 ids: `DA_18_EliseSpider` (an alternate-form
 asset, not its own recruitable champion) and `TFT18_Gromp` (a stray
 non-"DA_" id — looks like a PvE jungle monster reference, not a champion).
@@ -32,7 +32,7 @@ a flat round counter that doesn't obviously map to classic stage/round
 notation. config.yaml's `features.min_last_round` was picked from the
 actual data (see that file's comment) rather than guessed.
 
-Earlier this session, participants below that threshold were dropped
+Originally, participants below that threshold were dropped
 entirely. That's the right call for CLUSTERING (a half-built board can't
 define a comp archetype) but wrong for anything computed downstream from
 the same filtered set — it's a survivorship bias: early deaths skew hard

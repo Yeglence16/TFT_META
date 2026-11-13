@@ -71,7 +71,7 @@ def test_cells_below_min_n_excluded_from_ranked_lists():
 
 
 def test_tied_delta_tie_break_is_order_independent_and_by_trait_id():
-    # Regression (2026-08-30): compute_trait_exposure() builds `exposure` by
+    # Regression: compute_trait_exposure() builds `exposure` by
     # iterating active_traits/high_traits, which are Python sets of strings —
     # hash-randomized per process, so which of two exactly-tied traits was
     # inserted first (and therefore sorted first by the old delta-only sort

@@ -1,12 +1,12 @@
-"""Phase 2: comp subdivision (SPEC.md — pending write-up).
+"""Phase 2: comp subdivision (SPEC.md section 9a).
 
 Runs AFTER clustering.py, BEFORE matchups.py/traits.py/items.py/
 build_web_data.py. Splits selected phase-1 comps into finer pieces via a
-SEPARATE probe HDBSCAN fit — "Option B" from the design discussion this
-session: the probe fit runs on the SAME full training population
+SEPARATE probe HDBSCAN fit — "Option B" in SPEC.md section
+9a: the probe fit runs on the SAME full training population
 clustering.py already used (not a comp-local subset — a comp-local fit
 would use a completely different, unmeasured relative density threshold,
-see the design report), and only the pieces belonging to configured target
+see SPEC.md section 9a), and only the pieces belonging to configured target
 comps are kept; everything else (the other real comps, off_meta) passes
 through byte-identical to phase 1's own output.
 
@@ -27,8 +27,7 @@ purity_threshold).** A probe HDBSCAN cluster only becomes an official
      >= purity_threshold of that probe cluster's FULL population carries
      this target comp's PRODUCTION FINAL label (not the probe fit's own
      raw label — the real, already-decided phase-1 comp membership).
-Measured directly before being encoded here (resolve_variant_gap.py's Part
-A, this session): the 8 real pieces measured 96.1%-100% purity; a sibling
+Measured before being encoded here: the 8 real pieces measured 96.1%-100% purity; a sibling
 comp's (Draven-Alev) own weakest incidental mcs=200 sub-piece measured only
 69.7% and is correctly excluded (also excluded because it isn't in
 target_comps).
@@ -39,8 +38,7 @@ For a target comp's OWN points that don't land in one of its own pieces
 through ANY HDBSCAN fit): nearest-piece cosine distance is computed against
 ALL accepted pieces (not just this comp's own — measured to make zero
 difference: every single leftover point's nearest piece was from its own
-family, 100% across all 6 categories, resolve_variant_gap.py's follow-up
-measurement). Within noise_distance_threshold (the SAME 0.35 phase 1 uses
+family, 100% across all 6 categories). Within noise_distance_threshold (the SAME 0.35 phase 1 uses
 for its own noise/early-death reassignment — not a new number): assigned to
 that piece. Beyond it: off_meta. Points belonging to any OTHER comp are
 NEVER reassigned into a piece, regardless of geometric proximity — only a

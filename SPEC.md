@@ -590,10 +590,9 @@ Model ve centroid'ler `models/` altına kaydedilsin.
 değiştirilmedi — `min_cluster_size_fraction` aynen 0.003, global fit aynen
 çalışıyor. `subdivide.py` faz 1'in KENDİ çıktısı üzerinde çalışan ayrı, ek
 bir adım: seçilmiş 3 comp'u (Kayle — Bombardımancı, Cassiopeia — Savunucu,
-Aphelios — Öncü) daha ince parçalara böldü. Karar, bir önceki oturumun
-`scripts/sensitivity_mcs.py` → `measure_variants.py` → `resolve_variant_gap.py`
-→ `measure_residual.py` ölçüm zincirine dayanıyor (script'ler `scripts/`
-altında duruyor, tek seferlik ölçüm — pipeline'ın parçası değil).
+Aphelios — Öncü) daha ince parçalara böldü. Karar, tek seferlik bir ölçüm zincirine (mcs duyarlılığı, varyant ve artık
+ölçümleri) dayanıyor; bu ölçüm script'leri pipeline'ın parçası olmadığı için
+repo'da tutulmuyor.
 
 **Mimari — Seçenek B (global probe fit'i filtrelemek), Seçenek A değil.**
 İki mimari karşılaştırıldı: (A) her hedef comp'un kendi eğitim noktaları
@@ -1234,8 +1233,8 @@ aileleri ikincil unit farkıyla ince varyantlara böldüğünü gösteriyor.
 
 **Cost-ağırlıklı ve item-ağırlıklı vektörleme (Taric'in centroid'lere aşırı
 yakınlaştırıcı etkisini gidermek için) — reddedildi (2026-09-01, ölçüldü,
-uygulanmadı).** `scripts/diag_taric.py` ile (kod/config değiştirilmeden,
-tek seferlik ölçüm) iki karşı-olgusal ağırlıklandırma test edildi: (a) unit
+uygulanmadı).** Tek seferlik bir teşhis ölçümüyle (kod/config değiştirilmeden)
+iki karşı-olgusal ağırlıklandırma test edildi: (a) unit
 boyutlarını cost'la (1-5) ağırlıklandırıp yeniden normalize etmek, (b) item
 taşıyan unit'lerin board-bazlı ağırlığını 3x yapmak. Taric'i core_unit
 taşıyan 6 cluster'ın 15 çifti üzerinde:
@@ -1260,7 +1259,7 @@ regresyon kriterine göre ("sadece hedef düzelip başka yer bozulursa iş
 yaramaz") ikisi de elenir.
 
 **"Taric ortak frontline yakınlaşma yaratıyor" hipotezi — ölçülüp
-çürütüldü (2026-09-01).** Aynı `diag_taric.py` koşusunda, Taric'in 6
+çürütüldü (2026-09-01).** Aynı teşhis ölçümünde, Taric'in 6
 cluster'ın centroid cosine-benzerliğine dimension-bazlı katkısı ayrıştırıldı
 (bkz. yukarıdaki madde). Sonuç hipotezi doğrulamadı:
 

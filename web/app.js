@@ -3,8 +3,8 @@
 /**
  * TFT Comp Analyzer — web arayüzü (SPEC-WEB.md).
  *
- * Tek dosya (SPEC-WEB.md section 2 — bölünmüyor). Yerleşim section 5
- * (2026-08-30'da yeniden yazıldı): header/logo, sol "önerilen comp'lar",
+ * Tek dosya (SPEC-WEB.md section 2 — bölünmüyor). Yerleşim section 5:
+ * header/logo, sol "önerilen comp'lar",
  * orta board + aktif trait paneli, sağ sonuç paneli, altta yatay unit
  * paleti. Etkileşim: section 5/6 (board + DnD + tıklama), section 7.1
  * (aktif trait), section 7.3 (comp eşleştirme), section 8 (sonuç paneli,
@@ -517,11 +517,10 @@ function renderSuggestions() {
   }
 }
 
-/** section 9's core_unit_avg_stars (2026-09-01, ölçüldü): DEFAULT_STAR=2
- * varsayımı büyük ölçüde yanlış çıktı — 144 (cluster, core_unit) çiftinin
- * sadece %13.2'si 2.0'a ±0.1 yakındı, carry'ler bilinçli 3-yıldızlanıyor
- * (2.9'a kadar), düşük öncelikli unit'ler 1'den kurtulamıyor (ör. Taric,
- * göründüğü 5 cluster'ın hepsinde 1.2-1.55 arası). Yuvarlama: standart
+/** comps.json'ın core_unit_avg_stars ortalamasını (section 3.4) board'un
+ * tam sayı yıldızına çevirir. Sabit 2 yıldız çoğu unit için yanlış olurdu:
+ * carry'ler bilinçli 3-yıldızlanıyor, düşük öncelikli unit'ler genelde 1'de
+ * kalıyor. Yuvarlama: standart
  * "yarımdan yukarı" (Math.round — 2.56→3, 2.49→2). Ortalama tanım gereği
  * [1,3] aralığında olduğu için clamp gerçek veride hiç devreye girmez,
  * sadece savunma amaçlı (eski/eksik bir comps.json'a karşı). */
@@ -529,7 +528,7 @@ function starFromAverage(avgStar) {
   return Math.min(3, Math.max(1, Math.round(avgStar)));
 }
 
-/** section 8.3 (2026-08-31, kullanıcı kararı): SADECE sonuç panelinin/modalın
+/** section 8.3: SADECE sonuç panelinin/modalın
  * item önerileri bölümündeki core unit ikonlarında bir yıldız rozeti — palet
  * ve board kartlarına dokunulmuyor, oradaki yıldız kullanıcının kendi seçimi
  * (gerçek bir ortalama değil), ikisi karıştırılmasın. Gösterim: yuvarlanmış
@@ -549,11 +548,9 @@ function createUnitStarBadge(avgStarEntry) {
 }
 
 /** section 5.3: bir öneriye tıklanınca board'u o comp'un core_units'iyle
- * doldur — board doluysa bile onay istemeden, doğrudan (2026-08-30: ilk
- * taslaktaki confirm() kullanımda rahatsız edici bulundu, kaldırıldı).
- * core_unit_avg_stars'ın şekli 2026-08-31'de değişti: artık düz float değil
- * `{avg, n}` (section 8.3'ün yıldız rozeti tooltip'i için gerçek bir
- * örneklem büyüklüğü lazım oldu) — burada sadece `.avg` okunuyor. */
+ * doldur — board doluysa bile onay istemeden, doğrudan (comp'lar arası
+ * hızlı geçiş için). core_unit_avg_stars girdileri `{avg, n}`; burada
+ * sadece `.avg` okunuyor. */
 function loadSuggestedComp(compId) {
   const comp = state.comps[compId];
   const coreUnits = comp.core_units.slice(0, BOARD_SIZE);
@@ -632,7 +629,7 @@ function setUnitStar(unitId, star) {
   onBoardChanged();
 }
 
-/** 2026-08-31 bulgusu: .layout-grid CSS Grid'inde align-items:start tek
+/** .layout-grid CSS Grid'inde align-items:start tek
  * başına board ile palet arasındaki boşluğu çözmüyor — Grid'in auto-satır
  * boyutlandırması align-items'tan bağımsız olarak satırı o satırdaki EN UZUN
  * öğeye (genelde 8 comp'lu .side-column) göre kuruyor; ölçüldü:
@@ -772,14 +769,8 @@ function compName(comps, compId) {
 // sadece etiket metni/renk sırası burada — "zayıf eşleşme"/"düşük güven" ile
 // aynı desen (sayısal eşik veriden, UI metni koddan).
 //
-// S/A/B/C/D şeması (2026-08-31, kullanıcı kararı) — önceki 4 banlı
-// Ortalama-üstü/altı Q1/Q3 çeyreklik şemasının yerine geçti. Karar öncesi iki
-// aday şema gerçek 19 comp'luk dağılımda ölçüldü (SPEC.md'nin karar
-// geçmişi): standart sapma bazlı (mean±0.5σ/1.5σ) gerçek istatistiksel
-// aykırı değerleri (Draven — Alev, Warwick — Karadiken) tek başına S/D'ye
-// izole ediyordu; sabit %10/20/40/20/10 yüzdelik şeması ise birbirine 0.015
-// kadar yakın iki comp'u zorla farklı bant'a düşürüyordu. Standart sapma
-// bazlı seçildi — bkz. clustering.py'nin compute_avg_placement_tiers()'ı.
+// Bantlar standart sapma bazlı (mean±0.5σ/1.5σ), sabit yüzdelik değil —
+// gerekçe için bkz. clustering.py'nin compute_avg_placement_tiers()'ı.
 // ---------------------------------------------------------------------------
 
 const TIER_BANDS = [
@@ -850,11 +841,11 @@ function updateResult() {
   renderCompReport(container, matchedId, distance, meta, comps, matchups, compTraits, items, units, traits);
 }
 
-/** section 7.3 (2026-08-31 güncellemesi): "en yakın 3 comp" artık tıklanabilir
- * — sol sütundaki öneri listesiyle AYNI davranış (loadSuggestedComp): board o
- * comp'un core_units'iyle dolar, sonuç paneli o comp'un raporunu gösterir.
- * Modal AÇMAZ — bu madde 1, board'u değiştiren bir eylem; madde 3'ün
- * head-to-head modalıyla (board'a dokunmadan peek) karıştırılmamalı. */
+/** section 7.3: "en yakın 3 comp" tıklanabilir — sol sütundaki öneri
+ * listesiyle AYNI davranış (loadSuggestedComp): board o comp'un
+ * core_units'iyle dolar, sonuç paneli o comp'un raporunu gösterir. Modal
+ * AÇMAZ — bu board'u değiştiren bir eylem; section 8.4'ün head-to-head
+ * modalıyla (board'a dokunmadan bakış) karıştırılmamalı. */
 function renderUnmatched(container, ranked, distance, threshold, comps) {
   // section 7.3 / src/cli.py: zorla bir comp'a eşleştirip rapor gösterme.
   const p1 = document.createElement("p");
@@ -883,9 +874,9 @@ function renderUnmatched(container, ranked, distance, threshold, comps) {
 }
 
 /** Bir comp'un item/istatistik/head-to-head/trait gövdesi — hem ana sonuç
- * panelinde (board eşleşmesi bağlamında) hem de madde 3'ün modalında (board'a
+ * panelinde (board eşleşmesi bağlamında) hem de section 8.4'ün modalında (board'a
  * dokunmadan "bu comp nasıl" bakışında) AYNI şekilde kullanılıyor, tek yerden
- * üretiliyor ki ikisi birbirinden sürüklenmesin. Sıra (2026-08-31): item
+ * üretiliyor ki ikisi birbirinden sürüklenmesin. Sıra: item
  * önerileri → özet → head-to-head → trait'ler. */
 function buildCompReportBody(compId, comps, matchups, compTraits, items, units, traits) {
   const comp = comps[compId];
@@ -948,8 +939,8 @@ function renderHeadToHead(compId, matchups, comps) {
   const validEntries = Object.entries(entries).filter(([, cell]) => "rate" in cell);
   const insufficientEntries = Object.entries(entries).filter(([, cell]) => cell.insufficient_data === true);
 
-  // section 8 (2026-08-31): comp isimleri artık tıklanabilir buton — tıklanınca
-  // board'a dokunmadan o comp'un tam raporunu modalda açar (madde 3).
+  // section 8.4: comp isimleri tıklanabilir buton — tıklanınca board'a
+  // dokunmadan o comp'un tam raporunu modalda açar.
   function compLink(oppId) {
     const link = document.createElement("button");
     link.type = "button";
@@ -1125,7 +1116,7 @@ function renderItemSection(compId, comp, items, units) {
     } else {
       unitIconWrap.appendChild(makeFallbackBox(unitName, "item-unit-icon-fallback"));
     }
-    // section 8.3 (2026-08-31): SADECE burada — palet/board kartlarına dokunmuyor.
+    // section 8.3: SADECE burada — palet/board kartlarına dokunmuyor.
     const starBadge = createUnitStarBadge((comp.core_unit_avg_stars || {})[unitId]);
     if (starBadge) unitIconWrap.appendChild(starBadge);
     group.appendChild(unitIconWrap);
@@ -1166,7 +1157,7 @@ function renderItemSection(compId, comp, items, units) {
 }
 
 // ---------------------------------------------------------------------------
-// Comp modal (section 8, 2026-08-31) — head-to-head'deki bir comp ismine
+// Comp modal (section 8.4) — head-to-head'deki bir comp ismine
 // tıklanınca board'a hiç dokunmadan o comp'un tam raporunu gösterir. Modal
 // içindeki head-to-head isimleri de openCompModal'a bağlı olduğu için
 // tıklanınca yeni bir modal AÇMIYOR, aynı modalın #comp-modal-content'ini

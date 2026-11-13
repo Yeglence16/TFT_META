@@ -26,14 +26,10 @@
   box-sizing: border-box;
 }
 
-/* SPEC-WEB.md section 5.0, 2026-08-31 güncellemesi: "sabit viewport" modeli
-   (body height:100vh + tek esneyen flex çocuk) terk edildi — kaldığı yerde
-   .layout-grid'in flex:1 1 auto/min-height:0'ı, küçülmeyen kardeşleri
-   (palette-panel/constraints-box/footer) yüzünden neredeyse 0'a sıkışıyordu;
-   board sütunu birkaç piksele düşüyor, kartların altı kesiliyordu (bkz. karar
-   geçmişi). Artık body'nin sabit bir yüksekliği yok, sayfa doğal içerik
-   yüksekliğine göre büyüyor ve gerekirse tarayıcı sayfa düzeyinde dikey
-   scroll ediyor. */
+/* SPEC-WEB.md section 5.0: body'nin sabit bir yüksekliği yok — sayfa doğal
+   içerik yüksekliğine göre büyüyor, gerekirse sayfa düzeyinde scroll ediyor.
+   (body height:100vh + tek esneyen flex çocuk modeli, küçülmeyen kardeşler
+   yüzünden board sütununu birkaç piksele sıkıştırıyordu.) */
 body {
   margin: 0;
   min-height: 100vh;
@@ -117,15 +113,10 @@ body {
   align-items: start; /* iki sütun birbirinin doğal yüksekliğini zorlamasın */
 }
 
-/* 2026-08-31 bulgusu: align-items:start tek başına yetmiyor — CSS Grid'in
-   auto-satır boyutlandırması, align-items'tan BAĞIMSIZ olarak satırı o
-   satırdaki en uzun öğeye göre kuruyor (ölçüldü: gridTemplateRows hesaplanan
-   değeri .side-column'un doğal yüksekliğiyle birebir aynı çıktı, board 3
-   durumda da 124-160px kısa kaldı). align-items sadece kısa öğeyi o zaten
-   uzun satır içinde konumluyor, satırı kısaltmıyor. Tek güvenilir çözüm:
-   .side-column'un max-height'ini JS'te .board-column'un GERÇEK render
-   yüksekliğine eşitlemek (app.js'teki syncSideColumnHeight) — board hangi
-   durumda olursa olsun (boş/5/10 unit) satırı O belirliyor, side-column
+/* align-items:start tek başına yetmiyor — CSS Grid'in auto-satır
+   boyutlandırması satırı o satırdaki en uzun öğeye göre kuruyor. Bu yüzden
+   .side-column'un max-height'i JS'te .board-column'un gerçek render
+   yüksekliğine eşitleniyor (app.js'teki setupSideColumnSync); side-column
    taşarsa kendi içinde scroll ediyor, layout-grid'i uzatmıyor. */
 .side-column {
   padding-bottom: 0.75rem;
@@ -147,7 +138,7 @@ body {
   height: 100vh;
   /* KASITLI overflow:visible (varsayılan) — sekme (left:-28px ile dışarı
      taşıyor) burada kırpılmasın diye. Scroll, iç .result-panel-scroll'da.
-     (2026-08-30 bulgusu: overflow-y'yi burada auto yapmak CSS'in "bir eksen
+     (overflow-y'yi burada auto yapmak CSS'in "bir eksen
      overflow'u visible-dışı olunca öteki eksen de auto sayılır" kuralı
      yüzünden sekmeyi görünmez kılıyordu.) */
   transform: translateX(100%);
@@ -682,7 +673,7 @@ body {
   object-fit: cover;
 }
 
-/* --- Yıldız rozeti (section 8.3, 2026-08-31, kullanıcı kararı) — SADECE
+/* --- Yıldız rozeti (section 8.3) — SADECE
    sonuç panelinin/modalın item önerileri bölümündeki core unit ikonlarında.
    Palet/board kartlarındaki .star-selector'a KASITLI olarak dokunulmuyor —
    biri kullanıcının seçimi, biri comp'un ölçülen ortalaması, ayrı diller.
@@ -796,7 +787,7 @@ body {
 }
 
 /* --- Comp linki — head-to-head'de ve "uymuyor" listesinde tıklanabilir
-   comp isimleri (section 8, section 7.3, 2026-08-31) --- */
+   comp isimleri (section 7.3, 8.4) --- */
 
 .comp-link {
   background: none;
@@ -817,12 +808,10 @@ body {
   text-decoration-color: var(--gold-bright);
 }
 
-/* --- Meta-tier rozeti (section 8) — S/A/B/C/D (2026-08-31, kullanıcı
-   kararı; önceki Güçlü/Ortalama üstü/Ortalama altı/Zayıf 4-banlı şemanın
-   yerine geçti). Renkler kullanıcı isteğiyle: S altın (+ hafif parıltı, en
-   üst tier — .unit-star-badge'in 3★'ıyla aynı "dikkat çekici" dil), A yeşil,
-   B mavi, C gri, D sönük kırmızı. Sayısal sınırlar comps.json'dan geliyor
-   (app.js), burada sadece görsel. --- */
+/* --- Meta-tier rozeti (section 8.5) — S/A/B/C/D. S altın (+ hafif
+   parıltı, .unit-star-badge'in 3★'ıyla aynı dil), A yeşil, B mavi, C gri,
+   D sönük kırmızı. Sayısal sınırlar comps.json'dan geliyor (app.js),
+   burada sadece görsel. --- */
 
 .tier-badge {
   display: inline-block;
@@ -868,7 +857,7 @@ body {
   border: 1px solid #7a3a3a;
 }
 
-/* --- Comp modal (section 8, 2026-08-31) — head-to-head/nearest-comp
+/* --- Comp modal (section 8.4) — head-to-head/nearest-comp
    isimlerine tıklayınca board'a dokunmadan bir comp'un tam raporunu
    gösterir. Zincirleme gezinme: modal içindeki head-to-head isimleri de
    AYNI modalın içeriğini değiştirir, üst üste yeni modal açmaz. --- */
@@ -884,17 +873,10 @@ body {
   z-index: 100; /* result-panel'in (z-index:50) üstünde */
 }
 
-/* Bulgu (2026-08-31, modal boş açılıyor raporundan sonra bulundu — b0ff70e'de
-   de zaten var, bu değişiklikle ortaya çıkmadı): `display: flex` yukarıda
-   `hidden` özniteliğinin varsayılan `[hidden]{display:none}` UA kuralını
-   EZİYORDU — aynı özgüllükte (0,1,0) iki kural çakışınca author stylesheet
-   UA'yı kazanıyor, `hidden`/`.hidden` set edilse bile overlay hep
-   display:flex kalıp görünür duruyordu (canlı doğrulandı: fresh page
-   load'da computedDisplay="flex" ölçüldü, hem şu anki hem b0ff70e'deki
-   markup'ta). #comp-modal-content de hiç doldurulmadığı için (openCompModal
-   hiç çağrılmadan) boş bir panel + X butonu görünüyordu — kullanıcının
-   bildirdiği tam görüntü. Bu satır özgüllüğü (0,2,0) yukarıdaki kuralın
-   üstüne çıkarıp hidden'ı gerçekten etkili kılıyor. */
+/* Yukarıdaki `display: flex`, `hidden` özniteliğinin varsayılan
+   `[hidden]{display:none}` kuralını eziyor (author stylesheet UA'yı
+   kazanır) — bu kural olmadan overlay sayfa açılır açılmaz boş bir panel
+   olarak görünüyordu. Özgüllük (0,2,0), `hidden`'ı gerçekten etkili kılar. */
 .comp-modal-overlay[hidden] {
   display: none;
 }

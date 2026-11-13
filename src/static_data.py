@@ -7,7 +7,7 @@ data/static/cdragon_tft_{locale}.json (gitignored), one file per locale so
 switching locales doesn't serve a stale cache from a different language.
 Filtered to config.yaml's set_number — the dump covers every set at once.
 
-**Locale support added 2026-08-31, verified against a live tr_tr dump.**
+**Locale support (verified against a tr_tr dump).**
 Structurally identical to en_us for Set 18: same setData/champion/trait/item
 apiName sets (only the `name` strings differ), same icon asset paths (0/502
 item icon mismatches checked). `extract_traits`/`extract_units`/
@@ -138,7 +138,7 @@ Outputs (data/static/):
 
 Icon URLs (SPEC-WEB.md section 4): lowercase the whole cdragon asset path,
 swap the extension to .png, prepend the CommunityDragon game-asset root.
-Verified live (not assumed) — 4 constructed URLs (a champion, a trait, a
+Verified — 4 constructed URLs (a champion, a trait, a
 normal augment icon, and a "missing-tN" placeholder augment icon) all
 returned 200.
 """
@@ -205,7 +205,7 @@ def extract_traits(set_entry: dict) -> dict[str, dict]:
     """Drops non-stackable "trait" records — same idea as extract_units()
     dropping PvE/global champion entries via the empty-traits-list check.
 
-    **Found via SPEC-WEB.md's web build validator (2026-08-30):**
+    **Found via SPEC-WEB.md's web build validator:**
     `DA_18_Eclipse` has a single effect with `minUnits: null` and a
     description ("After 10 seconds of combat, the Eclipse kills the lowest
     Health enemy") that's a combat-encounter hazard, not a champion
@@ -216,7 +216,7 @@ def extract_traits(set_entry: dict) -> dict[str, dict]:
     count could ever satisfy, so it isn't real comp-building content and is
     excluded the same way `TFT18_Gromp` is excluded from units.
 
-    **`minUnits` is deduped, not just sorted (fixed 2026-08-30, found via the
+    **`minUnits` is deduped, not just sorted (found via the
     web build validator).** Two effects can share the same `minUnits` — a
     real cdragon shape, not malformed data — because a single breakpoint can
     carry more than one effect record (e.g. a distinct visual `style` on top
@@ -369,8 +369,8 @@ def _classify_item_type(item: dict) -> str:
 
 # Emblem items follow "<Trait Display Name><suffix>" (e.g. "Blackthorn
 # Emblem"), but the suffix itself is locale text, not a structural cdragon
-# field — it has to be listed per locale. Verified against a live tr_tr dump
-# (2026-08-31): Turkish emblems follow "<Trait Türkçe Adı> Amblemi" (e.g.
+# field — it has to be listed per locale. Verified against a tr_tr dump:
+# Turkish emblems follow "<Trait Türkçe Adı> Amblemi" (e.g.
 # "Blackthorn Emblem" -> "Karadiken Amblemi"); stripping " Amblemi" and
 # matching against tr_tr traits.json's names resolves 21/23 — the same count
 # and the same 2 holdouts as en_us (both locales' "Phantom Emblem"/"Hayali
@@ -471,8 +471,8 @@ def _augment_tier(icon_path: str) -> str | None:
 
 
 def extract_augments(cdragon: dict, set_entry: dict) -> dict[str, dict]:
-    """Finalized (confirmed against the user's independently-known Set 18
-    augment count): cdragon's raw set-18 augment list is 596 entries, but
+    """Finalized (cross-checked against the known Set 18 augment
+    count): cdragon's raw set-18 augment list is 596 entries, but
     ~342 of those carry a different-set prefix (TFT6_/7_/8_/9_/10_/11_/16_) —
     these are "legacy augment portal" picks bundled into Set 18's pool, not
     Set 18's own augments. Filtering to apiName.startswith("DA_") gives 254,

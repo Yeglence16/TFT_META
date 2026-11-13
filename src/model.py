@@ -21,7 +21,7 @@ dev sample is not expected to produce a strong model.
 Metrics: MAE and Spearman rank correlation (rank-based, doesn't assume a
 linear relationship between predicted and actual placement).
 
-**Predictions are clipped to [1, 8] (bulgu + düzeltme, 2026-08-30).** Raw
+**Predictions are clipped to [1, 8].** Raw
 LightGBM output isn't constrained to a valid TFT placement — on this
 dataset the unclipped test-set range measured [0.66, 8.68], mathematically
 impossible values. `clip_predictions()` is defined once, here, and is the

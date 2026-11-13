@@ -181,7 +181,7 @@ def build_comp_traits(
         # regardless of entries_by_bucket's insertion order — which otherwise
         # depends on Python's hash-randomized `set[str]` iteration order in
         # compute_trait_exposure() (active_traits/high_traits), a different
-        # order every process run. Found 2026-08-30: two runs on identical
+        # order every process run. Two runs on identical
         # input produced different comp_traits.json — sorted() alone is a
         # stable sort, but "stable" only preserves whatever pre-sort order a
         # tied delta arrived in, and that order wasn't deterministic. Fixing

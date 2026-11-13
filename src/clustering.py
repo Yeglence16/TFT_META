@@ -5,7 +5,7 @@ L2-normalized board vectors features.py produces. K-Means is not used
 (comps aren't equal-sized or spherical in general; HDBSCAN also finds its
 own cluster count instead of needing one guessed upfront).
 
-**Distance metric is euclidean, not cosine (changed 2026-08-31).** Cosine
+**Distance metric is euclidean, not cosine.** Cosine
 worked fine at 3k-match scale (~20k training boards clusters in under 10s)
 but doesn't scale: sklearn's HDBSCAN only has a brute-force path for cosine
 (`_hdbscan_brute` → a dense NxN `pairwise_distances` matrix, O(n²) memory),
@@ -85,59 +85,23 @@ raw "DA_18_Ornn — DA_18_Elderwood" id). comps.json's core_units/common_traits
 stay as raw apiName ids, per SPEC-WEB.md section 3.4's contract — the web
 side joins those against units.json/traits.json itself.
 
-**`core_unit_avg_stars` (added 2026-09-01).** The web UI's "load this comp"
-action used to fill the board with every core unit at a hardcoded 2 stars —
-measured against real data and found substantially wrong for most units:
-only 13.2% of (cluster, core_unit) pairs land within ±0.1 of 2.0. Carries get
-3-starred on purpose (up to 2.91 average), low-priority/utility units rarely
-leave 1 star (`DA_Taric18` averaged 1.2-1.55 in every one of the 5 clusters
-it appears in — never close to 2). So each comp now also carries
-`core_unit_avg_stars: {unit_id: mean_star}` — the mean of `raw_units[unit_id]
-["tier"]` across exactly the boards in that cluster THAT HAVE the unit (not
-all `n_total` boards; a board missing the unit has no star level to average
-in — a different denominator than `core_units`' own selection frequency).
-Keys are exactly `core_units`' unit ids, rounded to 3 decimals like
-`avg_placement`. `core_units` itself is unchanged (still a flat list of ids,
-frequency-ordered) — this is a strictly additive field, not a replacement,
-so every existing consumer that only reads `core_units` keeps working
-untouched.
+**`core_unit_avg_stars`:** `{unit_id: {"avg": mean_star, "n": count}}` per
+core unit — the mean star level over the `n` boards in that cluster that
+actually contain the unit (a board without it has no star level to
+average). Used by the web UI to fill the board with realistic star levels
+and to show a star badge with its sample size. A fixed 2-star default was
+wrong for most units: only 13.2% of (cluster, core_unit) pairs average
+within ±0.1 of 2.0 — carries are deliberately 3-starred, utility units
+rarely leave 1 star.
 
-**Shape changed to `{unit_id: {"avg": mean_star, "n": count}}` (2026-08-31).**
-Was a flat `{unit_id: mean_star}` float. SPEC-WEB.md section 8.3's star-badge
-decision needs a real sample size for its tooltip ("bu comp'ta ortalama 2.91
-yıldız, n=..."), not just the average — a bare average with no `n` is exactly
-the "oran n olmadan gösterilmeyecek" rule this project holds everywhere else.
-`n` is `select_core_units`'s own per-unit board count (the same denominator
-`_unit_avg_star` already divides by) — it was already being computed here
-and thrown away (`top_units`' second tuple element, previously read as `_`),
-so no new measurement or pipeline pass was needed to add it. `avg` stays in
-[1.0, 3.0] as before; `n` is a positive int, always <= that comp's `n_total`
-(usually well below it — `core_units` only requires >=50% presence, not
-100%). Regenerating this only needed `build_cluster_report` re-run against
-the already-saved `models/centroids.npz` + `data/processed/cluster_labels.npy`
-(both deterministic per-board outputs of the last HDBSCAN fit) — not a full
-HDBSCAN refit — so the 19 clusters, names, core_units and avg_placement are
-byte-identical to before; only this field's shape changed.
+**`_metadata.avg_placement_tiers`:** S/A/B/C/D band boundaries over the
+real comps' `avg_placement` (see `compute_avg_placement_tiers()`),
+recomputed every run rather than hardcoded. `_metadata` is not a comp:
+every consumer that enumerates comps.json's keys skips it the same way it
+skips `off_meta`.
 
-**`_metadata.avg_placement_tiers` (added 2026-09-01, S/A/B/C/D scheme
-2026-08-31 — see `compute_avg_placement_tiers()` for the measured
-comparison against a percentile alternative before choosing).** Meta-tier
-bands for the web UI (SPEC-WEB.md section 8) — stdev-based S/A/B/C/D
-boundaries over the real (non-off_meta) comps' `avg_placement`, recomputed
-every run from whatever data actually exists rather than hardcoded once.
-`comps.json` gains a `_metadata` key alongside the `c_NN`/`off_meta` ones
-(same pattern as `items.json`'s `_metadata` — SPEC-WEB.md section 3.8);
-every consumer that enumerates comps.json's keys needs to skip it the same
-way it already skips `off_meta` (`build_web_data.py`, `items.py`, `app.js`
-— audited and fixed this session, see SPEC-WEB.md's decision history for
-the full list).
-
-**This ran against a ~3000-match dev sample (2937 matches, 23496 boards
-total, ~20152 used for training) — not final data.** However many clusters
-this finds, however noisy they look, is reported as-is. Don't retune
-parameters to make the output "look nice" — the point right now is
-verifying the pipeline runs correctly end to end, not producing a
-presentable meta report.
+**Don't retune parameters to make the output "look nice".** However many
+clusters HDBSCAN finds, however noisy they look, is reported as-is.
 
 Outputs:
   models/hdbscan_model.pkl        the fitted HDBSCAN model (pickle)
@@ -196,8 +160,8 @@ CLUSTER_LABELS_PATH = DATA_PROCESSED / "cluster_labels.npy"
 OFF_META = "off_meta"
 OFF_META_CODE = -2  # encodes OFF_META in the saved int label array (HDBSCAN noise is -1, already reassigned by here)
 
-# core_units selection (SPEC.md section 9's "en sık 8 unit" — verified against
-# real data this session: a fixed top-8 cut sits mid-drop for outlier clusters
+# core_units selection (SPEC.md section 9's "en sık 8 unit" — checked against
+# real data: a fixed top-8 cut sits mid-drop for outlier clusters
 # (n_total < ~1000, e.g. c_09) while a >=50%-of-boards frequency threshold
 # lines up with each cluster's own natural falloff in 20/22 clusters checked.
 # CORE_UNIT_MIN/MAX bound the rare cases where the threshold alone misfires:
@@ -224,7 +188,7 @@ def _load_display_names() -> tuple[dict[str, str], dict[str, str]]:
 
 
 def fit_hdbscan(vectors: np.ndarray, min_cluster_size_fraction: float) -> tuple[HDBSCAN, np.ndarray, int]:
-    # metric="euclidean", not "cosine" — see module docstring (2026-08-31):
+    # metric="euclidean", not "cosine" — see module docstring:
     # mathematically equivalent for L2-normalized vectors (monotonic
     # transform, HDBSCAN is rank-order-based), but avoids cosine's brute-force
     # O(n²) memory path, which crashes past ~a few 10k training points.
@@ -321,8 +285,8 @@ def _unit_avg_star(rows: list[dict], indices: list[int]) -> dict[str, float]:
     """Mean star level per unit — averaged only over the boards that
     actually HAVE the unit (a board missing it contributes nothing), so the
     denominator here is that unit's own presence count, not n_total and not
-    _unit_frequency's count for a different unit. Measured against real data
-    (2026-09-01): far from a safe-to-assume constant — carries regularly
+    _unit_frequency's count for a different unit. Measured against real data:
+    far from a safe-to-assume constant — carries regularly
     average close to 3, low-priority units regularly stay close to 1."""
     totals: dict[str, float] = {}
     counts: dict[str, int] = {}
@@ -496,22 +460,12 @@ def compute_avg_placement_tiers(comps: dict) -> dict:
     over the real (non-off_meta, non-_metadata) comps' avg_placement,
     recomputed every run so the bands track whatever data currently exists.
 
-    **Changed 2026-08-31 from a 4-band Q1/Q3 quartile split to this 5-band
-    stdev split — measured against an alternative before choosing, not
-    assumed.** User asked for an S/A/B/C/D tier system and specified two
-    candidate schemes to compare on the real 19-comp distribution
-    (mean=4.468, population stdev=0.254): (A) this one — mean ± 0.5/1.5
-    stdev — and (B) a fixed 10/20/40/20/10 percentile split. Measured
-    outcome: (A) gave S=1/A=5/B=5/C=7/D=1, isolating the two comps that are
-    genuine statistical outliers (Draven — Alev at 3.958, next-closest 0.15
-    away; Warwick — Karadiken at 4.871, next-closest 0.14 away) — every other
-    gap in the sorted list is ~0.02-0.05. (B) gave S=2/A=4/B=7/C=4/D=2 but
-    forced a fixed shape regardless of actual gaps: e.g. it split Çakıl —
-    Vadi Canavarı (4.108, into S) from Master Yi — Ahenkli (4.123, into A)
-    despite only a 0.015 gap between them, purely to fill the 10% quota. (A)
-    was chosen because its boundaries reflect actual separation in the data;
-    (B) would have produced tier boundaries that don't correspond to any
-    real cluster in the distribution.
+    Stdev bands rather than fixed percentiles: on the 19-comp distribution
+    (mean=4.468, stdev=0.254) they isolated the two genuine outliers
+    (Draven — Alev 3.958 and Warwick — Karadiken 4.871, each ~0.14-0.15 from
+    their nearest neighbour vs. ~0.02-0.05 gaps elsewhere), while a fixed
+    10/20/40/20/10 split forced comps only 0.015 apart (4.108 vs 4.123) into
+    different tiers just to fill its quota.
 
     S: < mean - 1.5*stdev
     A: [mean - 1.5*stdev, mean - 0.5*stdev)

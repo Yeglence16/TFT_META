@@ -10,7 +10,7 @@ Implements SPEC.md section 2:
     item, because "failed" would mean "this match doesn't exist" and would
     cause silent, permanent data loss for whatever is left in the queue.
 
-**401 handled the same way as 403 (found live, 2026-08-31).** SPEC.md's
+**401 handled the same way as 403.** SPEC.md's
 error table only lists 403 for key problems, but a real 15k-match download
 run hit `401 Unauthorized` on `/tft/match/v1/matches/{matchId}` partway
 through — the same key had returned 200 repeatedly on other endpoints
@@ -171,8 +171,7 @@ class RiotClient:
         (caller should skip it and move on).
 
         Raises RiotApiKeyExpiredError on 401 or 403 — this must propagate and
-        stop the caller's queue, per SPEC.md section 2 (401 added 2026-08-31,
-        see module docstring — Riot returns either for a dead key depending
+        stop the caller's queue, per SPEC.md section 2 (see module docstring — Riot returns either for a dead key depending
         on the endpoint).
 
         Raises RiotRateLimitExceededError if a request is still 429ing after

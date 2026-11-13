@@ -34,8 +34,8 @@ Outputs (web/data/):
       copied from data/static/, re-serialized (indent=2).
   items.json
       data/processed/items.json's {id, name, lift, n} entries, each joined
-      against data/static/items.json (2026-08-30, previously never copied to
-      web/data/ at all) to add an `icon` field — SPEC-WEB.md section 3.8 and
+      against data/static/items.json (which is not itself copied to
+      web/data/) to add an `icon` field — SPEC-WEB.md section 3.8 and
       8's item-recommendation UI needs one, see enrich_items_with_icons().
   _selftest.json
       generated fresh each run — see build_selftest_cases()'s docstring.
@@ -160,8 +160,7 @@ def validate_traits(data: dict) -> None:
 
 def validate_avg_placement_tiers(metadata: dict) -> None:
     """comps.json's `_metadata.avg_placement_tiers` (SPEC-WEB.md section 8;
-    S/A/B/C/D stdev-based scheme since 2026-08-31, replacing an earlier
-    Q1/Q2/Q3 quartile split) — meta-tier band boundaries, recomputed every
+    stdev-based S/A/B/C/D bands) — meta-tier band boundaries, recomputed every
     run by clustering.py, never hardcoded downstream."""
     tiers = metadata.get("avg_placement_tiers")
     if not isinstance(tiers, dict):
@@ -239,7 +238,7 @@ def validate_comps(data: dict, *, vector_dim: int) -> None:
         if not isinstance(avg_stars, dict) or set(avg_stars.keys()) != set(core_units):
             raise SchemaError(f"comps.json: {comp_id}.core_unit_avg_stars missing or its keys don't match core_units exactly")
         for unit_id, entry in avg_stars.items():
-            # Shape is {"avg": float, "n": int} (2026-08-31) — the star-badge
+            # Shape is {"avg": float, "n": int} — the star-badge
             # tooltip (SPEC-WEB.md section 8.3) needs a real sample size
             # alongside the average, not just the average alone.
             if not isinstance(entry, dict):
@@ -346,7 +345,7 @@ def enrich_items_with_icons(items: dict, static_items: dict) -> dict:
     {id, name, lift, n} — no icon. The item-recommendation UI (section 8)
     needs one, and data/static/items.json (static_data.py's output, never
     previously copied to web/data/) already has it via the same _icon_url()
-    derivation used for units/traits (section 4) — verified live, 2026-08-30:
+    derivation used for units/traits (section 4) — verified:
     10 random completed-item URLs, 10/10 returned 200. This joins that icon
     onto every entry rather than shipping the whole 502-item static catalog
     to the browser, since items.json entries already carry their own name.
@@ -546,7 +545,7 @@ def build_selftest_cases(
         matched_id, distance = nearest_comp(vector, centroids)
         group_label = OFF_META if label == OFF_META_CODE else f"c_{label:02d}"
 
-        # No match_id in the output (2026-11-14): web/data/ is published in
+        # No match_id in the output: web/data/ is published in
         # a public repo, and a real Riot match ID lets anyone look up the
         # players in that lobby via the API. The self-test never read it —
         # it's still used above as a deterministic sort key, just not shipped.
@@ -583,7 +582,7 @@ def generate_selftest(context: dict) -> dict:
     centroids = {
         comp_id: np.array(info["centroid"], dtype=np.float64)
         for comp_id, info in comps.items()
-        if comp_id.startswith("c_")  # skips "off_meta" (no centroid) and "_metadata" (2026-09-01, no centroid either)
+        if comp_id.startswith("c_")  # skips "off_meta" (no centroid) and "_metadata" (no centroid either)
     }
 
     cases = build_selftest_cases(

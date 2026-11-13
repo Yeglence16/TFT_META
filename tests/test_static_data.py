@@ -56,7 +56,7 @@ def test_emblem_trait_id_returns_none_when_no_matching_trait():
 def test_emblem_trait_id_works_with_a_non_english_suffix():
     # Regression: the suffix used to be hardcoded to " Emblem" — Turkish
     # emblems follow "<Trait Türkçe Adı> Amblemi" instead (verified against
-    # a live tr_tr CommunityDragon dump, 2026-08-31). The matching logic
+    # a tr_tr CommunityDragon dump). The matching logic
     # itself is locale-agnostic; only the suffix string needs to vary.
     trait_name_to_id = {"Karadiken": "DA_18_Blackthorn"}
     assert _emblem_trait_id("Karadiken Amblemi", trait_name_to_id, " Amblemi") == "DA_18_Blackthorn"

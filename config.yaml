@@ -77,13 +77,10 @@ clustering:
   min_cluster_size_fraction: 0.003   # 0.2%-0.5% of sample count, per spec section 9
   noise_distance_threshold: 0.35     # max cosine distance before a noise point stays off-meta
 
-  # Phase 2 (src/subdivide.py, added 2026-09-02) — splits selected phase-1
-  # comps into finer pieces via a SEPARATE probe HDBSCAN fit, without
-  # touching min_cluster_size_fraction or clustering.py's own fit. Measured
-  # first (scripts/sensitivity_mcs.py, measure_variants.py,
-  # resolve_variant_gap.py, measure_residual.py this session) before being
-  # turned into a real pipeline step — see SPEC.md's decision history once
-  # it's updated with this feature.
+  # Phase 2 (src/subdivide.py) — splits selected phase-1 comps into finer
+  # pieces via a SEPARATE probe HDBSCAN fit, without touching
+  # min_cluster_size_fraction or clustering.py's own fit. See SPEC.md
+  # section 9a.
   subdivide:
     enabled: true
     probe_min_cluster_size: 200   # NOT min_cluster_size_fraction-derived — a separate, literal probe value
@@ -91,7 +88,7 @@ clustering:
     # target comp if >=90% of ITS OWN full population (train+early-death,
     # after the probe fit's own standard noise/early-death reassignment)
     # carries that target comp's PRODUCTION FINAL label. Measured directly
-    # (resolve_variant_gap.py's Part A) against the 8 candidate pieces
+    # against the 8 candidate pieces
     # before this threshold was chosen: all 8 measured between 96.1%-100%
     # purity, comfortably above 90%; Draven-Alev's own weakest mcs=200
     # sub-piece measured 69.7% and is correctly excluded by this threshold

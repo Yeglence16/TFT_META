@@ -136,7 +136,7 @@ def _valid_comp(**overrides):
 
 
 def _valid_metadata():
-    # SPEC-WEB.md section 8 (S/A/B/C/D scheme since 2026-08-31) — meta-tier
+    # SPEC-WEB.md section 8 (S/A/B/C/D scheme) — meta-tier
     # band boundaries, always present in real pipeline output (clustering.py
     # writes it every run).
     return {

@@ -161,7 +161,7 @@ def _load_comp_baselines() -> dict[int, float]:
     baselines = {}
     for comp_id, info in comps.items():
         if not comp_id.startswith("c_"):
-            continue  # skips "off_meta" (no coherent comp) and "_metadata" (2026-09-01, avg_placement_tiers — not a comp)
+            continue  # skips "off_meta" (no coherent comp) and "_metadata" (avg_placement_tiers — not a comp)
         cluster_id = int(comp_id.split("_")[1])
         baselines[cluster_id] = info["avg_placement"]
     return baselines
@@ -310,7 +310,7 @@ def run(config: dict) -> None:
     core_units_by_cluster = {
         int(comp_id.split("_")[1]): info["core_units"]
         for comp_id, info in comps.items()
-        if comp_id.startswith("c_")  # skips "off_meta" and "_metadata" (2026-09-01), same as _load_comp_baselines()
+        if comp_id.startswith("c_")  # skips "off_meta" and "_metadata", same as _load_comp_baselines()
     }
 
     cells = compute_item_cells(rows, completed_item_ids)
