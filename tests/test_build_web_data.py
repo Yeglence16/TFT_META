@@ -458,7 +458,7 @@ def test_build_selftest_cases_includes_clean_board():
     centroids = {"c_00": vectors[0]}
     cases = build_selftest_cases(rows, vectors, labels, UNIT_ORDER, TRAIT_ORDER, UNITS_MAP, TRAITS_MAP, centroids, 0.35)
     assert len(cases) == 1
-    assert cases[0]["match_id"] == "m1"
+    assert "match_id" not in cases[0]  # real match IDs must not ship in public web/data
     assert cases[0]["matched_comp"] == "c_00"
     assert cases[0]["input_units"] == [{"id": "u1", "star": 2}, {"id": "u2", "star": 2}]
 
@@ -473,7 +473,9 @@ def test_build_selftest_cases_picks_lowest_sort_key_per_label_deterministically(
     centroids = {"c_00": vectors[0]}
     cases = build_selftest_cases(rows, vectors, labels, UNIT_ORDER, TRAIT_ORDER, UNITS_MAP, TRAITS_MAP, centroids, 0.35)
     assert len(cases) == 1
-    assert cases[0]["match_id"] == "m1"  # ("m1", "pA") sorts before ("m2", "pB")
+    # ("m1", "pA") sorts before ("m2", "pB") — identified by its board
+    # (u1 at 2 stars), since match_id is no longer part of the output.
+    assert cases[0]["input_units"] == [{"id": "u1", "star": 2}]
 
 
 def test_build_selftest_cases_flags_off_meta_group():

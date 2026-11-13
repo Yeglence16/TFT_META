@@ -4,7 +4,7 @@ Motivation: the normal web/ deployment (SPEC-WEB.md section 1) needs a local
 HTTP server because `file://` blocks JSON `fetch()` via CORS. That's fine for
 the developer, but "send a friend a link to a folder + tell them to run
 `python -m http.server`" is a bad ask for casual sharing. This script embeds
-everything — data, CSS, JS, the header logo image — into one `.html` file
+everything — data, CSS, JS (the header logo is already an inline SVG) — into one `.html` file
 that opens directly via double-click, no server required.
 
 **How app.js supports both modes without a build-time fork.** `app.js`'s
@@ -60,7 +60,6 @@ Requires web/data/*.json to already exist (run build_web_data.py first).
 
 from __future__ import annotations
 
-import base64
 import json
 import re
 import sys
@@ -80,7 +79,6 @@ _DATA_FILES_ENTRY_RE = re.compile(r'(\w+):\s*"data/([\w.]+)"')
 
 _LINK_TAG = '<link rel="stylesheet" href="style.css">'
 _SCRIPT_TAG = '<script src="app.js" defer></script>'
-_LOGO_SRC_ATTR = 'src="logo.png"'
 
 
 class BuildError(RuntimeError):
@@ -147,21 +145,20 @@ def build_embedded_data_blocks(data_dir: Path, mapping: dict[str, str]) -> str:
     return "\n".join(blocks)
 
 
-def embed_logo(index_html: str, web_dir: Path) -> str:
-    """`web/index.html`'s header `<img src="logo.png">` (SPEC-WEB.md section
-    5.0) is a relative path — fine in server mode (served from the same
-    directory), but this build's whole point is a single file with no
-    sibling files, so under `file://` it would 404 (confirmed live: a real
-    console `net::ERR_FILE_NOT_FOUND` before this function existed). Same
-    fix as the JSON/CSS/JS embedding above, just for a binary asset: inline
-    it as a `data:` URI instead of a path reference."""
-    logo_path = web_dir / "logo.png"
-    if not logo_path.exists():
-        raise BuildError(f"{logo_path} not found")
-    if _LOGO_SRC_ATTR not in index_html:
-        raise BuildError(f"web/index.html: expected attribute not found: {_LOGO_SRC_ATTR!r}")
-    encoded = base64.b64encode(logo_path.read_bytes()).decode("ascii")
-    return index_html.replace(_LOGO_SRC_ATTR, f'src="data:image/png;base64,{encoded}"')
+def assert_no_local_asset_refs(html: str) -> None:
+    """The output is a single file with no siblings, so any remaining
+    relative `src=`/`href=` (a local image, stylesheet, script) would 404
+    under `file://`. Not hypothetical: the header used to be a local
+    `logo.png`, and the first live `file://` test of this build hit exactly
+    that (`net::ERR_FILE_NOT_FOUND`). The logo is now an inline SVG, so
+    nothing needs embedding today — this guard makes a future local asset
+    fail the build loudly instead of shipping a silently broken page."""
+    local = re.findall(r'(?:src|href)="(?!https?:|data:|#)([^"]+)"', html)
+    if local:
+        raise BuildError(
+            f"standalone output still references local files {sorted(set(local))} — "
+            "they won't exist next to the single HTML file; inline them or use a remote URL"
+        )
 
 
 def build(web_dir: Path) -> str:
@@ -182,8 +179,7 @@ def build(web_dir: Path) -> str:
     mapping = extract_data_files_mapping(app_js)
     data_blocks = build_embedded_data_blocks(web_dir / "data", mapping)
 
-    html = embed_logo(index_html, web_dir)
-    html = html.replace(_LINK_TAG, f"<style>\n{style_css}\n</style>")
+    html = index_html.replace(_LINK_TAG, f"<style>\n{style_css}\n</style>")
     # `defer` has no meaningful effect on an inline script anyway, and this
     # tag sits at the same position (end of body) it always did, so the
     # embedded data blocks (parsed into the DOM immediately before it) are
@@ -191,6 +187,7 @@ def build(web_dir: Path) -> str:
     # guarantee `defer` was providing for the external file, achieved here
     # by document position instead.
     html = html.replace(_SCRIPT_TAG, f"{data_blocks}\n<script>\n{app_js}\n</script>")
+    assert_no_local_asset_refs(html)
     return html
 
 

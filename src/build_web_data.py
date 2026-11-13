@@ -546,10 +546,13 @@ def build_selftest_cases(
         matched_id, distance = nearest_comp(vector, centroids)
         group_label = OFF_META if label == OFF_META_CODE else f"c_{label:02d}"
 
+        # No match_id in the output (2026-11-14): web/data/ is published in
+        # a public repo, and a real Riot match ID lets anyone look up the
+        # players in that lobby via the API. The self-test never read it —
+        # it's still used above as a deterministic sort key, just not shipped.
         cases.append(
             {
                 "id": group_label,
-                "match_id": row["match_id"],
                 "early_death": row["early_death"],
                 "input_units": [
                     {"id": unit_id, "star": info["tier"]} for unit_id, info in sorted(row["raw_units"].items())

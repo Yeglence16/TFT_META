@@ -1,4 +1,3 @@
-import base64
 import json
 import sys
 from pathlib import Path
@@ -11,17 +10,10 @@ from src.build_standalone import (
     BuildError,
     assert_no_script_close,
     build,
+    assert_no_local_asset_refs,
     build_embedded_data_blocks,
-    embed_logo,
     escape_script_close,
     extract_data_files_mapping,
-)
-
-# Smallest possible valid PNG (1x1, transparent) — a well-known fixture
-# constant, not a real logo; only its byte-identity round-trip through
-# base64 matters for these tests.
-_TINY_PNG_BYTES = base64.b64decode(
-    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
 )
 
 SAMPLE_APP_JS = """"use strict";
@@ -42,7 +34,7 @@ SAMPLE_INDEX_HTML = """<!DOCTYPE html>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<img class="logo-icon" src="logo.png" alt="">
+<svg class="logo-icon" viewBox="0 0 48 48" aria-hidden="true"><rect fill="url(#g)"/></svg>
 <div id="app"></div>
 <script src="app.js" defer></script>
 </body>
@@ -53,7 +45,7 @@ SAMPLE_STYLE_CSS = "body { margin: 0; }\n"
 
 
 def _make_web_dir(
-    tmp_path: Path, *, index_html=SAMPLE_INDEX_HTML, app_js=SAMPLE_APP_JS, style_css=SAMPLE_STYLE_CSS, with_logo=True
+    tmp_path: Path, *, index_html=SAMPLE_INDEX_HTML, app_js=SAMPLE_APP_JS, style_css=SAMPLE_STYLE_CSS
 ) -> Path:
     web_dir = tmp_path / "web"
     data_dir = web_dir / "data"
@@ -61,8 +53,6 @@ def _make_web_dir(
     (web_dir / "index.html").write_text(index_html, encoding="utf-8")
     (web_dir / "app.js").write_text(app_js, encoding="utf-8")
     (web_dir / "style.css").write_text(style_css, encoding="utf-8")
-    if with_logo:
-        (web_dir / "logo.png").write_bytes(_TINY_PNG_BYTES)
     (data_dir / "meta.json").write_text(json.dumps({"set_number": 18}), encoding="utf-8")
     (data_dir / "units.json").write_text(json.dumps({"u1": {"name": "Ahri"}}), encoding="utf-8")
     (data_dir / "comp_traits.json").write_text(json.dumps({"c_00": {}}), encoding="utf-8")
@@ -154,31 +144,29 @@ def test_build_embedded_data_blocks_raises_on_missing_file(tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# embed_logo
+# assert_no_local_asset_refs
 # ---------------------------------------------------------------------------
 
 
-def test_embed_logo_replaces_path_with_data_uri(tmp_path):
-    web_dir = _make_web_dir(tmp_path)
-    html = embed_logo(SAMPLE_INDEX_HTML, web_dir)
+def test_assert_no_local_asset_refs_allows_remote_data_and_fragment_refs():
+    html = (
+        '<img src="https://raw.communitydragon.org/x.png">'
+        '<img src="data:image/png;base64,AAAA">'
+        '<a href="#top">x</a>'
+    )
+    assert_no_local_asset_refs(html)  # no raise
 
-    assert 'src="logo.png"' not in html
-    assert "data:image/png;base64," in html
-    encoded = base64.b64encode(_TINY_PNG_BYTES).decode("ascii")
-    assert encoded in html
 
-
-def test_embed_logo_raises_when_file_missing(tmp_path):
-    web_dir = _make_web_dir(tmp_path, with_logo=False)
+def test_assert_no_local_asset_refs_raises_on_relative_image():
+    # Regression: the header used to be a local logo.png, which 404'd under
+    # file:// in the single-file build.
     with pytest.raises(BuildError):
-        embed_logo(SAMPLE_INDEX_HTML, web_dir)
+        assert_no_local_asset_refs('<img class="logo-icon" src="logo.png" alt="">')
 
 
-def test_embed_logo_raises_when_attribute_missing(tmp_path):
-    web_dir = _make_web_dir(tmp_path)
-    html_without_logo_tag = SAMPLE_INDEX_HTML.replace('<img class="logo-icon" src="logo.png" alt="">\n', "")
+def test_assert_no_local_asset_refs_raises_on_relative_stylesheet():
     with pytest.raises(BuildError):
-        embed_logo(html_without_logo_tag, web_dir)
+        assert_no_local_asset_refs('<link rel="stylesheet" href="extra.css">')
 
 
 # ---------------------------------------------------------------------------
@@ -186,14 +174,12 @@ def test_embed_logo_raises_when_attribute_missing(tmp_path):
 # ---------------------------------------------------------------------------
 
 
-def test_build_embeds_data_style_script_and_logo(tmp_path):
+def test_build_embeds_data_style_and_script(tmp_path):
     web_dir = _make_web_dir(tmp_path)
     html = build(web_dir)
 
     assert '<link rel="stylesheet" href="style.css">' not in html
     assert '<script src="app.js" defer></script>' not in html
-    assert 'src="logo.png"' not in html
-    assert "data:image/png;base64," in html
     assert "body { margin: 0; }" in html  # style.css inlined
     assert 'const DATA_FILES = {' in html  # app.js inlined
     assert 'id="embedded-data-meta"' in html
@@ -226,8 +212,9 @@ def test_build_raises_when_data_file_missing(tmp_path):
         build(web_dir)
 
 
-def test_build_raises_when_logo_missing(tmp_path):
-    web_dir = _make_web_dir(tmp_path, with_logo=False)
+def test_build_raises_when_index_references_a_local_image(tmp_path):
+    bad_html = SAMPLE_INDEX_HTML.replace("<body>\n", '<body>\n<img src="logo.png" alt="">\n')
+    web_dir = _make_web_dir(tmp_path, index_html=bad_html)
     with pytest.raises(BuildError):
         build(web_dir)
 

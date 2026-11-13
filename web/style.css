@@ -73,7 +73,6 @@ body {
 .logo-icon {
   width: 40px;
   height: 40px;
-  object-fit: contain; /* kare kaynak (600x600) — sadece savunma amaçlı, ezilmeyi engeller */
 }
 
 .site-header h1 {

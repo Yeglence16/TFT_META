@@ -28,6 +28,7 @@ import json
 import math
 import pickle
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -60,10 +61,9 @@ CLUSTER_LABELS_PATH = PROJECT_ROOT / "data" / "processed" / "cluster_labels.npy"
 STATIC_ITEMS_PATH = PROJECT_ROOT / "data" / "static" / "items.json"
 OFF_META_CODE = -2
 
-SCRATCH_DIR = Path(
-    r"C:\Users\USER\AppData\Local\Temp\PROJECT"
-    r"\428e16f3-dfaf-4fa4-a493-03d35d920af8\scratchpad"
-)
+# Machine-local cache for expensive HDBSCAN fits — under the OS temp dir,
+# never inside the repo and never a hardcoded user path.
+SCRATCH_DIR = Path(tempfile.gettempdir()) / "tft_meta_scratch"
 CACHE_DIR = SCRATCH_DIR / "hdbscan_cache"
 
 TARGET_COMPS = ["c_02", "c_04", "c_17"]  # Kayle, Cassiopeia, Aphelios-Öncü
